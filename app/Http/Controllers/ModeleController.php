@@ -1,24 +1,20 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\modele;
-use App\Models\categorie;
-use App\Http\Requests\StoreModeleRequest;
-use App\Http\Requests\UpdateModeleRequest;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Models\Modele;
+use App\Models\Categorie;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ModeleController extends Controller
 {
-    use AuthorizesRequests;
-
     /**
      * Affiche la liste des modèles.
      */
     public function index()
     {
-        $this->authorize('viewAny', modele::class);
-        $modeles = modele::all();
+        $this->authorize('viewAny', Modele::class);
+        $modeles = Modele::all();
         return view('modeles.index', compact('modeles'));
     }
 
@@ -27,48 +23,48 @@ class ModeleController extends Controller
      */
     public function create()
     {
-        $this->authorize('create', modele::class);
-        $categories = categorie::all(); // Récupère toutes les catégories
+        $this->authorize('create', Modele::class);
+        $categories = Categorie::all(); // Récupère toutes les catégories
         return view('modeles.create', compact('categories'));
     }
 
     /**
      * Enregistre un modèle en base de données.
      */
-    public function store(StoreModeleRequest $request)
+    public function store(Request $request)
     {
-        $this->authorize('create', modele::class);
+        $this->authorize('create', Modele::class);
 
-        // Récupération des données validées
-        $data = $request->validated();
-
-        // Gestion du fichier 'patron'
-        if ($request->hasFile('patron')) {
-            $data['patron'] = $request->file('patron')->store('patrons', 'public');
-        }
-
-        // Gestion du fichier XML
-        if ($request->hasFile('xml')) {
-            $data['xml'] = $request->file('xml')->store('xmls', 'public');
-        }
-
-        // Création du modèle avec **tous les champs**
-        modele::create([
-            'categorie_id' => $data['categorie_id'],
-            'nom' => $data['nom'],
-            'description' => $data['description'] ?? null,
-            'prix' => $data['prix'],
-            'patron' => $data['patron'] ?? null,
-            'xml' => $data['xml'] ?? null,
+        $validatedData = $request->validate([
+            'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'prix' => 'required|integer|min:0',
+            'categorie_id' => 'required|exists:categories,id',
+            'patron' => 'required|file|max:2048', // Fichier .val
+            'xml' => 'required|file|max:2048', // Fichier .vit ou .xml
         ]);
 
-        return redirect()->route('modeles.index')->with('message', 'Modèle ajouté avec succès.');
+        // Stockage des fichiers
+        $patronPath = $request->file('patron')->store('modeles', 'public');
+        $xmlPath = $request->file('xml')->store('modeles', 'public');
+
+        // Création du modèle
+        Modele::create([
+            'nom' => $validatedData['nom'],
+            'description' => $validatedData['description'],
+            'prix' => $validatedData['prix'],
+            'categorie_id' => $validatedData['categorie_id'],
+            'patron' => $patronPath,
+            'xml' => $xmlPath,
+        ]);
+
+        return redirect()->route('modeles.index')->with('message', 'Modèle ajouté avec succès !');
     }
 
     /**
      * Affiche les détails d'un modèle.
      */
-    public function show(modele $modele)
+    public function show(Modele $modele)
     {
         $this->authorize('view', $modele);
         return view('modeles.show', compact('modele'));
@@ -77,56 +73,55 @@ class ModeleController extends Controller
     /**
      * Affiche le formulaire d'édition d'un modèle.
      */
-    public function edit(modele $modele)
+    public function edit(Modele $modele)
     {
         $this->authorize('update', $modele);
-        $categories = categorie::all();
+        $categories = Categorie::all();
         return view('modeles.edit', compact('modele', 'categories'));
     }
 
     /**
      * Met à jour un modèle en base de données.
      */
-    public function update(UpdateModeleRequest $request, modele $modele)
+    public function update(Request $request, Modele $modele)
     {
         $this->authorize('update', $modele);
 
-        // Récupération des données validées
-        $data = $request->validated();
-
-        // Gestion du fichier 'patron' (mise à jour si un nouveau fichier est envoyé)
-        if ($request->hasFile('patron')) {
-            if ($modele->patron) {
-                Storage::disk('public')->delete($modele->patron);
-            }
-            $data['patron'] = $request->file('patron')->store('patrons', 'public');
-        }
-
-        // Gestion du fichier XML
-        if ($request->hasFile('xml')) {
-            if ($modele->xml) {
-                Storage::disk('public')->delete($modele->xml);
-            }
-            $data['xml'] = $request->file('xml')->store('xmls', 'public');
-        }
-
-        // Mise à jour du modèle avec **tous les champs**
-        $modele->update([
-            'categorie_id' => $data['categorie_id'],
-            'nom' => $data['nom'],
-            'description' => $data['description'] ?? null,
-            'prix' => $data['prix'],
-            'patron' => $data['patron'] ?? $modele->patron,
-            'xml' => $data['xml'] ?? $modele->xml,
+        $validatedData = $request->validate([
+            'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'prix' => 'required|integer|min:0',
+            'categorie_id' => 'required|exists:categories,id',
+            'patron' => 'nullable|file|max:2048', // Fichier .val
+            'xml' => 'nullable|file|max:2048', // Fichier .vit ou .xml
         ]);
 
-        return redirect()->route('modeles.index')->with('message', 'Modèle mis à jour avec succès.');
+        // Mise à jour des fichiers si fournis
+        if ($request->hasFile('patron')) {
+            Storage::disk('public')->delete($modele->patron);
+            $modele->patron = $request->file('patron')->store('modeles', 'public');
+        }
+
+        if ($request->hasFile('xml')) {
+            Storage::disk('public')->delete($modele->xml);
+            $modele->xml = $request->file('xml')->store('modeles', 'public');
+        }
+
+        // Mise à jour des autres données
+        $modele->update([
+            'nom' => $validatedData['nom'],
+            'description' => $validatedData['description'],
+            'prix' => $validatedData['prix'],
+            'categorie_id' => $validatedData['categorie_id'],
+        ]);
+
+        return redirect()->route('modeles.index')->with('message', 'Modèle mis à jour avec succès !');
     }
 
     /**
      * Supprime un modèle.
      */
-    public function destroy(modele $modele)
+    public function destroy(Modele $modele)
     {
         $this->authorize('delete', $modele);
 
@@ -144,3 +139,4 @@ class ModeleController extends Controller
         return redirect()->route('modeles.index')->with('message', 'Modèle supprimé avec succès.');
     }
 }
+
