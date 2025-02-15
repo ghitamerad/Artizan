@@ -15,7 +15,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         User::class => UserPolicy::class,
-        Modele::class => ModelePolicy::class, // "Modele" avec une majuscule (correspond au modèle)
+        modele::class => ModelePolicy::class, 
 
     ];
 

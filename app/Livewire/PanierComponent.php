@@ -34,7 +34,7 @@ class PanierComponent extends Component
     {
         return view('livewire.panier-component', [
             'paniers' => Panier::where('user_id', Auth::id())->get()
-        ])->layout('layout.guest2');
+        ])->layout('layouts.guest2');
     }
 }
 
