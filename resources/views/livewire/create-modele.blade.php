@@ -41,9 +41,6 @@
         </div>
 
         <button type="submit">Ajouter le modèle</button>
-        <a href="{{ route('generate.download.patron', $modele->id) }}" class="btn btn-primary">
-    Télécharger le Patron en PDF
-</a>
 
         @if (session()->has('message'))
             <p>{{ session('message') }}</p>
