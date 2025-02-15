@@ -31,7 +31,7 @@ Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () 
     Route::get('/modeles/create', [ModeleController::class, 'create'])->name('modeles.create');
     Route::post('/modeles/store', [ModeleController::class, 'store'])->name('modeles.store');
     Route::get('/modeles/{modele}/edit', [ModeleController::class, 'edit'])->name('modeles.edit');
-    Route::put('/modeles/{modele}', [ModeleController::class, 'update'])->name('modeles.update');
+    Route::put('/modeles/{modele}/update', [ModeleController::class, 'update'])->name('modeles.update');
     Route::delete('/modeles/{modele}/destroy', [ModeleController::class, 'destroy'])->name('modeles.destroy');
 });
 
