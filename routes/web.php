@@ -35,6 +35,21 @@ Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () 
     Route::delete('/modeles/{modele}/destroy', [ModeleController::class, 'destroy'])->name('modeles.destroy');
 });
 
+use App\http\Controllers\CommandeController;
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store');
+
+    Route::middleware(['can:validate,commande'])->group(function () {
+        Route::post('/commandes/{id}/valider', [CommandeController::class, 'validateCommande'])->name('commandes.validate');
+        Route::post('/commandes/{id}/invalider', [CommandeController::class, 'unvalidateCommande'])->name('commandes.unvalidate');
+    });
+
+    Route::middleware(['can:assign,commande'])->post('/commandes/{id}/assign', [CommandeController::class, 'assignToCouturiere'])->name('commandes.assign');
+
+    Route::middleware(['can:confirm,commande'])->post('/commandes/{id}/confirmer', [CommandeController::class, 'confirmCommande'])->name('commandes.confirm');
+});
 // use App\Livewire\CreateModele;
 
 // Route::middleware(['auth'])->group(function () {
