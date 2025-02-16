@@ -1,52 +1,50 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Utilisateur</title>
+</head>
+<body>
+    <div style="max-width: 600px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); text-align: center;">
+        <h2>Ajouter un Utilisateur</h2>
 
-@section('content')
-<div class="container">
-    <h2>Ajouter un utilisateur</h2>
+        <form action="{{ route('admin.users.store') }}" method="POST">
+            @csrf
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+            <table align="center" width="100%" cellpadding="10">
+                <tr>
+                    <td align="right"><label for="name">Nom :</label></td>
+                    <td><input type="text" name="name" required></td>
+                </tr>
+                <tr>
+                    <td align="right"><label for="email">Email :</label></td>
+                    <td><input type="email" name="email" required></td>
+                </tr>
+                <tr>
+                    <td align="right"><label for="password">Mot de passe :</label></td>
+                    <td><input type="password" name="password" required></td>
+                </tr>
+                <tr>
+                    <td align="right"><label for="password_confirmation">Confirmer :</label></td>
+                    <td><input type="password" name="password_confirmation" required></td>
+                </tr>
+                <tr>
+                    <td align="right"><label for="role">Rôle :</label></td>
+                    <td>
+                        <select name="role" required>
+                            <option value="client">Client</option>
+                            <option value="admin">Administrateur</option>
+                            <option value="gerante">Gérante</option>
+                            <option value="couturiere">Couturière</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
 
-    <form action="{{ route('admin.users.store') }}" method="POST">
-        @csrf
-        <div class="mb-3">
-            <label for="name" class="form-label">Nom</label>
-            <input type="text" name="name" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="password" class="form-label">Mot de passe</label>
-            <input type="password" name="password" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="role" class="form-label">Rôle</label>
-            <select name="role" class="form-control" required>
-                <option value="client">Client</option>
-                <option value="admin">Administrateur</option>
-                <option value="gerante">Gérante</option>
-                <option value="couturiere">Couturière</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="password_confirmation" class="form-label">Confirmer le mot de passe</label>
-            <input type="password" name="password_confirmation" class="form-control" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Ajouter</button>
-    </form>
-</div>
-@endsection
+            <br>
+            <button type="submit">Ajouter</button>
+        </form>
+    </div>
+</body>
+</html>

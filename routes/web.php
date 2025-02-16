@@ -36,5 +36,10 @@ Route::get('/generate-download-patron/{id}', [CreateModele::class, 'generateAndD
     ->name('generate.download.patron');
 
 Route::get('/modele/{id}', App\Livewire\ShowModele::class)->name('modele.show');
+use App\Http\Controllers\PanierController;
+
+Route::post('/panier/ajouter/{id}', [PanierController::class, 'ajouter'])
+    ->name('ajouter.au.panier');
+
 
 require __DIR__.'/auth.php';

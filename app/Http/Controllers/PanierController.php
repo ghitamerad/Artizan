@@ -2,65 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Panier;
-use App\Http\Requests\StorePanierRequest;
-use App\Http\Requests\UpdatePanierRequest;
+use App\Models\Modele;
+use Illuminate\Support\Facades\Auth;
 
 class PanierController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function ajouter($id)
     {
-        //
-    }
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $modele = Modele::findOrFail($id);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePanierRequest $request)
-    {
-        //
-    }
+        $panier = Panier::firstOrCreate(
+            ['user_id' => Auth::id(), 'modele_id' => $modele->id],
+            ['quantite' => 1]
+        );
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Panier $panier)
-    {
-        //
-    }
+        if (!$panier->wasRecentlyCreated) {
+            $panier->increment('quantite');
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Panier $panier)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePanierRequest $request, Panier $panier)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Panier $panier)
-    {
-        //
+        return redirect()->back()->with('message', 'Modèle ajouté au panier !');
     }
 }

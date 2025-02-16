@@ -1,46 +1,44 @@
-@extends('layouts.app')
-
-@section('content')
-    <div class="container">
-        <h2 class="mb-4">Modifier l'utilisateur</h2>
-
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier un Utilisateur</title>
+</head>
+<body>
+    <div style="max-width: 600px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); text-align: center;">
+        <h2>Modifier un Utilisateur</h2>
 
         <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
             @csrf
             @method('PUT')
 
-            <div class="mb-3">
-                <label for="name" class="form-label">Nom</label>
-                <input type="text" name="name" id="name" class="form-control" value="{{ $user->name }}" required>
-            </div>
+            <table align="center" width="100%" cellpadding="10">
+                <tr>
+                    <td align="right"><label for="name">Nom :</label></td>
+                    <td><input type="text" name="name" value="{{ $user->name }}" required></td>
+                </tr>
+                <tr>
+                    <td align="right"><label for="email">Email :</label></td>
+                    <td><input type="email" name="email" value="{{ $user->email }}" required></td>
+                </tr>
+                <tr>
+                    <td align="right"><label for="role">Rôle :</label></td>
+                    <td>
+                        <select name="role" required>
+                            <option value="client" {{ $user->role == 'client' ? 'selected' : '' }}>Client</option>
+                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Administrateur</option>
+                            <option value="gerante" {{ $user->role == 'gerante' ? 'selected' : '' }}>Gérante</option>
+                            <option value="couturiere" {{ $user->role == 'couturiere' ? 'selected' : '' }}>Couturière</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
 
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" name="email" id="email" class="form-control" value="{{ $user->email }}" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="role" class="form-label">Rôle</label>
-                <select name="role" id="role" class="form-control" required>
-                    <option value="client" {{ $user->role == 'client' ? 'selected' : '' }}>Client</option>
-                    <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Administrateur</option>
-                    <option value="gerante" {{ $user->role == 'gerante' ? 'selected' : '' }}>Gérante</option>
-                    <option value="couturiere" {{ $user->role == 'couturiere' ? 'selected' : '' }}>Couturière</option>
-                </select>
-            </div>
-
-
-            <button type="submit" class="btn btn-success">Enregistrer</button>
-            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Annuler</a>
+            <br>
+            <button type="submit">Enregistrer</button>
+            <a href="{{ route('admin.users.index') }}">Annuler</a>
         </form>
     </div>
-@endsection
+</body>
+</html>
