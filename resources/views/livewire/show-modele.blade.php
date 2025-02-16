@@ -11,7 +11,7 @@
                 </div>
 
                 <h1 class="text-4xl font-bold text-[#2C3E50] mb-4">{{ $modele->nom }}</h1>
-                
+
                 <div class="text-2xl font-bold text-[#2C3E50] mb-6">
                     {{ number_format($modele->prix, 2, ',', ' ') }} €
                 </div>
@@ -21,7 +21,7 @@
                 </div>
 
                 <div class="space-y-4">
-                    <button 
+                    <button
                         wire:click="ajouterAuPanier"
                         class="w-full bg-[#D4AF37] text-black px-6 py-3 rounded-full hover:bg-[#C19B2C] transition-colors duration-300 flex items-center justify-center gap-2 text-lg"
                     >
@@ -31,11 +31,17 @@
                         Ajouter au panier
                     </button>
 
-                    <button 
-                        class="w-full bg-[#2C3E50] text-balck px-6 py-3 rounded-full hover:bg-[#1a2530] transition-colors duration-300 flex items-center justify-center gap-2 text-lg"
-                    >
-                        Commander maintenant
-                    </button>
+                    <form action="{{ route('commandes.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="montant_total" value="{{ $modele->prix }}">
+                        <button
+                            type="submit"
+                            class="w-full bg-[#2C3E50] text-black px-6 py-3 rounded-full hover:bg-[#1a2530] transition-colors duration-300 flex items-center justify-center gap-2 text-lg"
+                        >
+                            Commander maintenant
+                        </button>
+                    </form>
+
                 </div>
 
                 <!-- Informations supplémentaires -->
@@ -51,8 +57,8 @@
                             <!-- Image du modèle -->
             <div class="p-8">
                 @if($modele->image)
-                    <img src="{{ Storage::url($modele->image) }}" 
-                         alt="{{ $modele->nom }}" 
+                    <img src="{{ Storage::url($modele->image) }}"
+                         alt="{{ $modele->nom }}"
                          class="w-full h-[300px] object-cover rounded-lg shadow-md">
                 @else
                     <div class="w-full h-[300px] bg-gray-200 flex items-center justify-center rounded-lg">
@@ -66,4 +72,4 @@
             </div>
         </div>
     </div>
-</div> 
+</div>

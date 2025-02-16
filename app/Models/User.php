@@ -24,6 +24,15 @@ class User extends Authenticatable
         'role',
     ];
 
+
+    /**
+     * Relation avec les commandes passées par le client ou créées par la gérante.
+     */
+    public function commandes()
+    {
+        return $this->hasMany(commande::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

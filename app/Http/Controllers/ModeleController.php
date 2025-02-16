@@ -1,66 +1,142 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\modele;
-use App\Http\Requests\StoremodeleRequest;
-use App\Http\Requests\UpdatemodeleRequest;
+use App\Models\Modele;
+use App\Models\Categorie;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ModeleController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Affiche la liste des modèles.
      */
     public function index()
     {
-        //
+        $this->authorize('viewAny', Modele::class);
+        $modeles = Modele::all();
+        return view('modeles.index', compact('modeles'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Affiche le formulaire de création d'un modèle.
      */
     public function create()
     {
-        //
+        $this->authorize('create', Modele::class);
+        $categories = Categorie::all(); // Récupère toutes les catégories
+        return view('modeles.create', compact('categories'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Enregistre un modèle en base de données.
      */
-    public function store(StoremodeleRequest $request)
+    public function store(Request $request)
     {
-        //
+        $this->authorize('create', Modele::class);
+
+        $validatedData = $request->validate([
+            'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'prix' => 'required|integer|min:0',
+            'categorie_id' => 'required|exists:categories,id',
+            'patron' => 'required|file|max:2048', // Fichier .val
+            'xml' => 'required|file|max:2048', // Fichier .vit ou .xml
+        ]);
+
+        // Stockage des fichiers
+        $patronPath = $request->file('patron')->store('modeles', 'public');
+        $xmlPath = $request->file('xml')->store('modeles', 'public');
+
+        // Création du modèle
+        Modele::create([
+            'nom' => $validatedData['nom'],
+            'description' => $validatedData['description'],
+            'prix' => $validatedData['prix'],
+            'categorie_id' => $validatedData['categorie_id'],
+            'patron' => $patronPath,
+            'xml' => $xmlPath,
+        ]);
+
+        return redirect()->route('modeles.index')->with('message', 'Modèle ajouté avec succès !');
     }
 
     /**
-     * Display the specified resource.
+     * Affiche les détails d'un modèle.
      */
-    public function show(modele $modele)
+    public function show(Modele $modele)
     {
-        //
+        $this->authorize('view', $modele);
+        return view('modeles.show', compact('modele'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Affiche le formulaire d'édition d'un modèle.
      */
-    public function edit(modele $modele)
+    public function edit(Modele $modele)
     {
-        //
+        $this->authorize('update', $modele);
+        $categories = Categorie::all();
+        return view('modeles.edit', compact('modele', 'categories'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Met à jour un modèle en base de données.
      */
-    public function update(UpdatemodeleRequest $request, modele $modele)
+    public function update(Request $request, Modele $modele)
     {
-        //
+        $this->authorize('update', $modele);
+
+        $validatedData = $request->validate([
+            'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'prix' => 'required|integer|min:0',
+            'categorie_id' => 'required|exists:categories,id',
+            'patron' => 'nullable|file|max:2048', // Fichier .val
+            'xml' => 'nullable|file|max:2048', // Fichier .vit ou .xml
+        ]);
+
+        // Mise à jour des fichiers si fournis
+        if ($request->hasFile('patron')) {
+            Storage::disk('public')->delete($modele->patron);
+            $modele->patron = $request->file('patron')->store('modeles', 'public');
+        }
+
+        if ($request->hasFile('xml')) {
+            Storage::disk('public')->delete($modele->xml);
+            $modele->xml = $request->file('xml')->store('modeles', 'public');
+        }
+
+        // Mise à jour des autres données
+        $modele->update([
+            'nom' => $validatedData['nom'],
+            'description' => $validatedData['description'],
+            'prix' => $validatedData['prix'],
+            'categorie_id' => $validatedData['categorie_id'],
+        ]);
+
+        return redirect()->route('modeles.index')->with('message', 'Modèle mis à jour avec succès !');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Supprime un modèle.
      */
-    public function destroy(modele $modele)
+    public function destroy(Modele $modele)
     {
-        //
+        $this->authorize('delete', $modele);
+
+        // Supprimer les fichiers associés
+        if ($modele->patron) {
+            Storage::disk('public')->delete($modele->patron);
+        }
+        if ($modele->xml) {
+            Storage::disk('public')->delete($modele->xml);
+        }
+
+        // Suppression du modèle
+        $modele->delete();
+
+        return redirect()->route('modeles.index')->with('message', 'Modèle supprimé avec succès.');
     }
 }
+

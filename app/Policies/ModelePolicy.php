@@ -4,12 +4,48 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\modele;
-use Illuminate\Auth\Access\Response;
 
 class ModelePolicy
 {
-    public function create(User $user)
+    /**
+     * Déterminer si un utilisateur peut voir tous les modèles.
+     */
+    public function viewAny(User $user): bool
     {
-        return $user->role === 'gerante'; // Assurez-vous que le rôle de la gérante est bien défini
+        return true; // Tout utilisateur peut voir la liste des modèles
+    }
+
+    /**
+     * Déterminer si un utilisateur peut voir un modèle spécifique.
+     */
+    public function view(User $user, modele $modele): bool
+    {
+        return $user->role === 'gerante';
+    }
+
+    /**
+     * Déterminer si un utilisateur peut créer un modèle.
+     */
+    public function create(User $user): bool
+    {
+
+        return $user->role === 'gerante';
+    }
+
+    /**
+     * Déterminer si un utilisateur peut modifier un modèle.
+     */
+    public function update(User $user, modele $modele): bool
+    {
+
+        return $user->role === 'gerante';
+    }
+
+    /**
+     * Déterminer si un utilisateur peut supprimer un modèle.
+     */
+    public function delete(User $user, modele $modele): bool
+    {
+        return $user->role === 'gerante';
     }
 }

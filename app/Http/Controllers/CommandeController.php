@@ -2,65 +2,75 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\commande;
-use App\Http\Requests\StorecommandeRequest;
-use App\Http\Requests\UpdatecommandeRequest;
+use App\Models\Commande;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommandeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Un client crée une commande.
      */
-    public function index()
+    public function store(Request $request)
     {
-        //
+        $this->authorize('create', commande::class);
+
+        $commande = commande::create([
+            'user_id' => Auth::id(),
+            'montant_total' => $request->montant_total,
+        ]);
+
+        return redirect()->back()->with('success', 'Commande créée avec succès !');
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Une gérante valide ou invalide une commande.
      */
-    public function create()
+    public function validateCommande($id)
     {
-        //
+        $commande = Commande::findOrFail($id);
+        $this->authorize('validate', $commande);
+
+        $commande->update(['statut' => 'validee']);
+
+        return redirect()->back()->with('success', 'Commande validée avec succès !');
+    }
+
+    public function unvalidateCommande($id)
+    {
+        $commande = Commande::findOrFail($id);
+        $this->authorize('validate', $commande);
+
+        $commande->update(['statut' => 'annulee']);
+
+        return redirect()->back()->with('success', 'Commande annulée avec succès !');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Une gérante assigne une commande à une couturière.
      */
-    public function store(StorecommandeRequest $request)
+    public function assignToCouturiere(Request $request, $id)
     {
-        //
+        $commande = Commande::findOrFail($id);
+        $this->authorize('assign', $commande);
+
+        $couturiere = User::where('role', 'couturiere')->findOrFail($request->couturiere_id);
+        $commande->update(['user_id' => $couturiere->id]);
+
+        return redirect()->back()->with('success', 'Commande assignée à la couturière avec succès !');
     }
 
     /**
-     * Display the specified resource.
+     * Une couturière confirme une commande.
      */
-    public function show(commande $commande)
+    public function confirmCommande($id)
     {
-        //
-    }
+        $commande = Commande::findOrFail($id);
+        $this->authorize('confirm', $commande);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(commande $commande)
-    {
-        //
-    }
+        $commande->update(['statut' => 'expediee']);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatecommandeRequest $request, commande $commande)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(commande $commande)
-    {
-        //
+        return redirect()->back()->with('success', 'Commande confirmée avec succès !');
     }
 }

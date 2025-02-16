@@ -25,15 +25,44 @@ Route::view('profile', 'profile')
 
 Route::get('/home', App\Livewire\Home::class)->name('home');
 
-use App\Livewire\CreateModele;
+use App\http\Controllers\ModeleController;
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/modele/create', CreateModele::class)->name('modele.create');
+Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () {
+    Route::get('/modeles/create', [ModeleController::class, 'create'])->name('modeles.create');
+    Route::post('/modeles/store', [ModeleController::class, 'store'])->name('modeles.store');
+    Route::get('/modeles/{modele}/edit', [ModeleController::class, 'edit'])->name('modeles.edit');
+    Route::put('/modeles/{modele}/update', [ModeleController::class, 'update'])->name('modeles.update');
+    Route::delete('/modeles/{modele}/destroy', [ModeleController::class, 'destroy'])->name('modeles.destroy');
 });
 
+use App\http\Controllers\CommandeController;
 
-Route::get('/generate-download-patron/{id}', [CreateModele::class, 'generateAndDownloadPatron'])
-    ->name('generate.download.patron');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store');
+
+    Route::middleware(['can:validate,commande'])->group(function () {
+        Route::post('/commandes/{id}/valider', [CommandeController::class, 'validateCommande'])->name('commandes.validate');
+        Route::post('/commandes/{id}/invalider', [CommandeController::class, 'unvalidateCommande'])->name('commandes.unvalidate');
+    });
+
+    Route::middleware(['can:assign,commande'])->post('/commandes/{id}/assign', [CommandeController::class, 'assignToCouturiere'])->name('commandes.assign');
+
+    Route::middleware(['can:confirm,commande'])->post('/commandes/{id}/confirmer', [CommandeController::class, 'confirmCommande'])->name('commandes.confirm');
+});
+// use App\Livewire\CreateModele;
+
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/modele/create', CreateModele::class)->name('modele.create');
+// });
+
+
+
+// Routes accessibles à tous les utilisateurs connectés
+Route::get('modeles', [ModeleController::class, 'index'])->name('modeles.index');
+Route::get('modeles/show/{modele}', [ModeleController::class, 'show'])->name('modeles.show');
+
+
 
 Route::get('/modele/{id}', App\Livewire\ShowModele::class)->name('modele.show');
 use App\Http\Controllers\PanierController;
