@@ -1,66 +1,57 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accueil - Modèles</title>
-</head>
-<body>
-    <div style="max-width: 900px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); text-align: center;">
-        <h2>Bienvenue sur notre boutique</h2>
+<!-- resources/views/livewire/home.blade.php -->
+<script>
+    Livewire.on('panierMisAJour', () => {
+        location.reload();
+    });
+</script>
 
-        <!-- Barre de Recherche -->
-        <form method="GET" action="">
-            <table align="center" width="100%" cellpadding="10">
-                <tr>
-                    <td align="right"><label for="search">Rechercher :</label></td>
-                    <td><input type="text" name="search" id="search" placeholder="Rechercher un modèle..."></td>
-                    <td><button type="submit">Rechercher</button></td>
-                </tr>
-            </table>
-        </form>
+<div class="container mx-auto p-6">
+    <!-- Header avec Recherche et Panier -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Boutique Traditionnelle</h1>
+        <div class="flex gap-4">
+            <input type="text" wire:model="search" placeholder="Rechercher..."
+                class="border rounded-lg px-4 py-2 w-64">
+                <a href="{{ route('panier') }}" class="btn btn-primary">
 
-        <br>
+                🛒 <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-2">{{ $panierCount }}</span>
+            </a>
+            <a href="{{ route('panier') }}">
+    Panier (<span id="panier-count">{{ $panierCount }}</span>)
+</a>
 
-        <!-- Tableau des modèles -->
-        <table border="1" width="100%" cellpadding="10">
-            <tr>
-                <th>Image</th>
-                <th>Nom</th>
-                <th>Catégorie</th>
-                <th>Prix</th>
-                <th>Action</th>
-            </tr>
-
-            @foreach($modeles as $modele)
-            <tr align="center">
-                <td>
-                    @if($modele->image)
-                        <img src="{{ Storage::url($modele->image) }}" alt="{{ $modele->nom }}" width="100">
-                    @else
-                        <span>Pas d'image</span>
-                    @endif
-                </td>
-                <td>{{ $modele->nom }}</td>
-                <td>{{ $modele->categorie->nom }}</td>
-                <td>{{ number_format($modele->prix, 2, ',', ' ') }} €</td>
-                <td>
-                    <a href="{{ route('modele.show', $modele->id) }}">Voir</a> | 
-                    <form action="{{ route('ajouter.au.panier', $modele->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        <button type="submit">Ajouter au panier</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </table>
-
-        <br>
-
-        <!-- Pagination -->
-        <div>
-            {{ $modeles->links() }}
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Filtres par Catégorie et Prix -->
+    <div class="flex gap-4 mb-6">
+        <select wire:model="selectedCategorie" class="border rounded-lg px-4 py-2">
+            <option value="">Toutes les catégories</option>
+            @foreach ($categories as $categorie)
+                <option value="{{ $categorie->id }}">{{ $categorie->nom }}</option>
+            @endforeach
+        </select>
+
+        <input type="number" wire:model="minPrix" placeholder="Prix min" class="border rounded-lg px-4 py-2 w-24">
+        <input type="number" wire:model="maxPrix" placeholder="Prix max" class="border rounded-lg px-4 py-2 w-24">
+    </div>
+
+    <!-- Grid des Modèles -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        @foreach ($modeles as $modele)
+            <div class="border rounded-lg overflow-hidden shadow-lg">
+                <img src="{{ Storage::url($modele->image) }}" alt="{{ $modele->nom }}" class="w-full h-64 object-cover">
+                <div class="p-4 text-center">
+                    <h3 class="text-lg font-semibold">{{ $modele->nom }}</h3>
+                    <p class="text-gray-600">{{ number_format($modele->prix, 2, ',', ' ') }} €</p>
+                    <button wire:click="ajouterAuPanier({{ $modele->id }})" class="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg">Ajouter au Panier</button>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-6">
+        {{ $modeles->links() }}
+    </div>
+</div>

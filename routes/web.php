@@ -14,14 +14,14 @@ Route::view('profile', 'profile')
 
     use App\Http\Controllers\UserController;
 
-    Route::middleware(['auth', 'can:viewAny,App\Models\User'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/users', [UserController::class, 'index'])->name('users.index'); // Affiche tous les utilisateurs
-        Route::get('/users/create', [UserController::class, 'create'])->name('users.create'); // Formulaire d'ajout
-        Route::post('/users', [UserController::class, 'store'])->name('users.store'); // Enregistre un utilisateur
-        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit'); // Formulaire d'édition
-        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update'); // Met à jour un utilisateur
-        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy'); // Supprime un utilisateur
-    });
+   
+Route::middleware(['auth', 'can:viewAny,App\Models\User'])
+->prefix('admin')
+->name('admin.')
+->group(function () {
+    
+    
+});
 
 Route::get('/home', App\Livewire\Home::class)->name('home');
 
@@ -57,6 +57,15 @@ Route::middleware(['auth'])->group(function () {
 // });
 
 
+use Illuminate\Support\Facades\Auth;
+
+Route::post('/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/');
+})->name('logout');
+
 
 // Routes accessibles à tous les utilisateurs connectés
 Route::get('modeles', [ModeleController::class, 'index'])->name('modeles.index');
@@ -69,6 +78,9 @@ use App\Http\Controllers\PanierController;
 
 Route::post('/panier/ajouter/{id}', [PanierController::class, 'ajouter'])
     ->name('ajouter.au.panier');
+    use App\Livewire\PanierComponent;
 
+    Route::get('/panier', PanierComponent::class)->name('panier');
+    
 
 require __DIR__.'/auth.php';

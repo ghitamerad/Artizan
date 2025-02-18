@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +27,7 @@ class PanierComponent extends Component
         }
 
         session()->flash('message', 'Modèle ajouté au panier !');
-        $this->emit('panierMisAJour'); // Pour actualiser le panier si besoin
+        $this->dispatch('panierMisAJour'); // Pour actualiser le panier si besoin
     }
 
     public function render()

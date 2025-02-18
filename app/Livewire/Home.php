@@ -57,27 +57,30 @@ class Home extends Component
 
 
     public function render()
-    {
-        $categories = categorie::all(); // Récupérer les catégories
+{
+    $categories = categorie::all();
 
-        $modeles = modele::query()
-            ->when($this->search, function ($query) {
-                $query->where('nom', 'like', '%' . $this->search . '%')
-                      ->orWhere('description', 'like', '%' . $this->search . '%');
-            })
-            ->when($this->selectedCategorie, function ($query) {
-                $query->where('categorie_id', $this->selectedCategorie);
-            })
-            ->when($this->minPrix, function ($query) {
-                $query->where('prix', '>=', $this->minPrix);
-            })
-            ->when($this->maxPrix, function ($query) {
-                $query->where('prix', '<=', $this->maxPrix);
-            })
-            ->with('categorie')
-            ->orderBy('created_at', 'desc')
-            ->paginate(9);
+    $modeles = modele::query()
+        ->when($this->search, function ($query) {
+            $query->where('nom', 'like', '%' . $this->search . '%')
+                  ->orWhere('description', 'like', '%' . $this->search . '%');
+        })
+        ->when($this->selectedCategorie, function ($query) {
+            $query->where('categorie_id', $this->selectedCategorie);
+        })
+        ->when($this->minPrix, function ($query) {
+            $query->where('prix', '>=', $this->minPrix);
+        })
+        ->when($this->maxPrix, function ($query) {
+            $query->where('prix', '<=', $this->maxPrix);
+        })
+        ->with('categorie')
+        ->orderBy('created_at', 'desc')
+        ->paginate(9);
 
-        return view('livewire.home', compact('modeles', 'categories'))->layout('layouts.guest2');
-    }
+    // Compter le nombre d'articles dans le panier de l'utilisateur
+    $panierCount = Auth::check() ? Panier::where('user_id', Auth::id())->count() : 0;
+
+    return view('livewire.home', compact('modeles', 'categories', 'panierCount'))->layout('layouts.guest2');
+}
 }
