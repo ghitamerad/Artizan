@@ -22,8 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'telephone', // ✅ Ajout du téléphone
     ];
-
 
     /**
      * Relation avec les commandes passées par le client ou créées par la gérante.

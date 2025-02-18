@@ -34,6 +34,12 @@ class UserResource extends Resource
                     ->unique(ignoreRecord: true)
                     ->required(),
 
+                Forms\Components\TextInput::make('telephone') // ✅ Ajout du champ téléphone
+                    ->label('Téléphone')
+                    ->tel()
+                    ->maxLength(20)
+                    ->nullable(),
+
                 Forms\Components\Select::make('role')
                     ->label('Rôle')
                     ->options([
@@ -59,7 +65,7 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('password_confirmation')
                     ->label('Confirmer le mot de passe')
                     ->password()
-                    ->same('password') // Validation pour correspondre au champ 'password'
+                    ->same('password')
                     ->required(fn (Page $livewire): bool => $livewire instanceof CreateRecord),
             ]);
     }
@@ -78,7 +84,12 @@ class UserResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('role') // ✅ Affichage du rôle
+                Tables\Columns\TextColumn::make('telephone') // ✅ Affichage du téléphone
+                    ->label('Téléphone')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('role')
                     ->label('Rôle')
                     ->sortable(),
 
