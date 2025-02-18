@@ -11,34 +11,55 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Pages\Page;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Validation\Rules\Password;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack'; // Icône
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack'; // Icône Filament
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nom')
                     ->required(),
 
                 Forms\Components\TextInput::make('email')
-                    ->label('Email Address')
+                    ->label('Email')
                     ->email()
                     ->maxLength(255)
-                    ->unique(ignoreRecord: true) // Vérifie l'unicité de l'email
+                    ->unique(ignoreRecord: true)
+                    ->required(),
+
+                Forms\Components\Select::make('role')
+                    ->label('Rôle')
+                    ->options([
+                        'admin' => 'Admin',
+                        'gerante' => 'Gérante',
+                        'couturiere' => 'Couturière',
+                        'client' => 'Client',
+                    ])
                     ->required(),
 
                 Forms\Components\DateTimePicker::make('email_verified_at')
-                    ->label('Email Verified At')
+                    ->label('Email Vérifié')
                     ->default(now()),
 
+                // ✅ Champ de mot de passe
                 Forms\Components\TextInput::make('password')
+                    ->label('Mot de passe')
                     ->password()
-                    ->dehydrated(fn ($state) => filled($state))
+                    ->required(fn (Page $livewire): bool => $livewire instanceof CreateRecord)
+                    ->rule(Password::defaults()),
+
+                // ✅ Champ de confirmation du mot de passe
+                Forms\Components\TextInput::make('password_confirmation')
+                    ->label('Confirmer le mot de passe')
+                    ->password()
+                    ->same('password') // Validation pour correspondre au champ 'password'
                     ->required(fn (Page $livewire): bool => $livewire instanceof CreateRecord),
             ]);
     }
@@ -48,34 +69,39 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    
+                    ->label('Nom')
+                    ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('email')
-                
+                    ->label('Email')
+                    ->sortable()
                     ->searchable(),
 
+                Tables\Columns\TextColumn::make('role') // ✅ Affichage du rôle
+                    ->label('Rôle')
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('email_verified_at')
-                    
+                    ->label('Email Vérifié')
                     ->dateTime()
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
-                    
+                    ->label('Créé le')
                     ->dateTime()
                     ->sortable(),
-                    
             ])
             ->filters([])
             ->actions([
                 Tables\Actions\ActionGroup::make([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
                 ])
+            ])
             ->bulkActions([
-                Tables\Actions\bulkActionGroup::make([
-
+                Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
