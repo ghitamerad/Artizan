@@ -54,4 +54,4 @@
     <div class="mt-6">
         {{ $modeles->links() }}
     </div>
-</div>
+</div>  
