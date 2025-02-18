@@ -10,7 +10,7 @@ class modele extends Model
     /** @use HasFactory<\Database\Factories\ModeleFactory> */
     use HasFactory;
 
-    protected $fillable = ['nom', 'description', 'categorie_id', 'prix','patron','xml'];
+    protected $fillable = ['nom', 'description', 'categorie_id', 'prix', 'patron', 'xml', 'en_stock'];
 
     public function categorie()
     {
