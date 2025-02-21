@@ -16,4 +16,10 @@ class modele extends Model
     {
         return $this->belongsTo(categorie::class, 'categorie_id');
     }
+
+    public function detailsCommandes()
+{
+    return $this->hasMany(DetailCommande::class);
+}
+
 }
