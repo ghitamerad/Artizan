@@ -14,13 +14,13 @@ Route::view('profile', 'profile')
 
     use App\Http\Controllers\UserController;
 
-   
+
 Route::middleware(['auth', 'can:viewAny,App\Models\User'])
 ->prefix('admin')
 ->name('admin.')
 ->group(function () {
-    
-    
+
+
 });
 
 Route::get('/home', App\Livewire\Home::class)->name('home');
@@ -37,18 +37,8 @@ Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () 
 
 use App\http\Controllers\CommandeController;
 
-
 Route::middleware(['auth'])->group(function () {
     Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store');
-
-    Route::middleware(['can:validate,commande'])->group(function () {
-        Route::post('/commandes/{id}/valider', [CommandeController::class, 'validateCommande'])->name('commandes.validate');
-        Route::post('/commandes/{id}/invalider', [CommandeController::class, 'unvalidateCommande'])->name('commandes.unvalidate');
-    });
-
-    Route::middleware(['can:assign,commande'])->post('/commandes/{id}/assign', [CommandeController::class, 'assignToCouturiere'])->name('commandes.assign');
-
-    Route::middleware(['can:confirm,commande'])->post('/commandes/{id}/confirmer', [CommandeController::class, 'confirmCommande'])->name('commandes.confirm');
 });
 // use App\Livewire\CreateModele;
 
@@ -81,6 +71,6 @@ Route::post('/panier/ajouter/{id}', [PanierController::class, 'ajouter'])
     use App\Livewire\PanierComponent;
 
     Route::get('/panier', PanierComponent::class)->name('panier');
-    
+
 
 require __DIR__.'/auth.php';

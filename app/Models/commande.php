@@ -22,6 +22,16 @@ class commande extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+        /**
+     * Relation avec les détails de commande (1 commande a plusieurs détails).
+     */
+    public function details()
+    {
+        return $this->hasMany(DetailCommande::class);
     }
 }
+
+

@@ -1,3 +1,7 @@
+@extends('layouts.guest2')
+
+@section('content')
+
 <div class="min-h-screen bg-[#F5F5DC] p-8">
     <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="grid md:grid-cols-2 gap-8">
@@ -73,3 +77,4 @@
         </div>
     </div>
 </div>
+@endsection
