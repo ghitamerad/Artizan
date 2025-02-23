@@ -5,16 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class modele extends Model
+class Modele extends Model
 {
-    /** @use HasFactory<\Database\Factories\ModeleFactory> */
     use HasFactory;
 
     protected $fillable = ['nom', 'description', 'categorie_id', 'prix', 'patron', 'xml', 'en_stock'];
 
     public function categorie()
     {
-        return $this->belongsTo(categorie::class, 'categorie_id');
+        return $this->belongsTo(Categorie::class, 'categorie_id');
     }
 
     public function detailsCommandes()

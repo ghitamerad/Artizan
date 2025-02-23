@@ -3,60 +3,96 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ModeleResource\Pages;
-use App\Models\modele;
+use App\Models\Modele;
 use Filament\Forms;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BooleanColumn;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Table;
+use Filament\Pages\Page;
 
 class ModeleResource extends Resource
 {
-    protected static ?string $model = modele::class;
+    protected static ?string $model = Modele::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
 
-    public static function form(Forms\Form $form): Forms\Form
+    public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('nom')->required(),
-                Textarea::make('description'),
-                Select::make('categorie_id')
-                    ->relationship('categorie', 'nom') // Assure-toi que la colonne est bien "nom" dans ta table "categories"
+                Forms\Components\TextInput::make('nom')
+                    ->label('Nom')
                     ->required(),
-                TextInput::make('prix')->numeric(),
-                TextInput::make('patron'),
-                TextInput::make('xml'),
-                Toggle::make('en_stock')->label('En Stock')->default(true), // Ajout du champ "En Stock"
+
+                Forms\Components\Textarea::make('description') // ✅ Ajout de la description
+                    ->label('Description')
+                    ->nullable(),
+
+                Forms\Components\Select::make('categorie_id')
+                    ->label('Catégorie')
+                    ->relationship('categorie', 'nom')
+                    ->required(),
+
+                Forms\Components\TextInput::make('prix')
+                    ->label('Prix')
+                    ->numeric()
+                    ->required(),
+
+                Forms\Components\TextInput::make('patron')
+                    ->label('Patron')
+                    ->nullable(),
+
+                Forms\Components\Textarea::make('xml')
+                    ->label('Fiche de mesures (XML)')
+                    ->nullable(),
+
+                Forms\Components\Toggle::make('en_stock') // ✅ Ajout de en_stock
+                    ->label('En Stock')
+                    ->default(true),
             ]);
     }
 
-    public static function table(Tables\Table $table): Tables\Table
+    public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('nom')->sortable()->searchable(),
-                TextColumn::make('description')->limit(50),
-                TextColumn::make('categorie.nom')->sortable()->searchable(), // Vérifie bien que la colonne s'appelle "nom"
-                TextColumn::make('prix')->sortable(),
-                BooleanColumn::make('en_stock')->label('En Stock')->sortable(), // Affichage de l'état en stock
-            ])
-            ->filters([
-                //
+                Tables\Columns\TextColumn::make('nom')
+                    ->label('Nom')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('description') // ✅ Ajout de la description
+                    ->label('Description')
+                    ->wrap()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('categorie.nom')
+                    ->label('Catégorie')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('prix')
+                    ->label('Prix')
+                    ->sortable(),
+
+                Tables\Columns\IconColumn::make('en_stock') // ✅ Icônes ✔️❌ pour en_stock
+                    ->label('En Stock')
+                    ->sortable()
+                    ->icon(fn ($state) => $state ? 'heroicon-o-check-circle' : 'heroicon-o-x-circle')
+                    ->color(fn ($state) => $state ? 'success' : 'danger'),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(), ])
+                    Tables\Actions\DeleteAction::make(),
+                ]),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
