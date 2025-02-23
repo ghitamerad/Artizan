@@ -22,17 +22,11 @@
 
                 <div class="space-y-4">
                     <!-- Bouton ajouter au panier -->
-                    <button
-                        wire:click="ajouterAuPanier"
-                        class="w-full bg-[#D4AF37] text-black px-6 py-3 rounded-full hover:bg-[#C19B2C] transition-colors duration-300 flex items-center justify-center gap-2 text-lg"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4z" />
-                        </svg>
-                        Ajouter au panier
-                    </button>
+                    <button wire:click="ajouterAuPanier({{ $modele->id }}, 1)"➕ >Ajouter au panier</button>
 
-                    <!-- Formulaire de commande -->
+
+
+                    {{-- <!-- Formulaire de commande -->
                     <form action="{{ route('commandes.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="modeles[0][id]" value="{{ $modele->id }}">
@@ -50,11 +44,11 @@
 
                         <button
                             type="submit"
-                            class="mt-4 w-full bg-[#2C3E50] text-white px-6 py-3 rounded-full hover:bg-[#1a2530] transition-colors duration-300 flex items-center justify-center gap-2 text-lg"
+                            class="mt-4 w-full bg-[#2C3E50] text-black px-6 py-3 rounded-full hover:bg-[#1a2530] transition-colors duration-300 flex items-center justify-center gap-2 text-lg"
                         >
                             Commander maintenant
                         </button>
-                    </form>
+                    </form> --}}
                 </div>
 
                 <!-- Informations supplémentaires -->

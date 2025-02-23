@@ -78,13 +78,11 @@ Route::get('modeles/show/{modele}', [ModeleController::class, 'show'])->name('mo
 
 
 Route::get('/modele/{id}', App\Livewire\ShowModele::class)->name('modele.show');
-use App\Http\Controllers\PanierController;
 
-Route::post('/panier/ajouter/{id}', [PanierController::class, 'ajouter'])
-    ->name('ajouter.au.panier');
-    use App\Livewire\PanierComponent;
+use App\Livewire\Panier;
 
-    Route::get('/panier', PanierComponent::class)->name('panier');
-
+Route::middleware(['auth'])->group(function () {
+    Route::get('/panier', App\Livewire\Panier::class)->name('panier');
+});
 
 require __DIR__.'/auth.php';
