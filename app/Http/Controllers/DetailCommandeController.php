@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\detail_commande;
-use App\Http\Requests\Storedetail_commandeRequest;
-use App\Http\Requests\Updatedetail_commandeRequest;
+use App\Models\DetailCommande;
+use App\Http\Requests\StoreDetailCommandeRequest;
+use App\Http\Requests\UpdateDetailCommandeRequest;
 
 class DetailCommandeController extends Controller
 {
@@ -27,7 +27,7 @@ class DetailCommandeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Storedetail_commandeRequest $request)
+    public function store(StoreDetailCommandeRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class DetailCommandeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(detail_commande $detail_commande)
+    public function show(DetailCommande $DetailCommande)
     {
         //
     }
@@ -43,7 +43,7 @@ class DetailCommandeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(detail_commande $detail_commande)
+    public function edit(DetailCommande $DetailCommande)
     {
         //
     }
@@ -51,7 +51,7 @@ class DetailCommandeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Updatedetail_commandeRequest $request, detail_commande $detail_commande)
+    public function update(UpdateDetailCommandeRequest $request, DetailCommande $DetailCommande)
     {
         //
     }
@@ -59,7 +59,7 @@ class DetailCommandeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(detail_commande $detail_commande)
+    public function destroy(DetailCommande $DetailCommande)
     {
         //
     }

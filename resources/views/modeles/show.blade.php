@@ -1,6 +1,4 @@
-@extends('layouts.app')
 
-@section('content')
 <div>
     <h1>{{ $modele->nom }}</h1>
     <p>Description : {{ $modele->description }}</p>
@@ -29,4 +27,3 @@
         </form>
     @endcan
 </div>
-@endsection

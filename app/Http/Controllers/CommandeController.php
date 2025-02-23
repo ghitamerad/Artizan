@@ -8,8 +8,6 @@ use App\Models\modele;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
@@ -36,7 +34,7 @@ class CommandeController extends Controller
         ]);
 
         // Enregistrement des détails de commande
-        DetailCommande::create([
+        $detailcommande = DetailCommande::create([
             'commande_id' => $commande->id,
             'modele_id' => $request->modele_id,
             'quantite' => 1, // Modifie selon besoin
