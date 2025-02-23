@@ -29,7 +29,7 @@ class CommandePolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'client';
+        return true;
     }
 
     /**

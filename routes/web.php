@@ -35,15 +35,30 @@ Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () 
     Route::delete('/modeles/{modele}/destroy', [ModeleController::class, 'destroy'])->name('modeles.destroy');
 });
 
-use App\http\Controllers\CommandeController;
+use App\Http\Controllers\CommandeController;
 
-Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store')->middleware('auth');
+Route::middleware(['auth', 'can:viewAny,App\Models\commande'])->group(function () {
+    // 📌 Afficher toutes les commandes (admin/gérante)
+    Route::get('/commandes', [CommandeController::class, 'index'])->name('commandes.index');
 
-// use App\Livewire\CreateModele;
+    // 📌 Formulaire pour créer une nouvelle commande (client)
+    Route::get('/commandes/create', [CommandeController::class, 'create'])->name('commandes.create');
 
-// Route::middleware(['auth'])->group(function () {
-//     Route::get('/modele/create', CreateModele::class)->name('modele.create');
-// });
+    // 📌 Enregistrer une nouvelle commande (client)
+    Route::post('/commandes/store', [CommandeController::class, 'store'])->name('commandes.store');
+
+    // 📌 Afficher une commande spécifique
+    Route::get('/commandes/{commande}', [CommandeController::class, 'show'])->name('commandes.show');
+
+    // 📌 Formulaire d'édition d'une commande (admin/gérante)
+    Route::get('/commandes/{commande}/edit', [CommandeController::class, 'edit'])->name('commandes.edit');
+
+    // 📌 Mettre à jour une commande (admin/gérante)
+    Route::put('/commandes/{commande}', [CommandeController::class, 'update'])->name('commandes.update');
+
+    // 📌 Supprimer une commande (admin/gérante)
+    Route::delete('/commandes/{commande}', [CommandeController::class, 'destroy'])->name('commandes.destroy');
+});
 
 
 use Illuminate\Support\Facades\Auth;

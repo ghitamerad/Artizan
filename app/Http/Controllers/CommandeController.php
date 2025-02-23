@@ -22,17 +22,22 @@ class CommandeController extends Controller
         $this->authorize('viewAny', Commande::class);
 
         $commandes = Commande::all();
-        return view('admin.commandes.index', compact('commandes'));
+        return view('commandes.index', compact('commandes'));
     }
+    public function create()
+    {
+        $this->authorize('create', Commande::class); // Vérifie si l'utilisateur peut créer une commande
 
+        return view('commandes.create');
+    }
     /**
      * Afficher une commande spécifique.
      */
     public function show(Commande $commande)
     {
         $this->authorize('view', $commande);
-
-        return view('admin.commandes.show', compact('commande'));
+        $commande->load('details.modele'); // Charge les détails et modèles associés
+        return view('commandes.show', compact('commande'));
     }
 
         public function store(Request $request)
@@ -76,6 +81,13 @@ class CommandeController extends Controller
             }
         }
 
+        public function edit(Commande $commande)
+{
+    $this->authorize('update', $commande); // Vérifie les permissions
+
+    return view('commandes.edit', compact('commande'));
+}
+
 
 
 
@@ -114,6 +126,52 @@ class CommandeController extends Controller
 
         return redirect()->back()->with('success', 'Commande invalidée.');
     }
+
+
+    public function update(Request $request, Commande $commande)
+{
+    $this->authorize('update', $commande);
+
+    // Validation des données
+    $request->validate([
+        'modeles' => 'sometimes|array', // Permet une mise à jour optionnelle des modèles
+        'modeles.*.id' => 'required_with:modeles|exists:modeles,id',
+        'modeles.*.quantite' => 'required_with:modeles|integer|min:1',
+        'modeles.*.prix_unitaire' => 'required_with:modeles|numeric|min:0',
+        'montant_total' => 'sometimes|numeric|min:0',
+        'statut' => 'sometimes|string|in:en_attente,validee,refusee',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        // Mise à jour des champs de la commande si fournis
+        $commande->update($request->only(['montant_total', 'statut']));
+
+        // Vérifier si des modèles sont fournis pour mise à jour
+        if ($request->has('modeles')) {
+            // Supprimer les anciens détails et insérer les nouveaux
+            $commande->details()->delete(); // Supprime les anciens détails
+            foreach ($request->modeles as $modele) {
+                DetailCommande::create([
+                    'commande_id' => $commande->id,
+                    'modele_id' => $modele['id'],
+                    'quantite' => $modele['quantite'],
+                    'prix_unitaire' => $modele['prix_unitaire'],
+                    'fichier_patron' => $modele['fichier_patron'] ?? null,
+                ]);
+            }
+        }
+
+        DB::commit();
+
+        return response()->json(['message' => 'Commande mise à jour avec succès'], 200);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['error' => 'Une erreur est survenue', 'message' => $e->getMessage()], 500);
+    }
+}
+
 
 
 }

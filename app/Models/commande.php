@@ -32,6 +32,8 @@ class commande extends Model
     {
         return $this->hasMany(DetailCommande::class);
     }
+
+    
 }
 
 
