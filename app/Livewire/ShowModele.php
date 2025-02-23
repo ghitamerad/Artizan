@@ -16,6 +16,6 @@ class ShowModele extends Component
 
     public function render()
     {
-        return view('livewire.show-modele');
+        return view('livewire.show-modele')->layout('layouts.guest2');
     }
 }

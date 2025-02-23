@@ -1,7 +1,3 @@
-@extends('layouts.guest2')
-
-@section('content')
-
 <div class="min-h-screen bg-[#F5F5DC] p-8">
     <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="grid md:grid-cols-2 gap-8">
@@ -25,6 +21,7 @@
                 </div>
 
                 <div class="space-y-4">
+                    <!-- Bouton ajouter au panier -->
                     <button
                         wire:click="ajouterAuPanier"
                         class="w-full bg-[#D4AF37] text-black px-6 py-3 rounded-full hover:bg-[#C19B2C] transition-colors duration-300 flex items-center justify-center gap-2 text-lg"
@@ -35,17 +32,29 @@
                         Ajouter au panier
                     </button>
 
+                    <!-- Formulaire de commande -->
                     <form action="{{ route('commandes.store') }}" method="POST">
                         @csrf
+                        <input type="hidden" name="modeles[0][id]" value="{{ $modele->id }}">
+                        <input type="hidden" name="modeles[0][prix_unitaire]" value="{{ $modele->prix }}">
+
+                        <!-- Sélection de la quantité -->
+                        <label for="quantite" class="block text-sm font-medium text-gray-700">Quantité</label>
+                        <select name="modeles[0][quantite]" id="quantite" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            @for ($i = 1; $i <= 10; $i++)
+                                <option value="{{ $i }}">{{ $i }}</option>
+                            @endfor
+                        </select>
+
                         <input type="hidden" name="montant_total" value="{{ $modele->prix }}">
+
                         <button
                             type="submit"
-                            class="w-full bg-[#2C3E50] text-black px-6 py-3 rounded-full hover:bg-[#1a2530] transition-colors duration-300 flex items-center justify-center gap-2 text-lg"
+                            class="mt-4 w-full bg-[#2C3E50] text-white px-6 py-3 rounded-full hover:bg-[#1a2530] transition-colors duration-300 flex items-center justify-center gap-2 text-lg"
                         >
                             Commander maintenant
                         </button>
                     </form>
-
                 </div>
 
                 <!-- Informations supplémentaires -->
@@ -54,11 +63,11 @@
                     <ul class="space-y-2 text-gray-600">
                         <li>Référence: #{{ $modele->id }}</li>
                         <li>Catégorie: {{ $modele->categorie->nom }}</li>
-                        <!-- Ajoutez d'autres détails si nécessaire -->
                     </ul>
                 </div>
+            </div>
 
-                            <!-- Image du modèle -->
+            <!-- Image du modèle -->
             <div class="p-8">
                 @if($modele->image)
                     <img src="{{ Storage::url($modele->image) }}"
@@ -73,8 +82,6 @@
                 @endif
             </div>
 
-            </div>
         </div>
     </div>
 </div>
-@endsection

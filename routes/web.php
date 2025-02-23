@@ -37,9 +37,8 @@ Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () 
 
 use App\http\Controllers\CommandeController;
 
-Route::middleware(['auth'])->group(function () {
-    Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store');
-});
+Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store')->middleware('auth');
+
 // use App\Livewire\CreateModele;
 
 // Route::middleware(['auth'])->group(function () {
