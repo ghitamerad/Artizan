@@ -38,28 +38,13 @@ Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () 
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\MesureController;
 
-Route::middleware(['auth', 'can:viewAny,App\Models\commande'])->group(function () {
-    // 📌 Afficher toutes les commandes (admin/gérante)
-    Route::get('/commandes', [CommandeController::class, 'index'])->name('commandes.index');
+Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store')->middleware('auth');
 
-    // 📌 Formulaire pour créer une nouvelle commande (client)
-    Route::get('/commandes/create', [CommandeController::class, 'create'])->name('commandes.create');
+// use App\Livewire\CreateModele;
 
-    // 📌 Enregistrer une nouvelle commande (client)
-    Route::post('/commandes/store', [CommandeController::class, 'store'])->name('commandes.store');
-
-    // 📌 Afficher une commande spécifique
-    Route::get('/commandes/{commande}', [CommandeController::class, 'show'])->name('commandes.show');
-
-    // 📌 Formulaire d'édition d'une commande (admin/gérante)
-    Route::get('/commandes/{commande}/edit', [CommandeController::class, 'edit'])->name('commandes.edit');
-
-    // 📌 Mettre à jour une commande (admin/gérante)
-    Route::put('/commandes/{commande}', [CommandeController::class, 'update'])->name('commandes.update');
-
-    // 📌 Supprimer une commande (admin/gérante)
-    Route::delete('/commandes/{commande}', [CommandeController::class, 'destroy'])->name('commandes.destroy');
-});
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/modele/create', CreateModele::class)->name('modele.create');
+// });
 
 
 use Illuminate\Support\Facades\Auth;
@@ -79,12 +64,14 @@ Route::get('modeles/show/{modele}', [ModeleController::class, 'show'])->name('mo
 
 
 Route::get('/modele/{id}', App\Livewire\ShowModele::class)->name('modele.show');
+use App\Http\Controllers\PanierController;
 
-use App\Livewire\Panier;
+Route::post('/panier/ajouter/{id}', [PanierController::class, 'ajouter'])
+    ->name('ajouter.au.panier');
+    use App\Livewire\Panier;
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/panier', App\Livewire\Panier::class)->name('panier');
-});
+    Route::get('/panier', Panier::class)->name('panier');
+
 
 
 Route::post('/mesures/store', [MesureController::class, 'store'])->name('mesures.store');
