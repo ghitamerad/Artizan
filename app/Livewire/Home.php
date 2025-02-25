@@ -81,6 +81,6 @@ class Home extends Component
     // Compter le nombre d'articles dans le panier de l'utilisateur
     $panierCount = Auth::check() ? Panier::where('user_id', Auth::id())->count() : 0;
 
-    return view('livewire.home', compact('modeles', 'categories', 'panierCount'))->layout('layouts.app');
+    return view('livewire.home', compact('modeles', 'categories', 'panierCount'))->layout('layouts.guest2');
 }
 }
