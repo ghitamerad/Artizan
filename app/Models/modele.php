@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Modele extends Model
 {
@@ -19,6 +20,16 @@ class Modele extends Model
     public function detailsCommandes()
 {
     return $this->hasMany(DetailCommande::class);
+}
+
+/**
+ * Get all of the modele for the modele
+ *
+ * @return \Illuminate\Database\Eloquent\Relations\HasMany
+ */
+public function mesures(): HasMany
+{
+    return $this->hasMany(mesure::class);
 }
 
 }

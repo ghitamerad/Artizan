@@ -31,6 +31,6 @@ class DetailCommande extends Model
      */
     public function modele()
     {
-        return $this->belongsTo(modele::class);
+        return $this->belongsTo(modele::class, 'modele_id');
     }
 }

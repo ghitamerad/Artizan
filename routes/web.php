@@ -36,6 +36,7 @@ Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () 
 });
 
 use App\Http\Controllers\CommandeController;
+use App\Http\Controllers\MesureController;
 
 Route::middleware(['auth', 'can:viewAny,App\Models\commande'])->group(function () {
     // 📌 Afficher toutes les commandes (admin/gérante)
@@ -84,6 +85,12 @@ use App\Livewire\Panier;
 Route::middleware(['auth'])->group(function () {
     Route::get('/panier', App\Livewire\Panier::class)->name('panier');
 });
+
+
+Route::post('/mesures/store', [MesureController::class, 'store'])->name('mesures.store');
+Route::post('/mesures/edit', [MesureController::class, 'edit'])->name('mesures.edit');
+Route::post('/mesures/destroy', [MesureController::class, 'destroy'])->name('mesures.destroy');
+
 
 //
 require __DIR__.'/auth.php';
