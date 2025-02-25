@@ -17,7 +17,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack'; // Icône Filament
+    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
 
     public static function form(Form $form): Form
     {
@@ -34,7 +34,7 @@ class UserResource extends Resource
                     ->unique(ignoreRecord: true)
                     ->required(),
 
-                Forms\Components\TextInput::make('telephone') // ✅ Ajout du champ téléphone
+                Forms\Components\TextInput::make('telephone')
                     ->label('Téléphone')
                     ->tel()
                     ->maxLength(20)
@@ -54,19 +54,21 @@ class UserResource extends Resource
                     ->label('Email Vérifié')
                     ->default(now()),
 
-                // ✅ Champ de mot de passe
+                // ✅ Champ de mot de passe - visible uniquement en création
                 Forms\Components\TextInput::make('password')
                     ->label('Mot de passe')
                     ->password()
+                    ->rule(Password::defaults())
                     ->required(fn (Page $livewire): bool => $livewire instanceof CreateRecord)
-                    ->rule(Password::defaults()),
+                    ->hidden(fn (Page $livewire): bool => !($livewire instanceof CreateRecord)),
 
-                // ✅ Champ de confirmation du mot de passe
+                // ✅ Champ de confirmation du mot de passe - visible uniquement en création
                 Forms\Components\TextInput::make('password_confirmation')
                     ->label('Confirmer le mot de passe')
                     ->password()
                     ->same('password')
-                    ->required(fn (Page $livewire): bool => $livewire instanceof CreateRecord),
+                    ->required(fn (Page $livewire): bool => $livewire instanceof CreateRecord)
+                    ->hidden(fn (Page $livewire): bool => !($livewire instanceof CreateRecord)),
             ]);
     }
 
@@ -84,7 +86,7 @@ class UserResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('telephone') // ✅ Affichage du téléphone
+                Tables\Columns\TextColumn::make('telephone')
                     ->label('Téléphone')
                     ->sortable()
                     ->searchable(),
