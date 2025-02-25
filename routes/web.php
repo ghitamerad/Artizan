@@ -85,4 +85,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/panier', App\Livewire\Panier::class)->name('panier');
 });
 
+//
 require __DIR__.'/auth.php';
