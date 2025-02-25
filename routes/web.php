@@ -72,4 +72,5 @@ Route::post('/panier/ajouter/{id}', [PanierController::class, 'ajouter'])
     Route::get('/panier', Panier::class)->name('panier');
 
 
+//
 require __DIR__.'/auth.php';
