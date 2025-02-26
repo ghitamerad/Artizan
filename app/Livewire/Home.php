@@ -102,6 +102,6 @@ class Home extends Component
         // Récupération des catégories
         $categories = Categorie::all();
 
-        return view('livewire.home', compact('modeles', 'categories'))->layout('layouts.guest2');
+        return view('livewire.home', compact('modeles', 'categories'))->layout('layouts.test');
     }
 }
