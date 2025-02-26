@@ -4,21 +4,19 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\modele;
-use App\Models\categorie;
+use App\Models\Modele;
+use App\Models\Categorie;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Panier;
-
-
 
 class Home extends Component
 {
     use WithPagination;
 
     public $search = '';
-    public $selectedCategorie = ''; // Filtre par catégorie
-    public $minPrix = null; // Filtre prix min
-    public $maxPrix = null; // Filtre prix max
+    public $selectedCategorie = ''; // ID de la catégorie sélectionnée
+    public $minPrix = null;
+    public $maxPrix = null;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -27,11 +25,26 @@ class Home extends Component
         'maxPrix' => ['except' => null],
     ];
 
-    public function updated($property)
+    protected $listeners = ['refreshComponent' => '$refresh']; // Écouteur pour recharger le composant
+
+    public function updatedSearch()
     {
-        if (in_array($property, ['search', 'selectedCategorie', 'minPrix', 'maxPrix'])) {
-            $this->resetPage();
-        }
+        $this->resetPage(); // Réinitialise la pagination
+    }
+
+    public function updatedSelectedCategorie()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedMinPrix()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedMaxPrix()
+    {
+        $this->resetPage();
     }
 
     public function ajouterAuPanier($modeleId)
@@ -40,7 +53,7 @@ class Home extends Component
             return redirect()->route('login');
         }
 
-        $modele = modele::findOrFail($modeleId);
+        $modele = Modele::findOrFail($modeleId);
 
         $panier = Panier::firstOrCreate(
             ['user_id' => Auth::id(), 'modele_id' => $modele->id],
@@ -52,35 +65,43 @@ class Home extends Component
         }
 
         session()->flash('message', 'Modèle ajouté au panier !');
-        $this->dispatch('panierMisAJour'); // Pour actualiser le panier si besoin
+        $this->dispatch('panierMisAJour');
     }
 
-
     public function render()
-{
-    $categories = categorie::all();
+    {
+        $query = Modele::query();
 
-    $modeles = modele::query()
-        ->when($this->search, function ($query) {
-            $query->where('nom', 'like', '%' . $this->search . '%')
+        //  Recherche par nom ou description
+        if (!empty($this->search)) {
+            $query->where(function ($q) {
+                $q->where('nom', 'like', '%' . $this->search . '%')
                   ->orWhere('description', 'like', '%' . $this->search . '%');
-        })
-        ->when($this->selectedCategorie, function ($query) {
+            });
+        }
+
+        //  Filtrage par catégorie
+        if (!empty($this->selectedCategorie)) {
             $query->where('categorie_id', $this->selectedCategorie);
-        })
-        ->when($this->minPrix, function ($query) {
+        }
+
+        //  Filtrage par prix
+        if (!is_null($this->minPrix)) {
             $query->where('prix', '>=', $this->minPrix);
-        })
-        ->when($this->maxPrix, function ($query) {
+        }
+        if (!is_null($this->maxPrix)) {
             $query->where('prix', '<=', $this->maxPrix);
-        })
-        ->with('categorie')
-        ->orderBy('created_at', 'desc')
-        ->paginate(9);
+        }
 
-    // Compter le nombre d'articles dans le panier de l'utilisateur
-    $panierCount = Auth::check() ? Panier::where('user_id', Auth::id())->count() : 0;
+        // Récupération des modèles
+        $modeles = $query->whereNotNull('prix') // Évite les valeurs nulles
+            ->with('categorie')
+            ->orderBy('created_at', 'desc')
+            ->paginate(9);
 
-    return view('livewire.home', compact('modeles', 'categories', 'panierCount'))->layout('layouts.guest2');
-}
+        // Récupération des catégories
+        $categories = Categorie::all();
+
+        return view('livewire.home', compact('modeles', 'categories'))->layout('layouts.guest2');
+    }
 }
