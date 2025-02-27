@@ -67,7 +67,9 @@ class ModeleController extends Controller
     public function show(Modele $modele)
     {
         $this->authorize('view', $modele);
-        return view('modeles.show', compact('modele'));
+        $mesures = $modele->mesures ?? collect(); // Assurez-vous que cette relation existe
+
+        return view('modeles.show', compact('modele', 'mesures'));
     }
 
     /**

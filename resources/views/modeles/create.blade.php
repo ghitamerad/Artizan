@@ -1,18 +1,18 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <h2 class="mb-4">Créer un nouveau modèle</h2>
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Créer un nouveau modèle</h2>
 
     @if (session('message'))
-        <div class="alert alert-success">
+        <div class="bg-green-100 text-green-700 p-3 rounded-lg mb-4">
             {{ session('message') }}
         </div>
     @endif
 
     @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
+        <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-4">
+            <ul class="list-disc pl-5">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -20,31 +20,35 @@
         </div>
     @endif
 
-    <form action="{{ route('modeles.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('modeles.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
 
         <!-- Nom du modèle -->
-        <div class="mb-3">
-            <label for="nom" class="form-label">Nom du modèle</label>
-            <input type="text" class="form-control" id="nom" name="nom" value="{{ old('nom') }}" required>
+        <div>
+            <label for="nom" class="block text-gray-700 font-medium">Nom du modèle</label>
+            <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required
+                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
         </div>
 
         <!-- Description -->
-        <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" name="description">{{ old('description') }}</textarea>
+        <div>
+            <label for="description" class="block text-gray-700 font-medium">Description</label>
+            <textarea id="description" name="description"
+                      class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">{{ old('description') }}</textarea>
         </div>
 
         <!-- Prix -->
-        <div class="mb-3">
-            <label for="prix" class="form-label">Prix (en €)</label>
-            <input type="number" class="form-control" id="prix" name="prix" min="0" value="{{ old('prix') }}" required>
+        <div>
+            <label for="prix" class="block text-gray-700 font-medium">Prix (en €)</label>
+            <input type="number" id="prix" name="prix" min="0" value="{{ old('prix') }}" required
+                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
         </div>
 
         <!-- Catégorie -->
-        <div class="mb-3">
-            <label for="categorie_id" class="form-label">Catégorie</label>
-            <select class="form-control" id="categorie_id" name="categorie_id" required>
+        <div>
+            <label for="categorie_id" class="block text-gray-700 font-medium">Catégorie</label>
+            <select id="categorie_id" name="categorie_id" required
+                    class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:outline-none">
                 <option value="">Sélectionner une catégorie</option>
                 @foreach ($categories as $categorie)
                     <option value="{{ $categorie->id }}" {{ old('categorie_id') == $categorie->id ? 'selected' : '' }}>
@@ -55,20 +59,30 @@
         </div>
 
         <!-- Upload du patron (.val) -->
-        <div class="mb-3">
-            <label for="patron" class="form-label">Fichier Patron (.val)</label>
-            <input type="file" class="form-control" id="patron" name="patron" accept=".val" required>
+        <div>
+            <label for="patron" class="block text-gray-700 font-medium">Fichier Patron (.val)</label>
+            <input type="file" id="patron" name="patron" accept=".val" required
+                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:outline-none">
         </div>
 
         <!-- Upload du fichier de mesures (.xml ou .vit) -->
-        <div class="mb-3">
-            <label for="xml" class="form-label">Fichier de Mesures (.xml ou .vit)</label>
-            <input type="file" class="form-control" id="xml" name="xml" accept=".xml,.vit" required>
+        <div>
+            <label for="xml" class="block text-gray-700 font-medium">Fichier de Mesures (.xml ou .vit)</label>
+            <input type="file" id="xml" name="xml" accept=".xml,.vit" required
+                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:outline-none">
         </div>
 
-        <!-- Bouton de soumission -->
-        <button type="submit" class="btn btn-primary">Créer le modèle</button>
-        <a href="{{ route('modeles.index') }}" class="btn btn-secondary">Annuler</a>
+        <!-- Boutons -->
+        <div class="flex space-x-4">
+            <button type="submit"
+                    class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-hover transition-all duration-300">
+                Créer le modèle
+            </button>
+            <a href="{{ route('modeles.index') }}"
+               class="bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 transition-all duration-300">
+                Annuler
+            </a>
+        </div>
     </form>
 </div>
 @endsection
