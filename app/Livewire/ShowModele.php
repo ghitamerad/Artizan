@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\modele;
+use App\Models\Panier;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -32,11 +33,11 @@ class ShowModele extends Component
         ]);
 
         session()->flash('success', 'Article ajouté au panier.');
-        $this->emit('panierMisAJour'); // Pour actualiser le panier dans d'autres composants si besoin
+        $this->dispatch('panierMisAJour'); // Pour actualiser le panier dans d'autres composants si besoin
     }
 
     public function render()
     {
-        return view('livewire.show-modele')->layout('layouts.guest2');
+        return view('livewire.show-modele')->layout('layouts.test');
     }
 }

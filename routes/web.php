@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -13,7 +12,7 @@ Route::view('profile', 'profile')
     ->name('profile');
 
     use App\Http\Controllers\UserController;
-
+use Ramsey\Uuid\Builder\FallbackBuilder;
 
 Route::middleware(['auth', 'can:viewAny,App\Models\User'])
 ->prefix('admin')
@@ -23,7 +22,7 @@ Route::middleware(['auth', 'can:viewAny,App\Models\User'])
 
 });
 
-Route::get('/home', App\Livewire\Home::class)->name('home');
+Route::get('/', App\Livewire\Home::class)->name('home');
 
 use App\http\Controllers\ModeleController;
 
@@ -39,12 +38,6 @@ use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\MesureController;
 
 Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store')->middleware('auth');
-
-// use App\Livewire\CreateModele;
-
-// Route::middleware(['auth'])->group(function () {
-//     Route::get('/modele/create', CreateModele::class)->name('modele.create');
-// });
 
 
 use Illuminate\Support\Facades\Auth;
@@ -68,9 +61,9 @@ use App\Http\Controllers\PanierController;
 
 Route::post('/panier/ajouter/{id}', [PanierController::class, 'ajouter'])
     ->name('ajouter.au.panier');
-    use App\Livewire\Panier;
+    use App\Livewire\PanierComponent;
 
-    Route::get('/panier', Panier::class)->name('panier');
+    Route::get('/panier', PanierComponent::class)->name('panier');
 
 
 
