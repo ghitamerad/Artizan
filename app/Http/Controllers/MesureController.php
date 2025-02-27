@@ -14,15 +14,39 @@ class MesureController extends Controller
      /**
      * Extraction des mesures depuis un fichier .vit
      */
-    private function extraireMesuresVit($xmlContent)
+    public function extractMeasures(Request $request, Modele $modele)
     {
-        $xml = simplexml_load_string($xmlContent);
-        $mesures = [];
+        if (!$request->hasFile('xml')) {
+            return back()->withErrors(['xml' => 'Aucun fichier XML fourni.']);
+        }
 
-        foreach ($xml->{'body-measurements'}->m as $mesure) {
+        $file = $request->file('xml');
+        $path = $file->store('xml_files', 'public');
+
+        $mesures = $this->extraireMesuresDepuisVit(storage_path("app/public/" . $path));
+
+        foreach ($mesures as $nom => $valeur) {
+            Mesure::updateOrCreate(
+                ['modele_id' => $modele->id, 'variable_xml' => $nom],
+                ['valeur_par_defaut' => $valeur, 'label' => ucfirst(str_replace('_', ' ', $nom))]
+            );
+        }
+
+        return back()->with('success', 'Mesures générées avec succès.');
+    }
+
+    private function extraireMesuresDepuisVit($cheminFichier)
+    {
+
+
+        $xml = simplexml_load_file($cheminFichier);
+        if (!$xml) return [];
+
+        $mesures = [];
+        foreach ($xml->{"body-measurements"}->m as $mesure) {
             $nom = (string) $mesure['name'];
-            $valeur = (float) $mesure['value'];
-            $mesures[] = ['nom' => $nom, 'valeur' => $valeur];
+            $valeur = (float) trim((string) $mesure['value']);
+            $mesures[$nom] = $valeur;
         }
 
         return $mesures;

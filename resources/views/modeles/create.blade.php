@@ -75,7 +75,7 @@
         <!-- Boutons -->
         <div class="flex space-x-4">
             <button type="submit"
-                    class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-hover transition-all duration-300">
+                    class="bg-primary text-red px-6 py-3 rounded-lg hover:bg-hover transition-all duration-300">
                 Créer le modèle
             </button>
             <a href="{{ route('modeles.index') }}"
