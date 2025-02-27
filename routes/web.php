@@ -77,7 +77,7 @@ Route::post('/mesures', [MesureController::class, 'store'])->name('mesures.store
 Route::delete('/mesures/{mesure}', [MesureController::class, 'destroy'])->name('mesures.destroy');
 
 
-Route::post('/mesures/extract/{modele}', [MesureController::class, 'extractMeasures'])->name('mesures.extract');
+Route::post('/mesures/extract/{modele}', [MesureController::class, 'importMesuresFromVit'])->name('mesures.extract');
 
 
 use App\Http\Controllers\PatronController;

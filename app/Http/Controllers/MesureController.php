@@ -7,52 +7,49 @@ use App\Models\modele;
 use App\Http\Requests\StoremesureRequest;
 use App\Http\Requests\UpdatemesureRequest;
 use Illuminate\Http\Request;
+use SimpleXMLElement;
+
 
 class MesureController extends Controller
 {
-
-     /**
+        /**
      * Extraction des mesures depuis un fichier .vit
      */
-    public function extractMeasures(Request $request, Modele $modele)
+    public function importMesuresFromVit(Modele $modele)
     {
-        if (!$request->hasFile('xml')) {
-            return back()->withErrors(['xml' => 'Aucun fichier XML fourni.']);
+        $filename = basename($modele->xml); // Récupérer le nom du fichier depuis la colonne `xml`
+
+
+        // Vérifier si le fichier existe dans storage/public/mesures
+        $path = storage_path("app/public/mesures/{$filename}");
+
+        if (!file_exists($path)) {
+            return back()->with('error', 'Fichier non trouvé.');
         }
 
-        $file = $request->file('xml');
-        $path = $file->store('xml_files', 'public');
+        // Charger le fichier XML
+        $xmlContent = file_get_contents($path);
+        $xml = new SimpleXMLElement($xmlContent);
 
-        $mesures = $this->extraireMesuresDepuisVit(storage_path("app/public/" . $path));
+        // Parcourir les mesures et les ajouter à la base de données
+        foreach ($xml->{"body-measurements"}->m as $measure) {
+            $variableXml = (string) $measure['name'];
 
-        foreach ($mesures as $nom => $valeur) {
-            Mesure::updateOrCreate(
-                ['modele_id' => $modele->id, 'variable_xml' => $nom],
-                ['valeur_par_defaut' => $valeur, 'label' => ucfirst(str_replace('_', ' ', $nom))]
-            );
+            // Vérifier si la mesure existe déjà
+            Mesure::create([
+                'modele_id' => $modele->id,
+                'label' => str_replace('@', '', $variableXml), // Nettoyer le label
+                'valeur_par_defaut' => 0, // Valeur par défaut, modifiable ensuite
+                'variable_xml' => $variableXml
+            ]);
         }
 
-        return back()->with('success', 'Mesures générées avec succès.');
+        return back()->with('success', 'Mesures importées avec succès.');
     }
 
-    private function extraireMesuresDepuisVit($cheminFichier)
-    {
 
 
-        $xml = simplexml_load_file($cheminFichier);
-        if (!$xml) return [];
-
-        $mesures = [];
-        foreach ($xml->{"body-measurements"}->m as $mesure) {
-            $nom = (string) $mesure['name'];
-            $valeur = (float) trim((string) $mesure['value']);
-            $mesures[$nom] = $valeur;
-        }
-
-        return $mesures;
-    }
-
-        /**
+    /**
      * Affichage du formulaire des mesures pour un modèle
      */
     public function showMesuresForm($modeleId)
