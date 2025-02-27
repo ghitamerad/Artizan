@@ -1,25 +1,41 @@
-<div class="fixed top-0 left-0 w-full bg-white shadow-md p-4 z-50">
-    <div class="flex justify-between items-center">
-        <h2 class="text-lg font-semibold text-gray-700">🛍️ Votre Panier</h2>
-        <button wire:click="togglePanier" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-            {{ $showPanier ? 'Fermer' : 'Afficher' }}
-        </button>
-    </div>
+<div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-700 mb-6">Votre Panier</h1>
 
-    @if($showPanier)
-        <div class="mt-4">
-            @if(count($panier) > 0)
-                <ul>
-                    @foreach($panier as $item)
-                        <li class="flex justify-between items-center border-b py-2">
-                            <span class="text-gray-700">{{ $item->modele->nom }}</span>
-                            <span class="text-gray-900 font-bold">{{ $item->quantite }}x</span>
-                        </li>
-                    @endforeach
-                </ul>
-            @else
-                <p class="text-gray-500">Votre panier est vide.</p>
-            @endif
+    @if($panier->isEmpty())
+        <p class="text-gray-500 text-lg">Votre panier est vide.</p>
+    @else
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <ul class="space-y-4">
+                @foreach($panier as $item)
+                    <li class="flex items-center justify-between p-4 border rounded-lg bg-gray-50">
+                        <div class="flex items-center space-x-4">
+                            <img src="{{ $item->modele->image ?? 'https://via.placeholder.com/100' }}" alt="Modèle" class="w-16 h-16 rounded-lg object-cover">
+                            <div>
+                                <h2 class="text-lg font-semibold text-gray-800">{{ $item->modele->nom }}</h2>
+                                <p class="text-gray-600">Quantité : {{ $item->quantite }}</p>
+                            </div>
+                        </div>
+                        <button wire:click="retirerDuPanier({{ $item->id }})" class="text-red-500 hover:text-red-700">
+                            ❌ Retirer
+                        </button>
+                    </li>
+                @endforeach
+            </ul>
+
+            <div class="mt-6 flex justify-between items-center">
+                <p class="text-lg font-semibold text-gray-700">Total articles : {{ $totalArticles }}</p>
+                <div class="space-x-4">
+                    <form action="{{ route('commandes.store') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">
+                            Commander
+                        </button>
+                    </form>
+                    <button class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition">
+                        Continuer les achats
+                    </button>
+                </div>
+            </div>
         </div>
     @endif
 </div>

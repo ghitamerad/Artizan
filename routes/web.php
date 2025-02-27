@@ -12,16 +12,16 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 
-    use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserController;
 
-    Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/users', [UserController::class, 'index'])->name('users.index');
-        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-        Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
-        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-    });
+Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+});
 
 
 Route::get('/', App\Livewire\Home::class)->name('home');
@@ -59,20 +59,23 @@ Route::get('modeles/show/{modele}', [ModeleController::class, 'show'])->name('mo
 
 
 Route::get('/modele/{id}', App\Livewire\ShowModele::class)->name('modele.show');
+
 use App\Http\Controllers\PanierController;
 
 Route::post('/panier/ajouter/{id}', [PanierController::class, 'ajouter'])
     ->name('ajouter.au.panier');
-    use App\Livewire\PanierComponent;
 
-    Route::get('/panier', PanierComponent::class)->name('panier');
+use App\Livewire\PanierComponent;
+
+Route::get('/panier', PanierComponent::class)->name('panier');
 
 
 
-Route::post('/mesures/store', [MesureController::class, 'store'])->name('mesures.store');
-Route::post('/mesures/edit', [MesureController::class, 'edit'])->name('mesures.edit');
-Route::post('/mesures/destroy', [MesureController::class, 'destroy'])->name('mesures.destroy');
+Route::get('/mesures/{mesure}/edit', [MesureController::class, 'edit'])->name('mesures.edit');
+Route::put('/mesures/{mesure}', [MesureController::class, 'update'])->name('mesures.update');
+Route::post('/mesures', [MesureController::class, 'store'])->name('mesures.store');
+Route::delete('/mesures/{mesure}', [MesureController::class, 'destroy'])->name('mesures.destroy');
 
 
 //
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
