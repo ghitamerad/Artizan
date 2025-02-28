@@ -39,8 +39,30 @@ Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () 
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\MesureController;
 
-Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store')->middleware('auth');
+Route::middleware('auth')->group(function () {
+    // Afficher toutes les commandes (admin & gérante)
+    Route::get('/commandes', [CommandeController::class, 'index'])->name('commandes.index');
 
+    // Formulaire de création d'une commande
+    Route::get('/commandes/create', [CommandeController::class, 'create'])->name('commandes.create');
+
+    // Enregistrer une nouvelle commande
+    Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store');
+
+    // Afficher une commande spécifique (admin, gérante ou propriétaire)
+    Route::get('/commandes/{commande}', [CommandeController::class, 'show'])->name('commandes.show');
+
+    // Modifier une commande (uniquement admin & gérante)
+    Route::get('/commandes/{commande}/edit', [CommandeController::class, 'edit'])->name('commandes.edit');
+    Route::put('/commandes/{commande}', [CommandeController::class, 'update'])->name('commandes.update');
+
+    // Supprimer une commande (admin & gérante)
+    Route::delete('/commandes/{commande}', [CommandeController::class, 'destroy'])->name('commandes.destroy');
+
+    // Validation et invalidation des commandes (admin & gérante)
+    Route::post('/commandes/{commande}/valider', [CommandeController::class, 'validateCommande'])->name('commandes.validate');
+    Route::post('/commandes/{commande}/invalider', [CommandeController::class, 'unvalidateCommande'])->name('commandes.invalidate');
+});
 
 use Illuminate\Support\Facades\Auth;
 

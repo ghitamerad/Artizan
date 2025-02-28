@@ -28,7 +28,7 @@
                     👗 Gérer les modèles
                 </a>
 
-                <a href="{{ route('commandes.store') }}"
+                <a href="{{ route('commandes.index') }}"
                    class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 hover:bg-yellow-400 hover:text-gray-900">
                     📋 Valider les commandes
                 </a>
