@@ -15,7 +15,6 @@ Route::view('profile', 'profile')
 use App\Http\Controllers\UserController;
 
 
-
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
