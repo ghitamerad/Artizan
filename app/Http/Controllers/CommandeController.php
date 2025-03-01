@@ -27,8 +27,8 @@ class CommandeController extends Controller
     public function create()
     {
         $this->authorize('create', Commande::class); // Vérifie si l'utilisateur peut créer une commande
-
-        return view('commandes.create');
+        $modeles = modele::all();
+        return view('commandes.create', compact('modeles'));
     }
     /**
      * Afficher une commande spécifique.
@@ -55,10 +55,9 @@ class CommandeController extends Controller
             // Récupérer le panier de l'utilisateur
             $panier = \App\Models\Panier::where('user_id', $userId)->with('modele')->get();
 
-            if ($panier->isEmpty()) {
+            if ($panier->isEmpty() && !in_array(Auth::user()->role, ['admin', 'gerante'])) {
                 return response()->json(['error' => 'Votre panier est vide.'], 400);
             }
-
             // Calcul du montant total
             $montant_total = $panier->sum(function ($item) {
                 return $item->modele->prix * $item->quantite;
@@ -98,8 +97,10 @@ class CommandeController extends Controller
     {
         $this->authorize('update', $commande); // Vérifie les permissions
 
-        return view('commandes.edit', compact('commande'));
-    }
+        $users = User::all(); // Récupère tous les utilisateurs
+        $modeles = modele::all();
+
+        return view('commandes.edit', compact('commande', 'users','modeles'));    }
 
 
 
