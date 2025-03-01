@@ -43,8 +43,30 @@ Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () 
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\MesureController;
 
-Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store')->middleware('auth');
+Route::middleware('auth')->group(function () {
+    // Afficher toutes les commandes (admin & gérante)
+    Route::get('/commandes', [CommandeController::class, 'index'])->name('commandes.index');
 
+    // Formulaire de création d'une commande
+    Route::get('/commandes/create', [CommandeController::class, 'create'])->name('commandes.create');
+
+    // Enregistrer une nouvelle commande
+    Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store');
+
+    // Afficher une commande spécifique (admin, gérante ou propriétaire)
+    Route::get('/commandes/{commande}', [CommandeController::class, 'show'])->name('commandes.show');
+
+    // Modifier une commande (uniquement admin & gérante)
+    Route::get('/commandes/{commande}/edit', [CommandeController::class, 'edit'])->name('commandes.edit');
+    Route::put('/commandes/{commande}', [CommandeController::class, 'update'])->name('commandes.update');
+
+    // Supprimer une commande (admin & gérante)
+    Route::delete('/commandes/{commande}', [CommandeController::class, 'destroy'])->name('commandes.destroy');
+
+    // Validation et invalidation des commandes (admin & gérante)
+    Route::post('/commandes/{commande}/valider', [CommandeController::class, 'validateCommande'])->name('commandes.validate');
+    Route::post('/commandes/{commande}/invalider', [CommandeController::class, 'unvalidateCommande'])->name('commandes.invalidate');
+});
 
 use Illuminate\Support\Facades\Auth;
 
@@ -80,6 +102,15 @@ Route::put('/mesures/{mesure}', [MesureController::class, 'update'])->name('mesu
 Route::post('/mesures', [MesureController::class, 'store'])->name('mesures.store');
 Route::delete('/mesures/{mesure}', [MesureController::class, 'destroy'])->name('mesures.destroy');
 
+
+Route::post('/mesures/extract/{modele}', [MesureController::class, 'importMesuresFromVit'])->name('mesures.extract');
+
+
+use App\Http\Controllers\PatronController;
+
+Route::post('/modeles/{modele}/generate-patron', [PatronController::class, 'generatePatron'])->name('patron.generate');
+
+Route::get('/patron/{modele}', [PatronController::class, 'showPatron'])->name('patron.show');
 
 //
 require __DIR__ . '/auth.php';

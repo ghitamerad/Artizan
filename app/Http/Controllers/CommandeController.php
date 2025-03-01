@@ -135,7 +135,7 @@ class CommandeController extends Controller
     {
         $this->authorize('validateCommande', $commande);
 
-        $commande->update(['statut' => 'refusee']);
+        $commande->update(['statut' => 'annulee']);
 
         return redirect()->back()->with('success', 'Commande invalidée.');
     }

@@ -29,7 +29,7 @@
             <label class="block text-gray-600">Catégorie</label>
             <select name="categorie_id" class="w-full p-2 border border-gray-300 rounded-lg">
                 @foreach ($categories as $categorie)
-                    <option value="{{ $categorie->id }}" {{ $modele->categorie_id == $categorie->id ? 'selected' : '' }}>
+                    <option value="{{ $categorie->id }}" {{ old('categorie_id', $modele->categorie_id) == $categorie->id ? 'selected' : '' }}>
                         {{ $categorie->nom }}
                     </option>
                 @endforeach
@@ -55,12 +55,18 @@
             @endif
         </div>
 
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Mettre à jour</button>
+        <div class="flex space-x-4">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Mettre à jour</button>
+        </div>
     </form>
 
     <h2 class="text-xl font-semibold mt-8 mb-4 text-gray-700">Mesures du Modèle</h2>
 
     <div class="overflow-x-auto">
+        <form action="{{ route('mesures.extract', $modele) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">Extraire les mesures</button>
+        </form>
         <table class="w-full border-collapse border border-gray-300 rounded-lg">
             <thead>
                 <tr class="bg-gray-200">
@@ -98,17 +104,17 @@
 
         <div>
             <label class="block text-gray-600">Label</label>
-            <input type="text" name="label" required class="w-full p-2 border border-gray-300 rounded-lg">
+            <input type="text" name="label" value="{{ old('label') }}" required class="w-full p-2 border border-gray-300 rounded-lg">
         </div>
 
         <div>
             <label class="block text-gray-600">Valeur par défaut</label>
-            <input type="number" name="valeur_par_defaut" step="0.01" required class="w-full p-2 border border-gray-300 rounded-lg">
+            <input type="number" name="valeur_par_defaut" value="{{ old('valeur_par_defaut') }}" step="0.01" required class="w-full p-2 border border-gray-300 rounded-lg">
         </div>
 
         <div>
             <label class="block text-gray-600">Variable XML</label>
-            <input type="text" name="variable_xml" required class="w-full p-2 border border-gray-300 rounded-lg">
+            <input type="text" name="variable_xml" value="{{ old('variable_xml') }}" required class="w-full p-2 border border-gray-300 rounded-lg">
         </div>
 
         <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">Ajouter</button>

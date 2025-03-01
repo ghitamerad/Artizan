@@ -7,28 +7,49 @@ use App\Models\modele;
 use App\Http\Requests\StoremesureRequest;
 use App\Http\Requests\UpdatemesureRequest;
 use Illuminate\Http\Request;
+use SimpleXMLElement;
+
 
 class MesureController extends Controller
 {
-
-     /**
+        /**
      * Extraction des mesures depuis un fichier .vit
      */
-    private function extraireMesuresVit($xmlContent)
+    public function importMesuresFromVit(Modele $modele)
     {
-        $xml = simplexml_load_string($xmlContent);
-        $mesures = [];
+        $filename = basename($modele->xml); // Récupérer le nom du fichier depuis la colonne `xml`
 
-        foreach ($xml->{'body-measurements'}->m as $mesure) {
-            $nom = (string) $mesure['name'];
-            $valeur = (float) $mesure['value'];
-            $mesures[] = ['nom' => $nom, 'valeur' => $valeur];
+
+        // Vérifier si le fichier existe dans storage/public/mesures
+        $path = storage_path("app/public/mesures/{$filename}");
+
+        if (!file_exists($path)) {
+            return back()->with('error', 'Fichier non trouvé.');
         }
 
-        return $mesures;
+        // Charger le fichier XML
+        $xmlContent = file_get_contents($path);
+        $xml = new SimpleXMLElement($xmlContent);
+
+        // Parcourir les mesures et les ajouter à la base de données
+        foreach ($xml->{"body-measurements"}->m as $measure) {
+            $variableXml = (string) $measure['name'];
+
+            // Vérifier si la mesure existe déjà
+            Mesure::create([
+                'modele_id' => $modele->id,
+                'label' => str_replace('@', '', $variableXml), // Nettoyer le label
+                'valeur_par_defaut' => 0, // Valeur par défaut, modifiable ensuite
+                'variable_xml' => $variableXml
+            ]);
+        }
+
+        return back()->with('success', 'Mesures importées avec succès.');
     }
 
-        /**
+
+
+    /**
      * Affichage du formulaire des mesures pour un modèle
      */
     public function showMesuresForm($modeleId)

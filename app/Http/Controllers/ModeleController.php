@@ -3,11 +3,35 @@ namespace App\Http\Controllers;
 
 use App\Models\Modele;
 use App\Models\Categorie;
+use App\Models\mesure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use SimpleXMLElement;
+
 
 class ModeleController extends Controller
 {
+
+    public function extractMesures(Modele $modele)
+{
+    if (!$modele->xml || !Storage::exists('public/' . $modele->xml)) {
+        return back()->with('error', 'Fichier XML introuvable.');
+    }
+
+    // Charger le fichier XML
+    $xmlContent = Storage::get('public/' . $modele->xml);
+    $xml = new SimpleXMLElement($xmlContent);
+
+    // Supposons que les mesures soient stockées sous <mesures><mesure nom="Taille" valeur="100"/>
+    foreach ($xml->mesures->mesure as $m) {
+        Mesure::updateOrCreate(
+            ['modele_id' => $modele->id, 'label' => (string) $m['nom']],
+            ['valeur_par_defaut' => (float) $m['valeur'], 'variable_xml' => (string) $m['nom']]
+        );
+    }
+
+    return back()->with('success', 'Mesures extraites avec succès.');
+}
     /**
      * Affiche la liste des modèles.
      */
@@ -44,22 +68,30 @@ class ModeleController extends Controller
             'xml' => 'required|file|max:2048', // Fichier .vit ou .xml
         ]);
 
-        // Stockage des fichiers
-        $patronPath = $request->file('patron')->store('modeles', 'public');
-        $xmlPath = $request->file('xml')->store('modeles', 'public');
-
-        // Création du modèle
-        Modele::create([
+        // Création du modèle sans fichiers
+        $modele = Modele::create([
             'nom' => $validatedData['nom'],
             'description' => $validatedData['description'],
             'prix' => $validatedData['prix'],
             'categorie_id' => $validatedData['categorie_id'],
+        ]);
+
+        // Stockage des fichiers avec des noms clairs
+        $patronName = "modele-{$modele->id}-patron.val";
+        $patronPath = $request->file('patron')->storeAs('patrons', $patronName, 'public');
+
+        $xmlName = "modele-{$modele->id}-mesures.vit";
+        $xmlPath = $request->file('xml')->storeAs('mesures', $xmlName, 'public');
+
+        // Mise à jour du modèle avec les chemins des fichiers
+        $modele->update([
             'patron' => $patronPath,
             'xml' => $xmlPath,
         ]);
 
         return redirect()->route('modeles.index')->with('message', 'Modèle ajouté avec succès !');
     }
+
 
     /**
      * Affiche les détails d'un modèle.
@@ -100,13 +132,15 @@ class ModeleController extends Controller
 
         // Mise à jour des fichiers si fournis
         if ($request->hasFile('patron')) {
-            Storage::disk('public')->delete($modele->patron);
-            $modele->patron = $request->file('patron')->store('modeles', 'public');
+            Storage::disk('public')->delete($modele->patron); // Supprime l'ancien fichier
+            $patronName = "modele-{$modele->id}-patron.val";
+            $modele->patron = $request->file('patron')->storeAs('patrons', $patronName, 'public');
         }
 
         if ($request->hasFile('xml')) {
             Storage::disk('public')->delete($modele->xml);
-            $modele->xml = $request->file('xml')->store('modeles', 'public');
+            $xmlName = "modele-{$modele->id}-mesures.vit";
+            $modele->xml = $request->file('xml')->storeAs('mesures', $xmlName, 'public');
         }
 
         // Mise à jour des autres données
@@ -119,6 +153,7 @@ class ModeleController extends Controller
 
         return redirect()->route('modeles.index')->with('message', 'Modèle mis à jour avec succès !');
     }
+
 
     /**
      * Supprime un modèle.
@@ -140,5 +175,6 @@ class ModeleController extends Controller
 
         return redirect()->route('modeles.index')->with('message', 'Modèle supprimé avec succès.');
     }
+
 }
 
