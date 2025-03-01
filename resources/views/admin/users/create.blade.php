@@ -9,22 +9,27 @@
 
         <div class="mb-4">
             <label for="name" class="block text-gray-700 font-medium">Nom :</label>
-            <input type="text" name="name" id="name" required class="w-full p-2 border rounded-lg">
+            <input type="text" name="name" id="name" required class="w-full p-2 border rounded-lg" value="{{ old('name') }}">
         </div>
 
         <div class="mb-4">
             <label for="email" class="block text-gray-700 font-medium">Email :</label>
-            <input type="email" name="email" id="email" required class="w-full p-2 border rounded-lg">
+            <input type="email" name="email" id="email" required class="w-full p-2 border rounded-lg" value="{{ old('email') }}">
         </div>
 
         <div class="mb-4">
             <label for="phone" class="block text-gray-700 font-medium">Numéro de téléphone :</label>
-            <input type="text" name="phone" id="phone" required class="w-full p-2 border rounded-lg">
+            <input type="text" name="phone" id="phone" required class="w-full p-2 border rounded-lg" value="{{ old('phone') }}">
         </div>
 
         <div class="mb-4">
             <label for="password" class="block text-gray-700 font-medium">Mot de passe :</label>
             <input type="password" name="password" id="password" required class="w-full p-2 border rounded-lg">
+        </div>
+
+        <div class="mb-4">
+            <label for="password_confirmation" class="block text-gray-700 font-medium">Confirmer le mot de passe :</label>
+            <input type="password" name="password_confirmation" id="password_confirmation" required class="w-full p-2 border rounded-lg">
         </div>
 
         <div class="mb-4">
