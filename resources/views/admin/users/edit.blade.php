@@ -1,44 +1,50 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier un Utilisateur</title>
-</head>
-<body>
-    <div style="max-width: 600px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); text-align: center;">
-        <h2>Modifier un Utilisateur</h2>
+@extends('layouts.admin')
 
-        <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
-            @csrf
-            @method('PUT')
+@section('content')
+<div class="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Modifier un Utilisateur</h2>
 
-            <table align="center" width="100%" cellpadding="10">
-                <tr>
-                    <td align="right"><label for="name">Nom :</label></td>
-                    <td><input type="text" name="name" value="{{ $user->name }}" required></td>
-                </tr>
-                <tr>
-                    <td align="right"><label for="email">Email :</label></td>
-                    <td><input type="email" name="email" value="{{ $user->email }}" required></td>
-                </tr>
-                <tr>
-                    <td align="right"><label for="role">Rôle :</label></td>
-                    <td>
-                        <select name="role" required>
-                            <option value="client" {{ $user->role == 'client' ? 'selected' : '' }}>Client</option>
-                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Administrateur</option>
-                            <option value="gerante" {{ $user->role == 'gerante' ? 'selected' : '' }}>Gérante</option>
-                            <option value="couturiere" {{ $user->role == 'couturiere' ? 'selected' : '' }}>Couturière</option>
-                        </select>
-                    </td>
-                </tr>
-            </table>
+    <form action="{{ route('admin.users.update', $user->id) }}" method="POST" class="space-y-5">
+        @csrf
+        @method('PUT')
 
-            <br>
-            <button type="submit">Enregistrer</button>
-            <a href="{{ route('admin.users.index') }}">Annuler</a>
-        </form>
-    </div>
-</body>
-</html>
+        <!-- Champ Nom -->
+        <div>
+            <label for="name" class="block text-gray-700 font-medium mb-1">Nom :</label>
+            <input type="text" name="name" id="name" value="{{ $user->name }}" required
+                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+
+        <!-- Champ Email -->
+        <div>
+            <label for="email" class="block text-gray-700 font-medium mb-1">Email :</label>
+            <input type="email" name="email" id="email" value="{{ $user->email }}" required
+                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+
+        <!-- Sélection du rôle -->
+        <div>
+            <label for="role" class="block text-gray-700 font-medium mb-1">Rôle :</label>
+            <select name="role" id="role" required
+                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <option value="client" {{ $user->role == 'client' ? 'selected' : '' }}>Client</option>
+                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Administrateur</option>
+                <option value="gerante" {{ $user->role == 'gerante' ? 'selected' : '' }}>Gérante</option>
+                <option value="couturiere" {{ $user->role == 'couturiere' ? 'selected' : '' }}>Couturière</option>
+            </select>
+        </div>
+
+        <!-- Boutons -->
+        <div class="flex justify-between items-center mt-6">
+            <button type="submit"
+                class="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">
+                Enregistrer
+            </button>
+            <a href="{{ route('admin.users.index') }}"
+                class="px-5 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition">
+                Annuler
+            </a>
+        </div>
+    </form>
+</div>
+@endsection
