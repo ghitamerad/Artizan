@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('detail_commandes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->nullable();
             $table->foreignId('modele_id')->constrained('modeles')->onDelete('cascade');
             $table->foreignId('commande_id')->constrained('commandes')->onDelete('cascade');
             $table->integer('quantite')->default(1);

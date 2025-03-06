@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('prix'); // Description facultative
             $table->string('patron')->nullable(); // Ajout du champ pour le patron
             $table->text('xml')->nullable(); // Fiche de mesures sous forme XML
+            $table->boolean('stock');
             $table->timestamps();
         });
     }

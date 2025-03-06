@@ -34,12 +34,14 @@ class MesureController extends Controller
         // Parcourir les mesures et les ajouter à la base de données
         foreach ($xml->{"body-measurements"}->m as $measure) {
             $variableXml = (string) $measure['name'];
+            $valeurParDefaut = (float) trim((string) $measure['value']); // Convertir en nombre
+
 
             // Vérifier si la mesure existe déjà
             Mesure::create([
                 'modele_id' => $modele->id,
                 'label' => str_replace('@', '', $variableXml), // Nettoyer le label
-                'valeur_par_defaut' => 0, // Valeur par défaut, modifiable ensuite
+                'valeur_par_defaut' => $valeurParDefaut, // Récupérer la valeur du XML
                 'variable_xml' => $variableXml
             ]);
         }

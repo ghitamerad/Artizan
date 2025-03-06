@@ -100,6 +100,9 @@ Route::put('/mesures/{mesure}', [MesureController::class, 'update'])->name('mesu
 Route::post('/mesures', [MesureController::class, 'store'])->name('mesures.store');
 Route::delete('/mesures/{mesure}', [MesureController::class, 'destroy'])->name('mesures.destroy');
 
+Route::get('/modeles/{modele}/mesures', [MesureController::class, 'showMesuresForm'])->name('modeles.mesures');
+
+
 
 Route::post('/mesures/extract/{modele}', [MesureController::class, 'importMesuresFromVit'])->name('mesures.extract');
 
