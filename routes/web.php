@@ -47,8 +47,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/commandes', [CommandeController::class, 'index'])->name('commandes.index');
 
     // Formulaire de création d'une commande
-    Route::get('/commandes/create', [CommandeController::class, 'create'])->name('commandes.create');
-
+    Route::get('/commandes/create', function () {
+        return view('commandes.create');
+    })->name('commandes.create');
     // Enregistrer une nouvelle commande
     Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store');
 

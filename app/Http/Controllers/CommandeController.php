@@ -42,6 +42,8 @@ class CommandeController extends Controller
         return view('commandes.show', compact('commande', 'couturieres'));
     }
 
+    
+
        public function store(Request $request)
 {
     DB::beginTransaction();
