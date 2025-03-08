@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Panier;
 use App\Models\Modele;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class PanierController extends Controller
 {
@@ -15,16 +15,24 @@ class PanierController extends Controller
             return redirect()->route('login');
         }
 
+        $userId = Auth::id();
+        $panier = Cache::get("panier_{$userId}", []);
+
         $modele = Modele::findOrFail($id);
 
-        $panier = Panier::firstOrCreate(
-            ['user_id' => Auth::id(), 'modele_id' => $modele->id],
-            ['quantite' => 1]
-        );
-
-        if (!$panier->wasRecentlyCreated) {
-            $panier->increment('quantite');
+        // Ajouter ou mettre à jour la quantité dans le panier
+        if (isset($panier[$id])) {
+            $panier[$id]['quantite']++;
+        } else {
+            $panier[$id] = [
+                'id' => $modele->id,
+                'nom' => $modele->nom,
+                'prix' => $modele->prix,
+                'quantite' => 1,
+            ];
         }
+
+        Cache::put("panier_{$userId}", $panier, now()->addHours(2));
 
         return redirect()->back()->with('message', 'Modèle ajouté au panier !');
     }

@@ -27,28 +27,28 @@
         <div>
             <label for="nom" class="block text-gray-700 font-medium">Nom du modèle</label>
             <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required
-                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
+                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
         </div>
 
         <!-- Description -->
         <div>
             <label for="description" class="block text-gray-700 font-medium">Description</label>
             <textarea id="description" name="description"
-                      class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">{{ old('description') }}</textarea>
+                      class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ old('description') }}</textarea>
         </div>
 
         <!-- Prix -->
         <div>
             <label for="prix" class="block text-gray-700 font-medium">Prix (en €)</label>
             <input type="number" id="prix" name="prix" min="0" value="{{ old('prix') }}" required
-                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
+                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
         </div>
 
         <!-- Catégorie -->
         <div>
             <label for="categorie_id" class="block text-gray-700 font-medium">Catégorie</label>
             <select id="categorie_id" name="categorie_id" required
-                    class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:outline-none">
+                    class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 <option value="">Sélectionner une catégorie</option>
                 @foreach ($categories as $categorie)
                     <option value="{{ $categorie->id }}" {{ old('categorie_id') == $categorie->id ? 'selected' : '' }}>
@@ -58,24 +58,38 @@
             </select>
         </div>
 
+        <!-- Stock -->
+        <div class="flex items-center space-x-2">
+            <input type="checkbox" id="stock" name="stock" value="1" {{ old('stock', true) ? 'checked' : '' }}
+                   class="rounded border-gray-300 focus:ring-2 focus:ring-blue-500">
+            <label for="stock" class="text-gray-700">Disponible en stock</label>
+        </div>
+
+        <!-- Sur commande -->
+        <div class="flex items-center space-x-2">
+            <input type="checkbox" id="sur_commande" name="sur_commande" value="1" {{ old('sur_commande') ? 'checked' : '' }}
+                   class="rounded border-gray-300 focus:ring-2 focus:ring-blue-500">
+            <label for="sur_commande" class="text-gray-700">Disponible sur commande</label>
+        </div>
+
         <!-- Upload du patron (.val) -->
         <div>
             <label for="patron" class="block text-gray-700 font-medium">Fichier Patron (.val)</label>
             <input type="file" id="patron" name="patron" accept=".val" required
-                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:outline-none">
+                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
         </div>
 
         <!-- Upload du fichier de mesures (.xml ou .vit) -->
         <div>
             <label for="xml" class="block text-gray-700 font-medium">Fichier de Mesures (.xml ou .vit)</label>
             <input type="file" id="xml" name="xml" accept=".xml,.vit" required
-                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:outline-none">
+                   class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
         </div>
 
         <!-- Boutons -->
         <div class="flex space-x-4">
             <button type="submit"
-                    class="bg-primary text-red px-6 py-3 rounded-lg hover:bg-hover transition-all duration-300">
+                    class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300">
                 Créer le modèle
             </button>
             <a href="{{ route('modeles.index') }}"

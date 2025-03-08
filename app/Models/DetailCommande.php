@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DetailCommande extends Model
 {
@@ -12,6 +13,7 @@ class DetailCommande extends Model
 
 
     protected $fillable = [
+        'user_id',
         'commande_id',
         'modele_id',
         'quantite',
@@ -33,4 +35,13 @@ class DetailCommande extends Model
     {
         return $this->belongsTo(modele::class, 'modele_id');
     }
+/**
+ * Get the user that owns the DetailCommande
+ *
+ * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+ */
+public function couturiere(): BelongsTo
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 }

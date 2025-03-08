@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('detail_commandes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->nullable();
+            $table->foreignId('user_id')->nullable()->constrained();
             $table->foreignId('modele_id')->constrained('modeles')->onDelete('cascade');
             $table->foreignId('commande_id')->constrained('commandes')->onDelete('cascade');
             $table->integer('quantite')->default(1);
             $table->decimal('prix_unitaire', 10, 2);
             $table->string('fichier_patron')->nullable(); // Lien vers le fichier du patron
+            $table->boolean('custom')->default(false); // Lien vers le fichier du patron
             $table->timestamps();
         });
     }

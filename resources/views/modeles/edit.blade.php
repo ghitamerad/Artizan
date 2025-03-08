@@ -36,6 +36,37 @@
             </select>
             @error('categorie_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
+        <div>
+            <label class="block text-gray-600">En stock</label>
+            <div class="flex space-x-4">
+                <label class="flex items-center">
+                    <input type="radio" name="stock" value="1" {{ $modele->stock ? 'checked' : '' }} class="mr-2">
+                    Oui
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="stock" value="0" {{ !$modele->stock ? 'checked' : '' }} class="mr-2">
+                    Non
+                </label>
+            </div>
+            @error('en_stock') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+        </div>
+
+        <div>
+            <label class="block text-gray-600">Sur commande</label>
+            <div class="flex space-x-4">
+                <label class="flex items-center">
+                    <input type="radio" name="sur_commande" value="1" {{ $modele->sur_commande ? 'checked' : '' }} class="mr-2">
+                    Oui
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="sur_commande" value="0" {{ !$modele->sur_commande ? 'checked' : '' }} class="mr-2">
+                    Non
+                </label>
+            </div>
+            @error('sur_commande') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+        </div>
+
+
 
         <div>
             <label class="block text-gray-600">Fichier .val (Patron)</label>

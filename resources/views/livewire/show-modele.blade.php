@@ -10,7 +10,16 @@
                     </span>
                 </div>
 
-                <h1 class="text-4xl font-bold text-[#2C3E50] mb-4">{{ $modele->nom }}</h1>
+                <h1 class="text-4xl font-bold text-[#2C3E50] mb-2">{{ $modele->nom }}</h1>
+
+                <!-- Affichage du statut de disponibilité -->
+                @if (!$modele->stock && $modele->sur_commande)
+                    <p class="text-red-600 font-semibold mb-4">Disponible seulement sur commande</p>
+                @elseif (!$modele->stock && !$modele->sur_commande)
+                    <p class="text-red-600 font-semibold mb-4">Non disponible</p>
+                @elseif ($modele->stock && !$modele->sur_commande)
+                    <p class="text-green-600 font-semibold mb-4">Pièce unique</p>
+                @endif
 
                 <div class="text-2xl font-bold text-[#2C3E50] mb-6">
                     {{ number_format($modele->prix, 2, ',', ' ') }} €
@@ -21,34 +30,21 @@
                 </div>
 
                 <div class="space-y-4">
-                    <!-- Bouton ajouter au panier -->
-                    <button wire:click="ajouterAuPanier({{ $modele->id }}, 1)"➕ >Ajouter au panier</button>
+                    <!-- Bouton Ajouter au panier -->
+                    <button
+                        wire:click="ajouterAuPanier({{ $modele->id }})"
+                        class="w-full bg-[#2C3E50] text-white px-6 py-3 rounded-full hover:bg-[#1a2530] transition-colors duration-300 text-lg">
+                        Ajouter au panier
+                    </button>
 
-
-
-                    {{-- <!-- Formulaire de commande -->
-                    <form action="{{ route('commandes.store') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="modeles[0][id]" value="{{ $modele->id }}">
-                        <input type="hidden" name="modeles[0][prix_unitaire]" value="{{ $modele->prix }}">
-
-                        <!-- Sélection de la quantité -->
-                        <label for="quantite" class="block text-sm font-medium text-gray-700">Quantité</label>
-                        <select name="modeles[0][quantite]" id="quantite" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            @for ($i = 1; $i <= 10; $i++)
-                                <option value="{{ $i }}">{{ $i }}</option>
-                            @endfor
-                        </select>
-
-                        <input type="hidden" name="montant_total" value="{{ $modele->prix }}">
-
+                    <!-- Bouton Commander sur mesure si sur_commande est true -->
+                    @if($modele->sur_commande)
                         <button
-                            type="submit"
-                            class="mt-4 w-full bg-[#2C3E50] text-black px-6 py-3 rounded-full hover:bg-[#1a2530] transition-colors duration-300 flex items-center justify-center gap-2 text-lg"
-                        >
-                            Commander maintenant
+                            wire:click="commanderSurMesure({{ $modele->id }})"
+                            class="w-full bg-[#D4AF37] text-white px-6 py-3 rounded-full hover:bg-[#b8962e] transition-colors duration-300 text-lg">
+                            Commander sur mesure
                         </button>
-                    </form> --}}
+                    @endif
                 </div>
 
                 <!-- Informations supplémentaires -->

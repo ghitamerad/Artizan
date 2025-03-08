@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="container mt-5">
-    <h2 class="mb-4 text-center text-primary">🛍️ Passer une nouvelle commande</h2>
+    <h2 class="mb-4 text-center text-primary">🛍️ Ajouter une nouvelle commande</h2>
 
     <div class="card shadow p-4">
-        <form action="{{ route('commandes.store') }}" method="POST">
+        <form action="{{ route('commandes.storeAdmin') }}" method="POST">
             @csrf
 
             <div id="produits-container">
@@ -84,6 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     updateRemoveButtons();
-});//
+});
 </script>
 @endsection

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\DetailCommande;
 use App\Http\Requests\StoreDetailCommandeRequest;
 use App\Http\Requests\UpdateDetailCommandeRequest;
+use Illuminate\Http\Request;
+use App\Models\User;
+
 
 class DetailCommandeController extends Controller
 {
@@ -35,9 +38,28 @@ class DetailCommandeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(DetailCommande $DetailCommande)
+
+    public function show(DetailCommande $detail_commande)
     {
-        //
+        $couturieres = User::where('role', 'couturiere')->get(); // Récupérer les utilisateurs avec le rôle couturière
+        return view('commandes.detail_commande', compact('detail_commande', 'couturieres'));
+    }
+
+        /**
+ * Assigner une commande à une couturière.
+ */
+public function assignerCouturiere(Request $request, $detailId)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $detail = DetailCommande::findOrFail($detailId);
+        $detail->user_id = $request->user_id;
+        $detail->save();
+
+        return redirect()->route('commandes.show', $detail->commande->id)
+            ->with('success', 'Couturière assignée avec succès.');
     }
 
     /**

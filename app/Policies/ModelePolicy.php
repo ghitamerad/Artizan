@@ -20,7 +20,7 @@ class ModelePolicy
      */
     public function view(User $user, modele $modele): bool
     {
-        return in_array($user->role, ['gerant', 'admin']);
+        return in_array($user->role, ['gerante', 'admin']);
     }
 
     /**
@@ -29,7 +29,7 @@ class ModelePolicy
     public function create(User $user): bool
     {
 
-        return in_array($user->role, ['gerant', 'admin']);
+        return in_array($user->role, ['gerante', 'admin']);
     }
 
     /**
@@ -38,7 +38,7 @@ class ModelePolicy
     public function update(User $user, modele $modele): bool
     {
 
-        return in_array($user->role, ['gerant', 'admin']);
+        return in_array($user->role, ['gerante', 'admin']);
     }
 
     /**
@@ -46,6 +46,6 @@ class ModelePolicy
      */
     public function delete(User $user, modele $modele): bool
     {
-        return in_array($user->role, ['gerant', 'admin']);
+        return in_array($user->role, ['gerante', 'admin']);
     }
 }

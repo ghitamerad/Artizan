@@ -32,6 +32,14 @@ class CommandePolicy
         return true;
     }
 
+        /**
+     * admin et gerante créer une commande.
+     */
+    public function createAdmin(User $user): bool
+    {
+        return in_array($user->role, ['admin', 'gerante']);
+    }
+
     /**
      * Déterminer si un utilisateur peut mettre à jour une commande.
      */
@@ -55,6 +63,14 @@ class CommandePolicy
     {
         return in_array($user->role, ['admin', 'gerante']);
     }
+
+    /**
+ * Déterminer si un utilisateur peut assigner une commande à une couturière.
+ */
+public function assignCouturiere(User $user, Commande $commande): bool
+{
+    return in_array($user->role, ['admin', 'gerante']);
+}
 
 }
 

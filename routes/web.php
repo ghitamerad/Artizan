@@ -39,6 +39,7 @@ Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () 
 });
 
 use App\Http\Controllers\CommandeController;
+use App\Http\Controllers\DetailCommandeController;
 use App\Http\Controllers\MesureController;
 
 Route::middleware('auth')->group(function () {
@@ -50,6 +51,7 @@ Route::middleware('auth')->group(function () {
 
     // Enregistrer une nouvelle commande
     Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store');
+
 
     // Afficher une commande spécifique (admin, gérante ou propriétaire)
     Route::get('/commandes/{commande}', [CommandeController::class, 'show'])->name('commandes.show');
@@ -65,6 +67,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/commandes/{commande}/valider', [CommandeController::class, 'validateCommande'])->name('commandes.validate');
     Route::post('/commandes/{commande}/invalider', [CommandeController::class, 'unvalidateCommande'])->name('commandes.invalidate');
 });
+
+Route::get('/commandes/{detail}/detail_commande', [DetailCommandeController::class, 'detailCommande'])
+    ->name('commandes.detail_commande');
+
+Route::post('/commandes/{detail}/assigner', [DetailCommandeController::class, 'assignerCouturiere'])
+    ->name('commandes.assigner_couturiere');
+
+
+Route::get('/detail_commandes/{detail_commande}', [DetailCommandeController::class, 'show'])->name('commandes.details');
+
 
 use Illuminate\Support\Facades\Auth;
 
@@ -91,7 +103,7 @@ Route::post('/panier/ajouter/{id}', [PanierController::class, 'ajouter'])
 
 use App\Livewire\PanierComponent;
 
-Route::get('/panier', PanierComponent::class)->name('panier');
+Route::get('/panier', PanierComponent::class)->middleware('auth')->name('panier');
 
 
 

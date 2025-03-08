@@ -1,7 +1,7 @@
 <div class="container mx-auto p-6">
     <h1 class="text-3xl font-bold text-gray-700 mb-6">Votre Panier</h1>
 
-    @if($panier->isEmpty())
+    @if(empty($panier))
         <p class="text-gray-500 text-lg">Votre panier est vide.</p>
     @else
         <div class="bg-white shadow-lg rounded-lg p-6">
@@ -9,13 +9,13 @@
                 @foreach($panier as $item)
                     <li class="flex items-center justify-between p-4 border rounded-lg bg-gray-50">
                         <div class="flex items-center space-x-4">
-                            <img src="{{ $item->modele->image ?? 'https://via.placeholder.com/100' }}" alt="Modèle" class="w-16 h-16 rounded-lg object-cover">
+                            <img src="" alt="Modèle" class="w-16 h-16 rounded-lg object-cover">
                             <div>
-                                <h2 class="text-lg font-semibold text-gray-800">{{ $item->modele->nom }}</h2>
-                                <p class="text-gray-600">Quantité : {{ $item->quantite }}</p>
+                                <h2 class="text-lg font-semibold text-gray-800">{{ $item['nom'] }}</h2>
+                                <p class="text-gray-600">Quantité : {{ $item['quantite'] }}</p>
                             </div>
                         </div>
-                        <button wire:click="retirerDuPanier({{ $item->id }})" class="text-red-500 hover:text-red-700">
+                        <button wire:click="retirerDuPanier({{ $item['id'] }})" class="text-red-500 hover:text-red-700">
                             ❌ Retirer
                         </button>
                     </li>
@@ -31,8 +31,8 @@
                             Commander
                         </button>
                     </form>
-                    <button class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition">
-                        Continuer les achats
+                    <button wire:click="viderPanier" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition">
+                        Vider le panier
                     </button>
                 </div>
             </div>
