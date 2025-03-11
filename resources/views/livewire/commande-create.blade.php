@@ -6,7 +6,7 @@
             <div id="modeles-container">
                 @foreach ($selectedModeles as $index => $modele)
                     <div class="modele-item d-flex align-items-center mb-3">
-                        <div class="w-50 me-2">
+                        <div class="w-25 me-2">
                             <label class="form-label fw-bold">Modèle</label>
                             <select class="form-control" wire:model="selectedModeles.{{ $index }}.id" required>
                                 <option value="">Sélectionnez un modèle</option>
@@ -18,9 +18,27 @@
                             </select>
                         </div>
 
-                        <div class="w-25 me-2">
+                        <div class="w-15 me-2">
                             <label class="form-label fw-bold">Quantité</label>
                             <input type="number" class="form-control" wire:model="selectedModeles.{{ $index }}.quantite" min="1" required>
+                        </div>
+
+                        <div class="w-20 me-2">
+                            <label class="form-label fw-bold">Custom</label>
+                            <select class="form-control" wire:model="selectedModeles.{{ $index }}.custom" required>
+                                <option value="0">Non</option>
+                                <option value="1">Oui</option>
+                            </select>
+                        </div>
+
+                        <div class="w-25 me-2">
+                            <label class="form-label fw-bold">Couturière</label>
+                            <select class="form-control" wire:model="selectedModeles.{{ $index }}.user_id">
+                                <option value="">Sélectionnez une couturière</option>
+                                @foreach ($couturieres as $c)
+                                    <option value="{{ $c->id }}">{{ $c->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <button type="button" class="btn btn-danger" wire:click="removeModele({{ $index }})" @if(count($selectedModeles) === 1) disabled @endif>❌</button>

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('commande_id')->constrained('commandes')->onDelete('cascade');
             $table->integer('quantite')->default(1);
             $table->decimal('prix_unitaire', 10, 2);
+            $table->enum('statut', ['Null','validee','refuser', 'fini'])->default('Null');
             $table->string('fichier_patron')->nullable(); // Lien vers le fichier du patron
             $table->boolean('custom')->default(false); // Lien vers le fichier du patron
             $table->timestamps();

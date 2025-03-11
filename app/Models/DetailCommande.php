@@ -16,8 +16,10 @@ class DetailCommande extends Model
         'user_id',
         'commande_id',
         'modele_id',
+        'statut',
         'quantite',
         'prix_unitaire',
+        'cutom',
     ];
 
     /**

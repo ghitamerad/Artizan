@@ -28,9 +28,9 @@
 
                     <!-- Liens de navigation -->
                     <div class="hidden md:flex space-x-8">
-                        <a href="{{ route('dashboard') }}" class="text-[#2C3E50] hover:text-[#D4AF37] font-medium">Accueil</a>
-                        <a href="#" class="text-[#2C3E50] hover:text-[#D4AF37] font-medium">Produits</a>
-                        <a href="#" class="text-[#2C3E50] hover:text-[#D4AF37] font-medium">Contact</a>
+                        <a href="{{ route('home') }}" class="text-[#2C3E50] hover:text-[#D4AF37] font-medium">Accueil</a>
+                        <a href="{{ route('pret-a-porter') }}" class="text-[#2C3E50] hover:text-[#D4AF37] font-medium">pret a porter</a>
+                        <a href="{{ route('sur-mesure') }}" class="text-[#2C3E50] hover:text-[#D4AF37] font-medium">sur mesure</a>
                     </div>
 
                     <!-- Zone utilisateur -->

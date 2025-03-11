@@ -69,8 +69,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/commandes/{commande}/invalider', [CommandeController::class, 'unvalidateCommande'])->name('commandes.invalidate');
 });
 
-Route::get('/commandes/{detail}/detail_commande', [DetailCommandeController::class, 'detailCommande'])
+Route::get('/commandes/{detail_commande}/detail_commande', [DetailCommandeController::class, 'show'])
     ->name('commandes.detail_commande');
+
 
 Route::post('/commandes/{detail}/assigner', [DetailCommandeController::class, 'assignerCouturiere'])
     ->name('commandes.assigner_couturiere');
@@ -125,6 +126,26 @@ use App\Http\Controllers\PatronController;
 Route::post('/modeles/{modele}/generate-patron', [PatronController::class, 'generatePatron'])->name('patron.generate');
 
 Route::get('/patron/{modele}', [PatronController::class, 'showPatron'])->name('patron.show');
+
+
+use App\Livewire\PretAPorter;
+use App\Livewire\SurMesure;
+
+Route::get('/pret-a-porter', PretAPorter::class)->name('pret-a-porter');
+Route::get('/sur-mesure', SurMesure::class)->name('sur-mesure');
+
+
+use App\Livewire\CouturiereDashboard;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/couturiere', CouturiereDashboard::class)->name('couturiere.dashboard');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/couturiere/commandes', [DetailCommandeController::class, 'commandesCouturiere'])->name('couturiere.commandes');
+    Route::post('/couturiere/commandes/{id}/terminer', [DetailCommandeController::class, 'terminerCommande'])->name('couturiere.commandes.terminer');
+});
+
 
 //
 require __DIR__ . '/auth.php';

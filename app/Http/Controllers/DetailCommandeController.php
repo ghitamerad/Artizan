@@ -7,6 +7,8 @@ use App\Http\Requests\StoreDetailCommandeRequest;
 use App\Http\Requests\UpdateDetailCommandeRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
 
 
 class DetailCommandeController extends Controller
@@ -60,6 +62,28 @@ public function assignerCouturiere(Request $request, $detailId)
 
         return redirect()->route('commandes.show', $detail->commande->id)
             ->with('success', 'Couturière assignée avec succès.');
+    }
+
+
+    public function commandesCouturiere()
+    {
+        $commandes = DetailCommande::where('user_id', Auth::id())
+                        ->where('statut', 'validee')
+                        ->get();
+
+        return view('couturiere.commandes', compact('commandes'));
+    }
+
+    public function terminerCommande($id)
+    {
+        $commande = DetailCommande::findOrFail($id);
+
+        if ($commande->user_id == Auth::id()) {
+            $commande->update(['statut' => 'fini']);
+            return redirect()->route('couturiere.commandes')->with('success', 'Commande marquée comme terminée.');
+        }
+
+        return redirect()->route('couturiere.commandes')->with('error', 'Action non autorisée.');
     }
 
     /**

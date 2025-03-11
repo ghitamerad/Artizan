@@ -35,6 +35,10 @@
                            class="ml-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300">
                             ✏️ Assigner Couturière
                         </a>
+                        <a href="{{ route('commandes.details', $detail->id) }}"
+                            class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                            🔍
+                         </a>
                     </div>
                 </li>
             @endforeach
