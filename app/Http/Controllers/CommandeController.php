@@ -42,7 +42,7 @@ class CommandeController extends Controller
         return view('commandes.show', compact('commande', 'couturieres'));
     }
 
-    
+
 
        public function store(Request $request)
 {
@@ -160,7 +160,7 @@ class CommandeController extends Controller
             'modeles.*.quantite' => 'required_with:modeles|integer|min:1',
             'modeles.*.prix_unitaire' => 'required_with:modeles|numeric|min:0',
             'montant_total' => 'sometimes|numeric|min:0',
-            'statut' => 'sometimes|string|in:en_attente,validee,refusee',
+            'statut' => 'sometimes|string|in:en_attente,validee,anulee',
         ]);
 
         DB::beginTransaction();

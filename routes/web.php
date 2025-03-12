@@ -140,9 +140,12 @@ Route::get('/sur-mesure', SurMesure::class)->name('sur-mesure');
 
 use App\Livewire\CouturiereDashboard;
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/couturiere', CouturiereDashboard::class)->name('couturiere.dashboard');
-});
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/couturiere', CouturiereDashboard::class)->name('couturiere.dashboard');
+// });
+Route::get('/couturiere', function () {
+    return view('couturiere.index');
+})->name('couturiere.dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/couturiere/commandes', [DetailCommandeController::class, 'commandesCouturiere'])->name('couturiere.commandes');

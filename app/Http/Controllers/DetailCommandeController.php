@@ -152,9 +152,24 @@ public function assignerCouturiere(Request $request, $detailId)
     $detail->user_id = $request->user_id;
     $detail->save();
 
-    return redirect()->route('commandes.show', $detail->commande->id)
+    // Récupérer la commande associée
+    $commande = $detail->commande;
+
+    // Vérifier si tous les détails de la commande où `custom = true` ont un `user_id` non null
+    $tousAssignes = $commande->details()
+                        ->where('custom', true)
+                        ->whereNull('user_id') // Vérifier si des détails n'ont pas encore de couturière assignée
+                        ->doesntExist();
+
+    // Si tous les détails `custom = true` ont un `user_id`, on met à jour la commande en "assignée"
+    if ($tousAssignes) {
+        $commande->update(['statut' => 'assigner']);
+    }
+
+    return redirect()->route('commandes.show', $commande->id)
         ->with('success', 'Couturière assignée avec succès.');
 }
+
 
 
 public function commandesCouturiere()
@@ -168,13 +183,26 @@ public function commandesCouturiere()
 
 public function terminerCommande($id)
 {
-    $commande = DetailCommande::findOrFail($id);
+    $commandeDetail = DetailCommande::findOrFail($id);
 
-    if ($commande->user_id == Auth::id()) {
-        $commande->update(['statut' => 'fini']);
-        return redirect()->route('couturiere.commandes')->with('success', 'Commande marquée comme terminée.');
+    if ($commandeDetail->user_id == Auth::id()) {
+        $commandeDetail->update(['statut' => 'fini']);
+
+        // Vérifier si tous les détails de la commande sont finis
+        $commande = $commandeDetail->commande; // Relation entre détail et commande
+        $tousFinis = $commande->details()
+                        ->where('custom', true)
+                        ->where('statut', '!=', 'fini')
+                        ->doesntExist();
+
+        if ($tousFinis) {
+            $commande->update(['statut' => 'expediee']);
+        }
+
+        return redirect()->route('couturiere.commandes')->with('success', 'Détail de la commande terminé.');
     }
 
     return redirect()->route('couturiere.commandes')->with('error', 'Action non autorisée.');
 }
+
 }

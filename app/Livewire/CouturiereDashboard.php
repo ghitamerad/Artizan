@@ -36,15 +36,44 @@ class CouturiereDashboard extends Component
 
     public function accepter($id)
     {
-        DetailCommande::where('id', $id)->update(['statut' => 'validee']);
+        $detailCommande = DetailCommande::findOrFail($id);
+        $detailCommande->update(['statut' => 'validee']);
+
+        $commande = $detailCommande->commande;
+
+        // Vérifier si tous les détails "custom=true" sont validés
+        $tousValides = $commande->details()
+                        ->where('custom', true)
+                        ->where('statut', '!=', 'validee')
+                        ->doesntExist();
+
+        if ($tousValides) {
+            $commande->update(['statut' => 'validee']);
+        }
+
         $this->voirCommandes();
     }
 
     public function refuser($id)
     {
-        DetailCommande::where('id', $id)->update(['statut' => 'refuser']);
+        $detailCommande = DetailCommande::findOrFail($id);
+        $detailCommande->update(['statut' => 'refuser']);
+
+        $commande = $detailCommande->commande;
+
+        // Vérifier si tous les détails "custom=true" sont refusés
+        $tousRefuses = $commande->details()
+                        ->where('custom', true)
+                        ->where('statut', '!=', 'refuser')
+                        ->doesntExist();
+
+        if ($tousRefuses) {
+            $commande->update(['statut' => 'refuser']);
+        }
+
         $this->voirCommandes();
     }
+
 
     public function render()
     {

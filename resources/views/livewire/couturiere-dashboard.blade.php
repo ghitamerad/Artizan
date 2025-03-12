@@ -20,7 +20,7 @@
                     @foreach ($commandes as $commande)
                         <tr class="border-b hover:bg-gray-100 transition duration-200">
                             <td class="p-4">{{ $loop->iteration }}</td>
-                            <td class="p-4 font-semibold text-gray-700">{{ $commande->modele->nom }}</td>
+                            <td class="p-4 font-semibold text-gray-700">{{ $commande->modele->nom }} {{$commande->modele->id}}</td>
                             <td class="p-4">{{ $commande->quantite }}</td>
                             <td class="p-4 font-semibold text-green-600">{{ number_format($commande->prix_unitaire, 2) }} €</td>
                             <td class="p-4">{{ $commande->commande->user->name }}</td>
