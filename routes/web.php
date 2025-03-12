@@ -72,6 +72,9 @@ Route::middleware('auth')->group(function () {
 Route::get('/commandes/{detail_commande}/detail_commande', [DetailCommandeController::class, 'show'])
     ->name('commandes.detail_commande');
 
+    Route::get('/detail_commande/{detail_commande}/edit', [DetailCommandeController::class, 'edit'])->name('detail_commande.edit');
+    Route::put('/detail_commande/{detail_commande}/update', [DetailCommandeController::class, 'update'])->name('detail_commande.update');
+
 
 Route::post('/commandes/{detail}/assigner', [DetailCommandeController::class, 'assignerCouturiere'])
     ->name('commandes.assigner_couturiere');

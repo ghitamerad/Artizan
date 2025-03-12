@@ -23,4 +23,12 @@ class mesure extends Model
     {
         return $this->belongsTo(modele::class, 'modele_id');
     }
+
+        /**
+     * Relation avec les mesures associées aux détails de commande
+     */
+    public function mesureDetailCommandes()
+    {
+        return $this->hasMany(MesureDetailCommande::class, 'mesure_id');
+    }
 }

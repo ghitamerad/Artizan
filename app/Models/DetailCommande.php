@@ -19,7 +19,7 @@ class DetailCommande extends Model
         'statut',
         'quantite',
         'prix_unitaire',
-        'cutom',
+        'custom',
     ];
 
     /**
@@ -45,5 +45,10 @@ class DetailCommande extends Model
 public function couturiere(): BelongsTo
 {
     return $this->belongsTo(User::class, 'user_id');
+}
+
+public function mesuresDetail()
+{
+    return $this->hasMany(MesureDetailCommande::class, 'details_commande_id');
 }
 }
