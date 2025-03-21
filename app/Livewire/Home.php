@@ -75,8 +75,7 @@ class Home extends Component
         //  Recherche par nom ou description
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('nom', 'like', '%' . $this->search . '%')
-                  ->orWhere('description', 'like', '%' . $this->search . '%');
+                $q->where('nom', 'like', '%' . $this->search . '%');
             });
         }
 

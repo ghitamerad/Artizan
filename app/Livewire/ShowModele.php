@@ -15,60 +15,69 @@ class ShowModele extends Component
     public modele $modele;
 
     public function ajouterAuPanier($id)
-{
-    if (!Auth::check()) {
-        return redirect()->route('login');
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $userId = Auth::id();
+        $panier = Cache::get("panier_{$userId}", []);
+
+        $modele = Modele::findOrFail($id);
+
+        if (isset($panier[$id])) {
+            $panier[$id]['quantite']++;
+        } else {
+            $panier[$id] = [
+                'id' => $modele->id,
+                'nom' => $modele->nom,
+                'prix' => $modele->prix,
+                'quantite' => 1,
+                'custom' => false, // Mode classique
+            ];
+        }
+
+        Cache::put("panier_{$userId}", $panier, now()->addHours(2));
+
+        session()->flash('message', 'Modèle ajouté au panier !');
     }
 
-    $userId = Auth::id();
-    $panier = Cache::get("panier_{$userId}", []);
+    public function commanderSurMesure($id)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
 
-    $modele = Modele::findOrFail($id);
+        $userId = Auth::id();
+        $panier = Cache::get("panier_{$userId}", []);
 
-    if (isset($panier[$id])) {
-        $panier[$id]['quantite']++;
-    } else {
-        $panier[$id] = [
-            'id' => $modele->id,
-            'nom' => $modele->nom,
-            'prix' => $modele->prix,
-            'quantite' => 1,
-        ];
+        $modele = Modele::findOrFail($id);
+
+        if (isset($panier[$id])) {
+            $panier[$id]['quantite']++;
+        } else {
+            $panier[$id] = [
+                'id' => $modele->id,
+                'nom' => $modele->nom,
+                'prix' => $modele->prix,
+                'quantite' => 1,
+                'custom' => true, // Commande sur mesure
+            ];
+        }
+
+        Cache::put("panier_{$userId}", $panier, now()->addHours(2));
+
+        session()->flash('message', 'Commande sur mesure ajoutée au panier !');
+        return redirect()->route('modeles.mesures', ['modele' => $id]);
+
     }
-
-    Cache::put("panier_{$userId}", $panier, now()->addHours(2));
-
-    session()->flash('message', 'Modèle ajouté au panier !');
-}
 
     public function mount($id)
     {
         $this->modele = modele::with('categorie')->findOrFail($id);
     }
 
-    public function commanderSurMesure($modeleId)
-{
-    return redirect()->route('modeles.mesures', ['modele' => $modeleId]);
-}
 
-    // public function ajouterAuPanier($modeleId, $quantite)
-    // {
-    //     $user = Auth::user();
-    //     if (!$user) {
-    //         session()->flash('error', 'Vous devez être connecté pour ajouter au panier.');
-    //         return;
-    //     }
-
-    //     // Ajout au panier (exemple)
-    //     Panier::create([
-    //         'user_id' => $user->id,
-    //         'modele_id' => $modeleId,
-    //         'quantite' => $quantite,
-    //     ]);
-
-    //     session()->flash('success', 'Article ajouté au panier.');
-    //     $this->dispatch('panierMisAJour'); // Pour actualiser le panier dans d'autres composants si besoin
-    // }
 
     public function render()
     {

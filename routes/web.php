@@ -129,6 +129,9 @@ use App\Http\Controllers\PatronController;
 Route::post('/modeles/{modele}/generate-patron', [PatronController::class, 'generatePatron'])->name('patron.generate');
 
 Route::get('/patron/{modele}', [PatronController::class, 'showPatron'])->name('patron.show');
+Route::get('/patron/personnalise/{detailCommandeId}', [PatronController::class, 'customPattern'])->name('patron.custom');
+Route::get('/patron/personnalise/afficher/{detailCommandeId}', [PatronController::class, 'showCustomPattern'])->name('patron.custom.show');
+
 
 
 use App\Livewire\PretAPorter;
@@ -151,6 +154,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/couturiere/commandes', [DetailCommandeController::class, 'commandesCouturiere'])->name('couturiere.commandes');
     Route::post('/couturiere/commandes/{id}/terminer', [DetailCommandeController::class, 'terminerCommande'])->name('couturiere.commandes.terminer');
 });
+
 
 
 //

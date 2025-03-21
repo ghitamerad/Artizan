@@ -47,40 +47,42 @@ class PanierComponent extends Component
         Cache::forget("panier_{$userId}");
         $this->chargerPanier();
     }
-    public function ajouterAuPanier($id)
+
+    private function getMesuresFromCache($modeleId)
 {
-    if (!Auth::check()) {
-        return redirect()->route('login');
-    }
-
     $userId = Auth::id();
-    $panier = Cache::get("panier_{$userId}", []);
-
-    $modele = Modele::findOrFail($id);
-
-    if (isset($panier[$id])) {
-        $panier[$id]['quantite']++;
-    } else {
-        $panier[$id] = [
-            'id' => $modele->id,
-            'nom' => $modele->nom,
-            'prix' => $modele->prix,
-            'quantite' => 1,
-        ];
-    }
-
-    Cache::put("panier_{$userId}", $panier, now()->addHours(2));
-
-    $this->chargerPanier();
-    session()->flash('message', 'Modèle ajouté au panier !');
+    return Cache::get('mesures_user_' . $userId . '_modele_' . $modeleId, []);
 }
 
 
-    public function render()
-    {
-        return view('livewire.panier', [
-            'panier' => $this->panier,
-            'totalArticles' => $this->totalArticles,
-        ])->layout('layouts.test');
+public function render()
+{
+    $panierAvecMesures = [];
+
+    foreach ($this->panier as $item) {
+        if ($item['custom']) {
+            $mesuresBrutes = $this->getMesuresFromCache($item['id']);
+            $mesuresNomValeur = [];
+
+            // Récupérer les mesures du modèle
+            $mesures = \App\Models\Mesure::where('modele_id', $item['id'])->get();
+
+            // Associer nom => valeur
+            foreach ($mesures as $mesure) {
+                $valeur = $mesuresBrutes[$mesure->id] ?? $mesure->valeur_par_defaut;
+                $mesuresNomValeur[$mesure->nom] = $valeur;
+            }
+
+            $item['mesures'] = $mesuresNomValeur;
+        }
+        $panierAvecMesures[] = $item;
     }
+
+    return view('livewire.panier', [
+        'panier' => $panierAvecMesures,
+        'totalArticles' => $this->totalArticles,
+    ])->layout('layouts.test');
+}
+
+
 }

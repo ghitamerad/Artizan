@@ -31,20 +31,18 @@
 
                 <div class="space-y-4">
                     <!-- Bouton Ajouter au panier -->
-                    <button
-                        wire:click="ajouterAuPanier({{ $modele->id }})"
+                    <button wire:click="ajouterAuPanier({{ $modele->id }})"
                         class="w-full bg-[#2C3E50] text-white px-6 py-3 rounded-full hover:bg-[#1a2530] transition-colors duration-300 text-lg">
                         Ajouter au panier
                     </button>
 
-                    <!-- Bouton Commander sur mesure si sur_commande est true -->
-                    @if($modele->sur_commande)
-                        <button
-                            wire:click="commanderSurMesure({{ $modele->id }})"
+                    @if ($modele->sur_commande)
+                        <button wire:click="commanderSurMesure({{ $modele->id }})"
                             class="w-full bg-[#D4AF37] text-white px-6 py-3 rounded-full hover:bg-[#b8962e] transition-colors duration-300 text-lg">
                             Commander sur mesure
                         </button>
                     @endif
+
                 </div>
 
                 <!-- Informations supplémentaires -->
@@ -59,14 +57,14 @@
 
             <!-- Image du modèle -->
             <div class="p-8">
-                @if($modele->image)
-                    <img src="{{ Storage::url($modele->image) }}"
-                         alt="{{ $modele->nom }}"
-                         class="w-full h-[300px] object-cover rounded-lg shadow-md">
+                @if ($modele->image)
+                    <img src="{{ Storage::url($modele->image) }}" alt="{{ $modele->nom }}"
+                        class="w-full h-[300px] object-cover rounded-lg shadow-md">
                 @else
                     <div class="w-full h-[300px] bg-gray-200 flex items-center justify-center rounded-lg">
                         <svg class="h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                     </div>
                 @endif

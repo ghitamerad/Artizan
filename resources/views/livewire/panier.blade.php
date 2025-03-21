@@ -13,8 +13,20 @@
                             <div>
                                 <h2 class="text-lg font-semibold text-gray-800">{{ $item['nom'] }}</h2>
                                 <p class="text-gray-600">Quantité : {{ $item['quantite'] }}</p>
-                            </div>
+
+                                @if(isset($item['mesures']) && count($item['mesures']) > 0)
+                                <ul>
+                                    @foreach($item['mesures'] as $nom => $value)
+                                        <li>{{ $nom }} : {{ $value }} cm</li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <p class="text-gray-500 italic">Aucune mesure enregistrée.</p>
+                            @endif
+
+
                         </div>
+
                         <button wire:click="retirerDuPanier({{ $item['id'] }})" class="text-red-500 hover:text-red-700">
                             ❌ Retirer
                         </button>

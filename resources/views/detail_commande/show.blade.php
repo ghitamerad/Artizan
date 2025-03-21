@@ -58,12 +58,11 @@
 
         <!-- Bouton Extraire les Mesures -->
         <div class="mt-4">
-            <form action="" method="POST">
-                @csrf
-                <button type="submit"
-                    class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition">
-Modifier                </button>
-            </form>
+ <a href="{{ route('detail_commande.edit', $detail_commande->id) }}"
+           class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-700 ">
+            ✏️ Modifier
+        </a>
+
         </div>
     </div>
     <!-- 🔼🔼🔼 FIN TABLEAU DES MESURES 🔼🔼🔼 -->
@@ -99,6 +98,17 @@ Modifier                </button>
            class="bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition duration-300 shadow-md flex items-center gap-2">
             ✏️ Modifier
         </a>
+
+        <a href="{{ route('patron.custom', $detail_commande->id) }}"class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition duration-300 shadow-md flex items-center gap-2">
+            Générer un patron personnalisé
+        </a>
+
+        @if($detail_commande    ->fichier_patron)
+            <a href="{{ route('patron.custom.show', $detail_commande->id) }}" class="btn btn-success">
+                Voir le patron personnalisé
+            </a>
+        @endif
+
     </div>
 </div>
 @endsection

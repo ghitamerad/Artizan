@@ -66,7 +66,7 @@ class CommandeCreate extends Component
                     'modele_id' => $item['id'],
                     'quantite' => $item['quantite'],
                     'prix_unitaire' => Modele::find($item['id'])->prix,
-                    'custom' => $item['custom'],
+                    'custom' => (bool) $item['custom'],
                     'user_id' => $item['user_id'] ?: null,
                 ]);
 
