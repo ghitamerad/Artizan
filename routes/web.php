@@ -26,6 +26,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 Route::post('/admin/users/store', [UserController::class, 'store'])->name('admin.users.store');
 
 
+//Route::get('/', App\Livewire\Home::class)->name('home');
 Route::get('/', App\Livewire\Home::class)->name('home');
 
 use App\http\Controllers\ModeleController;
@@ -108,7 +109,7 @@ Route::post('/panier/ajouter/{id}', [PanierController::class, 'ajouter'])
 
 use App\Livewire\PanierComponent;
 
-Route::get('/panier', PanierComponent::class)->middleware('auth')->name('panier');
+Route::get('/panier', PanierComponent::class)->name('panier');
 
 
 
@@ -156,6 +157,8 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+Route::get('/mes-commandes', [DetailCommandeController::class, 'index'])->name('detail-commandes.index');
+Route::get('/mes-commandes/{id}', [DetailCommandeController::class, 'showClient'])->name('detail-commandes.showClient');
 
 //
 require __DIR__ . '/auth.php';

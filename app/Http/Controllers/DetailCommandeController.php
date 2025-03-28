@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailCommande;
+use App\Models\Commande;
 use App\Models\MesureDetailCommande;
 use App\Http\Requests\StoreDetailCommandeRequest;
 use App\Http\Requests\UpdateDetailCommandeRequest;
@@ -20,8 +21,25 @@ class DetailCommandeController extends Controller
      */
     public function index()
     {
-        //
+        $userId = Auth::id();
+
+        // Récupérer les commandes en cours (statut 'en_attente' ou 'validée')
+        $commandesEnCours = Commande::where('user_id', $userId)
+            ->whereIn('statut', ['en_attente', 'validee'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Récupérer les commandes terminées (statut 'fini')
+        $commandesPrecedentes = Commande::where('user_id', $userId)
+            ->where('statut', 'fini')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $slot='';
+
+        return view('detail_commande.index', compact('commandesEnCours', 'commandesPrecedentes', 'slot'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -38,6 +56,15 @@ class DetailCommandeController extends Controller
     {
         //
     }
+
+    public function showClient($id)
+{
+    $commande = Commande::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+    $detailsCommande = DetailCommande::where('commande_id', $commande->id)->get();
+
+    return view('detail_commande.showClient', compact('commande', 'detailsCommande'));
+}
+
 
     /**
      * Display the specified resource.

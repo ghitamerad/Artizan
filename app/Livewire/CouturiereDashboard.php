@@ -4,7 +4,9 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\DetailCommande;
+use App\Services\GeneratePatronService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CouturiereDashboard extends Component
 {
@@ -34,10 +36,14 @@ class CouturiereDashboard extends Component
             ->get();
     }
 
-    public function accepter($id)
+    public function accepter($id, GeneratePatronService $generatePatronService )
     {
         $detailCommande = DetailCommande::findOrFail($id);
+
         $detailCommande->update(['statut' => 'validee']);
+        Log::info("before");
+        $generatePatronService->customPattern($id);
+        Log::info("after");
 
         $commande = $detailCommande->commande;
 

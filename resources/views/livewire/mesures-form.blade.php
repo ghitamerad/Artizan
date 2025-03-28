@@ -17,7 +17,7 @@
                     <label for="mesure_{{ $mesure->id }}" class="block text-gray-700 font-semibold mb-2">
                         {{ $mesure->label }}
                     </label>
-                    <input type="number" step="0.01" wire:model.defer="values.{{ $mesure->id }}" id="mesure_{{ $mesure->id }}"
+                    <input type="number" step="0.01" wire:model.defer="values.{{ $mesure->label }}" id="mesure_{{ $mesure->id }}"
                         class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 p-3 text-lg">
                     @error('values.' . $mesure->id) <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>

@@ -44,58 +44,92 @@ class CommandeController extends Controller
 
 
 
-       public function store(Request $request)
-{
-    DB::beginTransaction();
+    public function store(Request $request)
+    {
+        DB::beginTransaction();
 
-    try {
-        // Vérifier si l'utilisateur est connecté
-        if (!Auth::check()) {
-            return response()->json(['error' => 'Utilisateur non authentifié.'], 401);
-        }
+        try {
+            // Vérifier si l'utilisateur est connecté
+            if (!Auth::check()) {
+                return response()->json(['error' => 'Utilisateur non authentifié.'], 401);
+            }
 
-        $userId = Auth::id();
+            $userId = Auth::id();
 
-        // Récupérer le panier depuis le cache
-        $panier = Cache::get("panier_{$userId}", []);
+            // Récupérer le panier depuis le cache
+            $panier = Cache::get("panier_{$userId}", []);
 
-        if (empty($panier)) {
-            return response()->json(['error' => 'Votre panier est vide.'], 400);
-        }
+            if (empty($panier)) {
+                return response()->json(['error' => 'Votre panier est vide.'], 400);
+            }
 
-        // Calcul du montant total
-        $montant_total = array_reduce($panier, function ($total, $item) {
-            return $total + ($item['prix'] * $item['quantite']);
-        }, 0);
+            // Calcul du montant total
+            $montant_total = array_reduce($panier, function ($total, $item) {
+                return $total + ($item['prix'] * $item['quantite']);
+            }, 0);
 
-        // Création de la commande
-        $commande = Commande::create([
-            'user_id' => $userId,
-            'montant_total' => $montant_total,
-            'statut' => 'en_attente',
-        ]);
-
-        // Ajouter les modèles du panier à la commande
-        foreach ($panier as $item) {
-            DetailCommande::create([
-                'commande_id' => $commande->id,
-                'modele_id' => $item['id'],
-                'quantite' => $item['quantite'],
-                'prix_unitaire' => $item['prix'],
+            // Création de la commande
+            $commande = Commande::create([
+                'user_id' => $userId,
+                'montant_total' => $montant_total,
+                'statut' => 'en_attente',
             ]);
+
+            // Ajouter les modèles du panier à la commande
+            foreach ($panier as $modeleId => $item) {
+                $quantite = $item['quantite'];
+                $prixUnitaire = $item['prix'];
+
+                // Récupérer les mesures spécifiques du cache pour ce modèle et cet utilisateur
+                $mesuresClient = Cache::get("mesures_user_{$userId}_modele_{$modeleId}", []);
+
+                // Déterminer si la commande est sur mesure (custom)
+                $custom = !empty($mesuresClient);
+
+                // Création du détail de commande
+                $detailCommande = DetailCommande::create([
+                    'commande_id' => $commande->id,
+                    'modele_id' => $modeleId,
+                    'quantite' => $quantite,
+                    'prix_unitaire' => $prixUnitaire,
+                    'custom' => $custom, // ✅ Initialisation correcte
+                ]);
+
+                if ($custom) {
+                    // Récupérer les mesures du modèle en base
+                    $mesuresModel = \App\Models\Mesure::where('modele_id', $modeleId)->get();
+
+                    if ($mesuresModel->isEmpty()) {
+                        throw new \Exception("Aucune mesure trouvée pour le modèle ID : $modeleId");
+                    }
+
+                    foreach ($mesuresModel as $mesure) {
+                        // Récupérer la valeur fournie par le client ou la valeur par défaut
+                        $valeurMesure = $mesuresClient[$mesure->id] ?? $mesure->valeur_par_defaut;
+
+                        \App\Models\MesureDetailCommande::create([
+                            'mesure_id' => $mesure->id,
+                            'details_commande_id' => $detailCommande->id,
+                            'valeur_mesure' => $valeurMesure,
+                            'valeur_par_defauts' => $mesure->valeur_par_defaut,
+                            'variable_xml' => $mesure->variable_xml,
+                        ]);
+                    }
+                }
+            }
+
+            // Vider le panier après validation de la commande
+            Cache::forget("panier_{$userId}");
+
+            DB::commit();
+
+            return redirect()->route('commandes.index')->with('success', 'Commande enregistrée avec succès.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Une erreur est survenue', 'message' => $e->getMessage()], 500);
         }
-
-        // Vider le panier après validation de la commande
-        Cache::forget("panier_{$userId}");
-
-        DB::commit();
-
-        return redirect()->route('commandes.index')->with('success', 'Commande enregistrée avec succès.');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return response()->json(['error' => 'Une erreur est survenue', 'message' => $e->getMessage()], 500);
     }
-}
+
 
 
 
@@ -106,7 +140,7 @@ class CommandeController extends Controller
         $users = User::all(); // Récupère tous les utilisateurs
         $modeles = modele::all();
 
-        return view('commandes.edit', compact('commande', 'users','modeles'));
+        return view('commandes.edit', compact('commande', 'users', 'modeles'));
     }
 
 

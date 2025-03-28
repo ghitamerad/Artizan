@@ -103,7 +103,7 @@
             Générer un patron personnalisé
         </a>
 
-        @if($detail_commande    ->fichier_patron)
+        @if($detail_commande->fichier_patron)
             <a href="{{ route('patron.custom.show', $detail_commande->id) }}" class="btn btn-success">
                 Voir le patron personnalisé
             </a>

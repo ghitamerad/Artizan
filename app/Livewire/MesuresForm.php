@@ -14,39 +14,46 @@ class MesuresForm extends Component
     public $mesures = [];
     public $values = [];
 
-        public function mount($modeleId)
-        {
-            $this->modele = Modele::findOrFail($modeleId);
-            $this->mesures = Mesure::where('modele_id', $modeleId)->get();
+    public function mount($modeleId)
+    {
+        $this->modele = Modele::findOrFail($modeleId);
+        $this->mesures = Mesure::where('modele_id', $modeleId)->get();
 
-            // Pré-remplir les valeurs avec cache ou valeurs par défaut
-            $cachedValues = Cache::get($this->cacheKey(), []);
-            foreach ($this->mesures as $mesure) {
-                $this->values[$mesure->id] = $cachedValues[$mesure->id] ?? $mesure->valeur_par_defaut;
+        // Pré-remplir avec des valeurs stockées dans le cache (par nom)
+        $cachedValues = Cache::get($this->cacheKey(), []);
+
+        foreach ($this->mesures as $mesure) {
+            $key = $mesure->label ?? $mesure->nom; // Utilise 'label' ou 'nom' selon ta colonne
+            $this->values[$key] = $cachedValues[$key] ?? $mesure->valeur_par_defaut;
+        }
+    }
+
+    public function save()
+    {
+        // Valider toutes les valeurs comme numériques
+        foreach ($this->values as $key => $value) {
+            if (!is_numeric($value) || $value < 0) {
+                $this->addError("values.$key", "La valeur de $key doit être un nombre positif.");
             }
         }
 
-        public function save()
-        {
-            $this->validate([
-                'values.*' => 'required|numeric|min:0',
-            ]);
-
-            Cache::put($this->cacheKey(), $this->values, now()->addHours(12));
-
-            session()->flash('success', 'Vos mesures ont été enregistrées temporairement.');
-
+        if ($this->getErrorBag()->isNotEmpty()) {
+            return;
         }
 
-        private function cacheKey()
-        {
-            return 'mesures_user_' . Auth::id() . '_modele_' . $this->modele->id;
-        }
+        // Sauvegarder dans le cache sous forme [label => valeur]
+        Cache::put($this->cacheKey(), $this->values, now()->addHours(12));
 
-        public function render()
-        {
-            return view('livewire.mesures-form')->layout('layouts.test');
-        }
+        session()->flash('success', 'Vos mesures ont été enregistrées temporairement.');
+    }
 
+    private function cacheKey()
+    {
+        return 'mesures_user_' . Auth::id() . '_modele_' . $this->modele->id;
+    }
 
+    public function render()
+    {
+        return view('livewire.mesures-form')->layout('layouts.test');
+    }
 }
