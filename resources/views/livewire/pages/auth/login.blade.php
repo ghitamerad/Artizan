@@ -19,8 +19,25 @@ new #[Layout('layouts.guest')] class extends Component
         $this->form->authenticate();
 
         Session::regenerate();
+ // On récupère l'URL précédemment visitée
+ $previousUrl = url()->previous();
 
-        $this->redirectIntended(default: route('dashboard', absolute: true), navigate: true);
+// Si l'utilisateur était sur une page comme le panier
+if (str_contains($previousUrl, 'panier') || str_contains($previousUrl, 'cart')) {
+    $this->redirect(url()->previous(), navigate: true);
+    return;
+}
+
+// Sinon, on redirige selon le rôle de l'utilisateur
+$redirectUrl = match (Auth::user()->role) {
+    'admin' => route('modeles.index'),
+    'gerante' => route('modeles.index'),
+    'couturiere' => route('couturiere.dashboard'),
+    'client' => route('dashboard'),
+    default => route('home'),
+};
+
+$this->redirectIntended(default: $redirectUrl, navigate: true);
     }
 }; ?>
 

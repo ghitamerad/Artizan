@@ -59,7 +59,7 @@ class CouturiereDashboard extends Component
 
     // Génération du patron (sans téléchargement)
     $service = new GeneratePatronService();
-    $result = $service->customPattern($id);
+    $result = $service->generatePattern($detailCommande->id);
 
     if ($result) {
         // Peut-être un petit message ou mise à jour d'état
