@@ -160,5 +160,8 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/mes-commandes', [DetailCommandeController::class, 'index'])->name('detail-commandes.index');
 Route::get('/mes-commandes/{id}', [DetailCommandeController::class, 'showClient'])->name('detail-commandes.showClient');
 
+Route::get('/patron/telecharger/{id}', [PatronController::class, 'telecharger'])->name('patron.telecharger');
+
 //
 require __DIR__ . '/auth.php';
+

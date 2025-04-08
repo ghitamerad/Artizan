@@ -7,6 +7,7 @@ use App\Models\Modele;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Livewire\Attributes\On; // (si nécessaire pour écouter des événements)
 
 class PanierComponent extends Component
 {
@@ -95,6 +96,9 @@ class PanierComponent extends Component
         }
 
         $this->chargerPanier();
+
+        $this->dispatch('panierMisAJour', $this->totalArticles);
+
     }
 
     public function viderPanier()
@@ -106,6 +110,8 @@ class PanierComponent extends Component
         }
 
         $this->chargerPanier();
+        $this->dispatch('panierMisAJour', 0);
+
     }
 
     public function render()

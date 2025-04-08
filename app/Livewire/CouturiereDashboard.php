@@ -23,7 +23,8 @@ class CouturiereDashboard extends Component
         $this->titre = "📋 Commandes en attente";
         $this->commandes = DetailCommande::where('user_id', Auth::id())
             ->where('statut', 'Null')
-            ->with(['modele', 'commande'])
+            ->with(['modele', 'commande.user'])
+            ->latest()
             ->get();
     }
 
@@ -32,22 +33,20 @@ class CouturiereDashboard extends Component
         $this->titre = "✅ Commandes acceptées";
         $this->commandes = DetailCommande::where('user_id', Auth::id())
             ->whereIn('statut', ['validee', 'refuser'])
-            ->with(['modele', 'commande.client'])
+            ->with(['modele', 'commande.user'])
+            ->latest()
             ->get();
     }
 
-    public function accepter($id, GeneratePatronService $generatePatronService )
+    public function accepter($id, GeneratePatronService $generatePatronService)
     {
         $detailCommande = DetailCommande::findOrFail($id);
-
         $detailCommande->update(['statut' => 'validee']);
-        Log::info("before");
-        $generatePatronService->customPattern($id);
-        Log::info("after");
+
+        //fonction qui genere le patron
+        // $generatePatronService->customPattern($id);
 
         $commande = $detailCommande->commande;
-
-        // Vérifier si tous les détails "custom=true" sont validés
         $tousValides = $commande->details()
                         ->where('custom', true)
                         ->where('statut', '!=', 'validee')
@@ -57,7 +56,20 @@ class CouturiereDashboard extends Component
             $commande->update(['statut' => 'validee']);
         }
 
-        $this->voirCommandes();
+
+    // Génération du patron (sans téléchargement)
+    $service = new GeneratePatronService();
+    $result = $service->customPattern($id);
+
+    if ($result) {
+        // Peut-être un petit message ou mise à jour d'état
+        session()->flash('message', 'Commande acceptée et patron généré.');
+    } else {
+        session()->flash('error', 'Erreur lors de la génération du patron.');
+    }
+        session()->flash('success', '✅ La commande a été acceptée avec succès !');
+        return redirect()->route('couturiere.commandes');
+
     }
 
     public function refuser($id)
@@ -66,24 +78,24 @@ class CouturiereDashboard extends Component
         $detailCommande->update(['statut' => 'refuser']);
 
         $commande = $detailCommande->commande;
-
-        // Vérifier si tous les détails "custom=true" sont refusés
         $tousRefuses = $commande->details()
                         ->where('custom', true)
                         ->where('statut', '!=', 'refuser')
                         ->doesntExist();
 
         if ($tousRefuses) {
-            $commande->update(['statut' => 'refuser']);
+            $commande->update(['statut' => 'en_attente']);
         }
 
-        $this->voirCommandes();
-    }
+        session()->flash('error', '❌ La commande a été refusée.');
 
+        // Mettre à jour la liste sans recharger la page
+        $this->voirCommandes();
+        $this->dispatch('refreshComponent');
+    }
 
     public function render()
     {
-        return view('livewire.couturiere-dashboard')->layout('layouts.couturiere');
+        return view('livewire.couturiere-dashboard')->layout('layouts.admin');
     }
 }
-

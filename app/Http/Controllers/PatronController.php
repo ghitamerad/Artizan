@@ -6,10 +6,33 @@ use Illuminate\Http\Request;
 use App\Models\modele;
 use App\Models\DetailCommande;
 use App\Models\MesureDetailCommande;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
+
 
 class PatronController extends Controller
 {
+
+    public function telecharger($id)
+    {
+        Log::info("lilou");
+        $detailCommande = DetailCommande::findOrFail($id);
+
+        if (!$detailCommande->fichier_patron) {
+            return redirect()->back()->with('error', 'Aucun fichier trouvé.');
+        }
+
+        $path = storage_path("app/public/" . $detailCommande->fichier_patron);
+
+        if (!file_exists($path)) {
+            return redirect()->back()->with('error', 'Le fichier n\'existe pas sur le serveur.');
+        }
+
+        return response()->download($path);
+    }
+
+
     public function generatePatron($modeleId)
     {
         $modele = Modele::findOrFail($modeleId);

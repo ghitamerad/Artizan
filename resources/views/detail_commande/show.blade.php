@@ -67,6 +67,11 @@
     </div>
     <!-- 🔼🔼🔼 FIN TABLEAU DES MESURES 🔼🔼🔼 -->
 
+    @if(Auth::check())
+    @php
+        $role = Auth::user()->role;
+    @endphp
+    @if($role == 'admin')
     <h4 class="text-2xl font-bold text-gray-700 mt-8">👩‍🎨 Sélectionner une couturière :</h4>
     <div class="bg-white p-6 rounded-lg shadow-sm mt-4">
         <form action="{{ route('commandes.assigner_couturiere', $detail_commande->id) }}" method="POST">
@@ -87,6 +92,21 @@
             </div>
         </form>
     </div>
+    @endif
+    @endif
+
+    @if($detail_commande->fichier_patron)
+    <div class="mt-4 p-4 bg-gray-100 rounded-lg shadow-sm">
+        <p class="text-lg font-semibold">📂 Patron généré :</p>
+        <p class="text-gray-800">{{ basename($detail_commande->fichier_patron) }}</p>
+
+        <a href="{{ route('patron.telecharger', $detail_commande->id) }}"
+           class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 shadow-md flex items-center gap-2 mt-2">
+            ⬇️ Télécharger le patron
+        </a>
+    </div>
+@endif
+
 
     <div class="mt-8 flex justify-between">
         <a href="{{ route('commandes.detail_commande', $detail_commande->id) }}"
@@ -99,12 +119,14 @@
             ✏️ Modifier
         </a>
 
+        @if($role == 'admin')
         <a href="{{ route('patron.custom', $detail_commande->id) }}"class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition duration-300 shadow-md flex items-center gap-2">
             Générer un patron personnalisé
         </a>
+        @endif
 
         @if($detail_commande->fichier_patron)
-            <a href="{{ route('patron.custom.show', $detail_commande->id) }}" class="btn btn-success">
+            <a href="{{ route('patron.custom.show', $detail_commande->id) }}" class="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition duration-300 shadow-md flex items-center gap-2">
                 Voir le patron personnalisé
             </a>
         @endif

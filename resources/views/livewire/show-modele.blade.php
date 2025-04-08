@@ -35,12 +35,24 @@
                         class="w-full bg-[#2C3E50] text-white px-6 py-3 rounded-full hover:bg-[#1a2530] transition-colors duration-300 text-lg">
                         Ajouter au panier
                     </button>
+                    @if (session()->has('message'))
+    <div class="mt-4 text-center text-green-700 bg-green-100 border border-green-400 px-4 py-2 rounded-lg">
+        {{ session('message') }}
+    </div>
+@endif
+
 
                     @if ($modele->sur_commande)
                         <button wire:click="commanderSurMesure({{ $modele->id }})"
                             class="w-full bg-[#D4AF37] text-white px-6 py-3 rounded-full hover:bg-[#b8962e] transition-colors duration-300 text-lg">
                             Commander sur mesure
                         </button>
+                        @if (session()->has('message'))
+    <div class="mt-4 text-center text-green-700 bg-green-100 border border-green-400 px-4 py-2 rounded-lg">
+        {{ session('message') }}
+    </div>
+@endif
+
                     @endif
 
                 </div>

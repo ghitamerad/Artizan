@@ -133,9 +133,9 @@
         </nav>
 
         <!-- Contenu principal -->
-        <div class="pt-20">
-            {{ $slot }}
-        </div>
+<main class="flex-1 p-10">
+    @yield('content')
+</main>
 
     </div>
 </body>

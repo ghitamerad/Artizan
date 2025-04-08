@@ -41,8 +41,14 @@ class ShowModele extends Component
             Session::put('panier_invite', $panier);
         }
 
-        session()->flash('message', 'Modèle ajouté au panier !');
-    }
+        $totalArticles = array_sum(array_column($panier, 'quantite'));
+        $this->dispatch('panierMisAJour', total: $totalArticles);
+
+
+        session()->flash('message', '✅ Modèle ajouté au panier avec succès !');
+
+        // Ajouter un message Livewire pour une notification front-end
+        $this->dispatch('ajoutReussi', message: 'Modèle ajouté au panier !');    }
 
     public function commanderSurMesure($id)
     {
