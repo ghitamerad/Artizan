@@ -13,6 +13,9 @@ new #[Layout('layouts.guest')] class extends Component {
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public string $telephone = '';
+    public string $adresse = '';
+
 
     /**
      * Handle an incoming registration request.
@@ -23,6 +26,8 @@ new #[Layout('layouts.guest')] class extends Component {
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'telephone' => ['required', 'string', 'min:10'],
+            'adresse' => ['nullable', 'string', 'max:255'],
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -58,6 +63,21 @@ new #[Layout('layouts.guest')] class extends Component {
                 required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
+<!-- Telephone -->
+<div class="mt-4">
+    <x-input-label for="telephone" :value="__('Téléphone')" />
+    <x-text-input wire:model="telephone" id="telephone" class="block mt-1 w-full" type="text" name="telephone"
+        required autocomplete="tel" />
+    <x-input-error :messages="$errors->get('telephone')" class="mt-2" />
+</div>
+
+<!-- Adresse -->
+<div class="mt-4">
+    <x-input-label for="adresse" :value="__('Adresse')" />
+    <x-text-input wire:model="adresse" id="adresse" class="block mt-1 w-full" type="text" name="adresse"
+        autocomplete="street-address" />
+    <x-input-error :messages="$errors->get('adresse')" class="mt-2" />
+</div>
 
         <!-- Password -->
         <div class="mt-4">

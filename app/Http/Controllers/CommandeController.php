@@ -22,13 +22,13 @@ class CommandeController extends Controller
     {
         $this->authorize('viewAny', Commande::class);
 
-        $commandes = Commande::all();
+        $commandes = Commande::latest()->get();
         return view('commandes.index', compact('commandes'));
     }
     public function create()
     {
         $this->authorize('create', Commande::class); // Vérifie si l'utilisateur peut créer une commande
-        $modeles = modele::all();
+        $modeles = modele::latest()->get();
         return view('commandes.create', compact('modeles'));
     }
     /**

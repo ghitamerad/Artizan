@@ -34,7 +34,7 @@ class CouturiereDashboard extends Component
         $this->commandes = DetailCommande::where('user_id', Auth::id())
             ->whereIn('statut', ['validee', 'refuser'])
             ->with(['modele', 'commande.user'])
-            ->latest()
+            ->orderBy('created_at', 'asc')
             ->get();
     }
 

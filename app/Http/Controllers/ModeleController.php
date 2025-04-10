@@ -15,7 +15,7 @@ class ModeleController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Modele::class);
-        $modeles = Modele::all();
+        $modeles = Modele::latest()->get();
         return view('modeles.index', compact('modeles'));
     }
 

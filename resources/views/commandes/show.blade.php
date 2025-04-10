@@ -33,11 +33,18 @@
                         <span class="font-semibold text-gray-800">{{ number_format($detail->prix_unitaire, 2) }} €</span>
 
                         @if ($detail->custom)
+                        @if ($detail->couturiere) {{-- Déjà assignée à une couturière --}}
+                            <span class="text-green-600 font-semibold">
+                                Assignée à :<b> {{ $detail->couturiere->name }}</b>
+                            </span>
+                        @else
                             <a href="{{ route('commandes.detail_commande', $detail->id) }}"
                                class="flex items-center gap-1 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-300 shadow-md">
                                 ✏️ Assigner Couturière
                             </a>
                         @endif
+                    @endif
+
 
                         <a href="{{ route('commandes.details', $detail->id) }}"
                            class="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 shadow-md">

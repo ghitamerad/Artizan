@@ -203,6 +203,7 @@ public function commandesCouturiere()
 {
     $commandes = DetailCommande::where('user_id', Auth::id())
                     ->where('statut', 'validee')
+                    ->latest()
                     ->get();
 
     return view('couturiere.commandes', compact('commandes'));
