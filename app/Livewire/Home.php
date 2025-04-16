@@ -47,6 +47,15 @@ class Home extends Component
         $this->resetPage();
     }
 
+    public function resetFiltres()
+{
+    $this->search = '';
+    $this->selectedCategorie = '';
+    $this->minPrix = null;
+    $this->maxPrix = null;
+}
+
+
     public function ajouterAuPanier($modeleId)
     {
         if (!Auth::check()) {
@@ -72,19 +81,17 @@ class Home extends Component
     {
         $query = Modele::query();
 
-        //  Recherche par nom ou description
-        if (!empty($this->search)) {
-            $query->where(function ($q) {
-                $q->where('nom', 'like', '%' . $this->search . '%');
-            });
+        // Recherche par nom
+        if (trim($this->search) !== '') {
+            $query->where('nom', 'like', '%' . $this->search . '%');
         }
 
-        //  Filtrage par catégorie
+        // Filtrage par catégorie
         if (!empty($this->selectedCategorie)) {
             $query->where('categorie_id', $this->selectedCategorie);
         }
 
-        //  Filtrage par prix
+        // Filtrage par prix
         if (!is_null($this->minPrix)) {
             $query->where('prix', '>=', $this->minPrix);
         }
@@ -92,15 +99,16 @@ class Home extends Component
             $query->where('prix', '<=', $this->maxPrix);
         }
 
-        // Récupération des modèles
-        $modeles = $query->whereNotNull('prix') // Évite les valeurs nulles
+        // Résultats
+        $modeles = $query->whereNotNull('prix')
             ->with('categorie')
             ->orderBy('created_at', 'desc')
             ->paginate(9);
 
-        // Récupération des catégories
         $categories = Categorie::all();
 
-        return view('livewire.home', compact('modeles', 'categories'))->layout('layouts.test');
+        return view('livewire.home', compact('modeles', 'categories'))
+            ->layout('layouts.test');
     }
+
 }
