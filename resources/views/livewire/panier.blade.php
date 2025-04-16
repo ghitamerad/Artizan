@@ -16,9 +16,11 @@
 
                                 @if (!empty($item['mesures']))
                                     <div class="relative inline-block mt-2">
-                                        <button class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
-                                            Voir les mesures
-                                        </button>
+                                        <a href="{{ route('modeles.mesures', ['modele' => $item['id']]) }}"
+                                            class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition block text-center">
+                                             Voir les mesures
+                                         </a>
+
                                         <div
                                             class="absolute hidden group-hover:flex hover:flex flex-col bg-white border shadow-xl p-4 rounded-lg z-10 w-56 text-sm text-gray-700 top-10 left-0">
                                             <h3 class="font-semibold mb-2">Mesures personnalisées :</h3>

@@ -8,6 +8,7 @@ use App\Models\modele;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -105,7 +106,17 @@ class CommandeController extends Controller
 
                     foreach ($mesuresModel as $mesure) {
                         // Récupérer la valeur fournie par le client ou la valeur par défaut
-                        $valeurMesure = $mesuresClient[$mesure->id] ?? $mesure->valeur_par_defaut;
+                        $key = $mesure->label ?? $mesure->nom;
+                        $valeurMesure = $mesuresClient[$key] ?? $mesure->valeur_par_defaut;
+
+                        Log::info("Traitement mesure pour le modèle {$modeleId}", [
+                            'mesure_id' => $mesure->id,
+                            'nom' => $key,
+                            'valeur_donnée_client' => $mesuresClient[$key] ?? null,
+                            'valeur_utilisée' => $valeurMesure,
+                            'valeur_par_defaut' => $mesure->valeur_par_defaut,
+                            'variable_xml' => $mesure->variable_xml,
+                        ]);
 
                         \App\Models\MesureDetailCommande::create([
                             'mesure_id' => $mesure->id,
