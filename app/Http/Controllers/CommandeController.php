@@ -123,7 +123,7 @@ class CommandeController extends Controller
 
             DB::commit();
 
-            return redirect()->route('commandes.index')->with('success', 'Commande enregistrée avec succès.');
+            return redirect()->route('detail-commandes.index')->with('success', 'Commande enregistrée avec succès.');
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Une erreur est survenue', 'message' => $e->getMessage()], 500);

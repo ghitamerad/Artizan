@@ -31,7 +31,7 @@ class DetailCommandeController extends Controller
 
         // Récupérer les commandes terminées (statut 'fini')
         $commandesPrecedentes = Commande::where('user_id', $userId)
-            ->where('statut', 'fini')
+            ->where('statut', 'expediee')
             ->orderBy('created_at', 'desc')
             ->get();
 

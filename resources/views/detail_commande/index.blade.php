@@ -1,29 +1,34 @@
-@extends('layouts.app')
+@extends('layouts.test2')
 
 @section('content')
-<div class="max-w-7xl mx-auto p-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">📦 Mes Commandes</h2>
+
+<div class="container mx-auto p-6 mt-10">
+    <h2 class="text-3xl font-bold text-gray-700 mb-6">📦 Mes Commandes</h2>
 
     <!-- Commandes en cours -->
-    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h3 class="text-lg font-semibold text-blue-600 mb-3">🚀 Commandes en cours</h3>
+    <div class="bg-white p-6 rounded-2xl shadow-lg mb-10 border border-[#F5F5DC]">
+        <h3 class="text-xl font-semibold text-[#2C3E50] mb-4 flex items-center gap-2">
+            🚀 Commandes en cours
+        </h3>
         @if ($commandesEnCours->isEmpty())
-            <p class="text-gray-500">Aucune commande en cours.</p>
+            <p class="text-gray-500 italic">Aucune commande en cours.</p>
         @else
             <div class="space-y-4">
                 @foreach ($commandesEnCours as $commande)
-                    <div class="p-4 border rounded-lg flex justify-between items-center">
+                    <div class="p-4 border border-[#D4AF37]/30 bg-[#FDFCF8] rounded-xl flex justify-between items-center hover:shadow transition">
                         <div>
-                            <p class="font-medium">Commande #{{ $commande->id }} - {{ $commande->created_at->format('d/m/Y') }}</p>
+                            <p class="font-medium text-[#2C3E50]">
+                                Commande #{{ $commande->id }} - {{ $commande->created_at->format('d/m/Y') }}
+                            </p>
                             <p class="text-sm text-gray-500">Statut :
                                 <span class="px-2 py-1 text-white text-xs rounded-full
-                                    {{ $commande->statut == 'en_attente' ? 'bg-yellow-500' : 'bg-green-500' }}">
+                                    {{ $commande->statut == 'en_attente' ? 'bg-yellow-500' : 'bg-green-600' }}">
                                     {{ ucfirst($commande->statut) }}
                                 </span>
                             </p>
                         </div>
                         <a href="{{ route('detail-commandes.showClient', $commande->id) }}"
-                           class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
+                           class="px-4 py-2 bg-[#D4AF37] text-white text-sm rounded-lg hover:bg-[#C19B2C] transition duration-200">
                             Voir détails
                         </a>
                     </div>
@@ -33,20 +38,27 @@
     </div>
 
     <!-- Commandes précédentes -->
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h3 class="text-lg font-semibold text-green-600 mb-3">✅ Commandes terminées</h3>
+    <div class="bg-white p-6 rounded-2xl shadow-lg border border-[#F5F5DC]">
+        <h3 class="text-xl font-semibold text-[#2C3E50] mb-4 flex items-center gap-2">
+            ✅ Commandes terminées
+        </h3>
         @if ($commandesPrecedentes->isEmpty())
-            <p class="text-gray-500">Aucune commande terminée.</p>
+            <p class="text-gray-500 italic">Aucune commande terminée.</p>
         @else
             <div class="space-y-4">
                 @foreach ($commandesPrecedentes as $commande)
-                    <div class="p-4 border rounded-lg flex justify-between items-center">
+                    <div class="p-4 border border-gray-200 bg-gray-50 rounded-xl flex justify-between items-center hover:shadow transition">
                         <div>
-                            <p class="font-medium">Commande #{{ $commande->id }} - {{ $commande->created_at->format('d/m/Y') }}</p>
-                            <p class="text-sm text-gray-500">Montant : <span class="font-semibold">{{ number_format($commande->montant_total, 2) }} €</span></p>
+                            <p class="font-medium text-[#2C3E50]">
+                                Commande #{{ $commande->id }} - {{ $commande->created_at->format('d/m/Y') }}
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                Montant :
+                                <span class="font-semibold text-[#D4AF37]">{{ number_format($commande->montant_total, 2) }} €</span>
+                            </p>
                         </div>
-                        <a href="{{ route('detail-commandes.show', $commande->id) }}"
-                           class="px-4 py-2 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 transition">
+                        <a href="{{ route('detail-commandes.showClient', $commande->id) }}"
+                           class="px-4 py-2 bg-[#2C3E50] text-white text-sm rounded-lg hover:bg-[#1A252F] transition duration-200">
                             Voir détails
                         </a>
                     </div>
@@ -54,5 +66,9 @@
             </div>
         @endif
     </div>
+
+    <a href="{{ route('panier') }}" class="mt-4 inline-block px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
+        Voir mon panier
+    </a>
 </div>
 @endsection

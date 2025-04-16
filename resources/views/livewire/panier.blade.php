@@ -64,4 +64,9 @@
             </div>
         </div>
     @endif
+
+
+    <a href="{{ route('detail-commandes.index') }}" class="mt-4 inline-block px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
+        Voir mes commandes
+    </a>
 </div>

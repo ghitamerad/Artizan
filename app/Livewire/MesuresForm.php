@@ -45,6 +45,8 @@ class MesuresForm extends Component
         Cache::put($this->cacheKey(), $this->values, now()->addHours(12));
 
         session()->flash('success', 'Vos mesures ont été enregistrées temporairement.');
+
+        return redirect()->route('panier');
     }
 
     private function cacheKey()
