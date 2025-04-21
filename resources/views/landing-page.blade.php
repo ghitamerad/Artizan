@@ -1,76 +1,92 @@
-<!-- resources/views/welcome.blade.php -->
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
+<html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    <!-- Fonts & Tailwind -->
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lebsa Zina</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fdfaf7;
+            font-family: 'Georgia', serif;
+        }
+    </style>
 </head>
+<body class="text-gray-800">
 
-<div class="bg-white text-gray-800">
+    <!-- HERO / INTRO -->
+    <section class="bg-[#fdfaf7] min-h-screen flex items-center justify-center pt-10">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 items-center gap-10">
 
-    <!-- Navigation -->
-    <nav class="flex justify-between items-center px-8 py-4 shadow">
-        <h1 class="text-2xl font-bold text-yellow-600">Lebsa Zina</h1>
-        <div class="space-x-6">
-            <a href="{{ route('panier') }}" class="hover:text-yellow-500 transition">Catalogue</a>
-            <a href="#services" class="hover:text-yellow-500 transition">Services</a>
-            <a href="#contact" class="hover:text-yellow-500 transition">Contact</a>
-        </div>
-    </nav>
+            <!-- Colonne gauche : texte -->
+            <div class="space-y-6">
+                <!-- Logo -->
+                <h1 class="text-5xl font-extrabold text-yellow-800">Lebsa Zina</h1>
 
-    <!-- Section 1: Présentation -->
-    <section class="flex flex-col md:flex-row items-center justify-between px-8 py-16 bg-yellow-50">
-        <div class="md:w-1/2 space-y-6">
-            <h2 class="text-4xl font-bold text-yellow-700">Bienvenue chez Lebsa Zina</h2>
-            <p class="text-lg text-gray-700">Votre boutique spécialisée dans la location, l'achat et la confection sur mesure de tenues traditionnelles élégantes.</p>
-            <a href="{{ route('panier') }}" class="inline-block bg-yellow-500 text-white px-6 py-2 rounded-full shadow hover:bg-yellow-600 transition">Voir les modèles</a>
-        </div>
-        <div class="md:w-1/2 mt-8 md:mt-0">
-            <img src="images/dame.png" alt="Modèle femme" class="rounded-xl shadow-lg">
-        </div>
-    </section>
+                <!-- Titre & description -->
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800">Bienvenue chez <span class="text-yellow-700">Lebsa Zina</span></h2>
+                <p class="text-lg text-gray-700 max-w-md">L’élégance de la tradition algérienne revisitée. Découvrez notre collection unique à la vente, à la location ou en sur-mesure.</p>
 
-    <!-- Section 2: Nos services -->
-    <section id="services" class="px-8 py-16 bg-white text-center">
-        <h2 class="text-3xl font-bold text-yellow-700 mb-8">Nos Services</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-yellow-100 p-6 rounded-lg shadow hover:shadow-lg transition">
-                <h3 class="text-xl font-semibold mb-2">Location de tenues</h3>
-                <p>Louez des tenues traditionnelles pour vos événements spéciaux à petit prix.</p>
+                <!-- Bouton -->
+                <a href="{{ route('home') }}" class="inline-block bg-yellow-700 hover:bg-yellow-800 text-white py-3 px-6 rounded-full shadow-md transition duration-300">
+                    Voir les modèles
+                </a>
             </div>
-            <div class="bg-yellow-100 p-6 rounded-lg shadow hover:shadow-lg transition">
-                <h3 class="text-xl font-semibold mb-2">Vente de modèles uniques</h3>
-                <p>Découvrez des créations originales réalisées par nos couturières partenaires.</p>
-            </div>
-            <div class="bg-yellow-100 p-6 rounded-lg shadow hover:shadow-lg transition">
-                <h3 class="text-xl font-semibold mb-2">Confection sur mesure</h3>
-                <p>Personnalisez votre tenue selon vos goûts et vos mesures exactes.</p>
+
+            <!-- Colonne droite : image -->
+            <div class="flex justify-center md:justify-end">
+                <img src="{{ asset('images/dame.png') }}" alt="Dame élégante" class="w-[380px] md:w-[500px] object-contain rounded-lg">
             </div>
         </div>
     </section>
 
-    <!-- Section 3: Derniers modèles en vogue -->
-    <section id="contact" class="px-8 py-16 bg-yellow-50">
-        <h2 class="text-3xl font-bold text-yellow-700 text-center mb-8">Derniers modèles en vogue</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                <div class="bg-white rounded-lg shadow hover:shadow-lg transition p-4">
-                    <img src="" alt="" class="w-full h-64 object-cover rounded-lg mb-4">
-                    <h3 class="text-lg font-semibold"></h3>
-                    <p class="text-sm text-gray-600"></p>
+    <!-- NOS SERVICES -->
+    <section class="bg-white py-20" id="services">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-semibold text-center mb-14 text-yellow-800">Nos Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+                <div class="space-y-4">
+                    <img src="{{ asset('icons/dress.svg') }}" class="mx-auto h-14" alt="Vente">
+                    <h3 class="text-xl font-medium text-yellow-900">Vente</h3>
                 </div>
+                <div class="space-y-4">
+                    <img src="{{ asset('icons/hanger.svg') }}" class="mx-auto h-14" alt="Location">
+                    <h3 class="text-xl font-medium text-yellow-900">Location</h3>
+                </div>
+                <div class="space-y-4">
+                    <img src="{{ asset('icons/needle.svg') }}" class="mx-auto h-14" alt="Sur-mesure">
+                    <h3 class="text-xl font-medium text-yellow-900">Sur-mesure</h3>
+                </div>
+            </div>
         </div>
     </section>
 
-</div>
+    <!-- FOOTER -->
+    <footer class="bg-yellow-800 text-white py-12">
+        <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <h3 class="text-2xl font-bold mb-4">Lebsa Zina</h3>
+                <p>L’élégance algérienne à portée de main.</p>
+            </div>
+            <div>
+                <h4 class="text-xl font-semibold mb-2">Navigation</h4>
+                <ul class="space-y-1 text-sm">
+                    <li><a href="#" class="hover:underline">Accueil</a></li>
+                    <li><a href="{{ route('home') }}" class="hover:underline">Catalogue</a></li>
+                    <li><a href="#services" class="hover:underline">Services</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-xl font-semibold mb-2">Contact</h4>
+                <ul class="text-sm space-y-1">
+                    <li>📍 Tlemcen, Algérie</li>
+                    <li>📞 +213 555 123 456</li>
+                    <li>✉️ contact@lebsazina.dz</li>
+                </ul>
+            </div>
+        </div>
+        <div class="text-center text-sm text-gray-300 mt-10">© 2025 Lebsa Zina. Tous droits réservés.</div>
+    </footer>
+
+</body>
 </html>
