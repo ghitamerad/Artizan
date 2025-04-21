@@ -162,6 +162,10 @@ Route::get('/mes-commandes/{id}', [DetailCommandeController::class, 'showClient'
 
 Route::get('/patron/telecharger/{id}', [PatronController::class, 'telecharger'])->name('patron.telecharger');
 
+
+Route::get('/landing', function () {
+    return view('landing-page');
+})->name('landing-page');
 //
 require __DIR__ . '/auth.php';
 
