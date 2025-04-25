@@ -40,6 +40,11 @@
                            class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 hover:bg-yellow-400 hover:text-gray-900">
                             📋 Gerer les commandes
                         </a>
+
+                        <a href="{{ route('attributs.index') }}"
+                        class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 hover:bg-yellow-400 hover:text-gray-900">
+                        📅 Gérer les attributs
+                     </a>
                     @endif
 
                     @if($role === 'couturiere')

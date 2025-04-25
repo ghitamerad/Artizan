@@ -18,7 +18,7 @@ class MesureDetailCommandeFactory extends Factory
     {
         return [
             'mesure_id' => \App\Models\Mesure::factory(),
-            'details_commande_id' => \App\Models\detail_commande::factory(),
+            'details_commande_id' => \App\Models\DetailCommande::factory(),
             'valeur_mesure' => fake()->randomFloat(2, 30, 120),
         ];
     }

@@ -87,8 +87,9 @@ class ShowModele extends Component
 
     public function mount($id)
     {
-        $this->modele = Modele::with('categorie')->findOrFail($id);
+        $this->modele = Modele::with(['categorie', 'attributs'])->findOrFail($id);
     }
+
 
     public function render()
     {

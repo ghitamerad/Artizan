@@ -36,10 +36,11 @@
                         Ajouter au panier
                     </button>
                     @if (session()->has('message'))
-    <div class="mt-4 text-center text-green-700 bg-green-100 border border-green-400 px-4 py-2 rounded-lg">
-        {{ session('message') }}
-    </div>
-@endif
+                        <div
+                            class="mt-4 text-center text-green-700 bg-green-100 border border-green-400 px-4 py-2 rounded-lg">
+                            {{ session('message') }}
+                        </div>
+                    @endif
 
 
                     @if ($modele->sur_commande)
@@ -48,10 +49,11 @@
                             Commander sur mesure
                         </button>
                         @if (session()->has('message'))
-    <div class="mt-4 text-center text-green-700 bg-green-100 border border-green-400 px-4 py-2 rounded-lg">
-        {{ session('message') }}
-    </div>
-@endif
+                            <div
+                                class="mt-4 text-center text-green-700 bg-green-100 border border-green-400 px-4 py-2 rounded-lg">
+                                {{ session('message') }}
+                            </div>
+                        @endif
 
                     @endif
 
@@ -65,7 +67,19 @@
                         <li>Catégorie: {{ $modele->categorie->nom }}</li>
                     </ul>
                 </div>
+                @if ($modele->attributs->count())
+    <div class="mt-8 border-t border-gray-200 pt-8">
+        <h2 class="text-xl font-semibold text-[#2C3E50] mb-4">Attributs du modèle</h2>
+        <ul class="space-y-2 text-gray-600">
+            @foreach ($modele->attributs as $attribut)
+                <li>{{ $attribut->nom }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
             </div>
+
 
             <!-- Image du modèle -->
             <div class="p-8">

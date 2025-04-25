@@ -22,6 +22,12 @@ class Modele extends Model
     return $this->hasMany(DetailCommande::class);
 }
 
+public function attributs()
+{
+    return $this->belongsToMany(Attribut::class, 'attribut_modeles', 'modele_id', 'attribut_id');
+}
+
+
 /**
  * Get all of the modele for the modele
  *

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttributController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -166,6 +167,9 @@ Route::get('/patron/telecharger/{id}', [PatronController::class, 'telecharger'])
 Route::get('/landing', function () {
     return view('landing-page');
 })->name('landing-page');
+
+Route::resource('attributs', AttributController::class)->middleware(['auth', 'can:viewAny,App\Models\Attribut']);
+
 //
 require __DIR__ . '/auth.php';
 
