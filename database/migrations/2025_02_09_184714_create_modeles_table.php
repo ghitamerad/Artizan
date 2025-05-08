@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('stock')->default(true);
             $table->boolean('sur_commande')->default(false);
 
+
             $table->timestamps();
         });
     }

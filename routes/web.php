@@ -168,7 +168,35 @@ Route::get('/landing', function () {
     return view('landing-page');
 })->name('landing-page');
 
-Route::resource('attributs', AttributController::class)->middleware(['auth', 'can:viewAny,App\Models\Attribut']);
+use App\Http\Controllers\CategorieController;
+
+Route::get('/categories', [CategorieController::class, 'index'])->name('categories.index');
+Route::get('/categories/create', [CategorieController::class, 'create'])->name('categories.create');
+Route::post('/categories/store', [CategorieController::class, 'store'])->name('categories.store');
+Route::get('/categories/{categorie}/edit', [CategorieController::class, 'edit'])->name('categories.edit');
+Route::put('/categories/{categorie}/update', [CategorieController::class, 'update'])->name('categories.update');
+Route::delete('/categories/{categorie}/destroy', [CategorieController::class, 'destroy'])->name('categories.destroy');
+
+use App\Http\Controllers\AttributValeurController;
+
+Route::prefix('attributs')->name('attributs.')->group(function () {
+    Route::get('/', [AttributController::class, 'index'])->name('index');
+    Route::get('/create', [AttributController::class, 'create'])->name('create');
+    Route::post('/', [AttributController::class, 'store'])->name('store');
+    Route::get('/{attribut}/edit', [AttributController::class, 'edit'])->name('edit');
+    Route::put('/{attribut}', [AttributController::class, 'update'])->name('update');
+    Route::delete('/{attribut}', [AttributController::class, 'destroy'])->name('destroy');
+});
+
+Route::get('/attributs/{attribut}/valeurs/create', [AttributValeurController::class, 'create'])->name('valeurs.create');
+
+Route::prefix('valeurs')->name('valeurs.')->group(function () {
+    Route::post('/', [AttributValeurController::class, 'store'])->name('store');
+
+});
+
+
+
 
 //
 require __DIR__ . '/auth.php';

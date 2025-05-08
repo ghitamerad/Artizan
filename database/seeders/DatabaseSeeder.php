@@ -23,12 +23,6 @@ class DatabaseSeeder extends Seeder
                 'categorie_id' => $categorie->id
             ]);
 
-            // Pour chaque modèle, attache des attributs
-            $modeles->each(function ($modele) {
-                // Crée 2 à 4 attributs pour chaque modèle
-                $attributs = Attribut::factory(rand(1, 3))->create();
-                $modele->attributs()->attach($attributs->pluck('id'));
-            });
         });
 
         // Appel des autres seeders

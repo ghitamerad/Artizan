@@ -10,10 +10,15 @@ class categorie extends Model
     /** @use HasFactory<\Database\Factories\CategorieFactory> */
     use HasFactory;
 
-    protected $fillable = ['nom'];
-    
-    public function modeles()
+    protected $fillable = ['nom', 'image', 'fichier_mesure', 'categorie_id'];
+
+    public function parent()
     {
-        return $this->hasMany(modele::class);
+        return $this->belongsTo(Categorie::class, 'categorie_id');
+    }
+
+    public function enfants()
+    {
+        return $this->hasMany(Categorie::class, 'categorie_id');
     }
 }

@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attribut_modeles', function (Blueprint $table) {
+        Schema::create('attribut_valeur_modele', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('attribut_valeur_id')->constrained()->onDelete('cascade');
             $table->foreignId('modele_id')->constrained()->onDelete('cascade');
-            $table->foreignId('attribut_id')->constrained()->onDelete('cascade');
+
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attribut_modeles');
+        Schema::dropIfExists('attribut_valeur_modele');
     }
 };

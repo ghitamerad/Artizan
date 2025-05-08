@@ -1,70 +1,70 @@
+
 @extends('layouts.admin')
 
 @section('content')
-<div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6">Gestion des Attributs</h2>
+<div class="max-w-4xl mx-auto p-6 space-y-6">
 
-    @if(session('message'))
-        <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
-            {{ session('message') }}
+    {{-- Formulaire de création d'attribut --}}
+    <div class="bg-white p-6 rounded-2xl shadow-md">
+        <h2 class="text-xl font-bold mb-4">Créer un attribut</h2>
+        <form method="POST" action="{{ route('attributs.store') }}" class="space-y-4">
+            @csrf
+            <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
+                <input type="text" name="nom" placeholder="Nom de l'attribut"
+                    class="flex-1 border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required>
+                <label class="inline-flex items-center space-x-2">
+                    <input type="checkbox" name="obligatoire"
+                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring focus:ring-blue-200">
+                    <span>Obligatoire</span>
+                </label>
+                <button type="submit"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition">Ajouter</button>
+            </div>
+        </form>
+    </div>
+
+    {{-- Liste des attributs --}}
+    <div class="space-y-4">
+        @foreach($attributs as $attribut)
+        <div class="bg-white p-4 rounded-xl shadow border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div class="text-lg font-semibold flex items-center gap-2">
+                    {{ $attribut->nom }}
+                    <span class="text-sm text-gray-600">
+                        {{ $attribut->obligatoire ? '✅ Obligatoire' : '❌ Optionnel' }}
+                    </span>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{{ route('valeurs.create', ['attribut' => $attribut->id]) }}" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm">➕ Valeur</a>
+
+                    <a href="{{ route('attributs.edit', $attribut) }}"
+                        class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm">✏️ Modifier</a>
+
+                    <form method="POST" action="{{ route('attributs.destroy', $attribut) }}"
+                        onsubmit="return confirm('Supprimer cet attribut ?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm">🗑️ Supprimer</button>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Liste des valeurs de l'attribut --}}
+            @if($attribut->valeurs->count())
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                @foreach($attribut->valeurs as $valeur)
+                <div class="bg-gray-100 p-2 rounded-md text-gray-800">
+                    {{ $valeur->nom }}
+                </div>
+                @endforeach
+            </div>
+            @else
+            <div class="text-gray-500 text-sm mt-2">Aucune valeur pour cet attribut.</div>
+            @endif
         </div>
-    @endif
-
-    <!-- Formulaire de création -->
-    <form action="{{ route('attributs.store') }}" method="POST" class="mb-6">
-        @csrf
-        <div class="flex space-x-4">
-            <input type="text" name="nom" placeholder="Nom de l'attribut" required
-                   class="flex-1 p-2 border border-gray-300 rounded">
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                Ajouter
-            </button>
-        </div>
-        @error('nom')
-            <div class="text-red-500 mt-1 text-sm">{{ $message }}</div>
-        @enderror
-    </form>
-
-    <!-- Liste des attributs -->
-    <table class="w-full table-auto border-collapse">
-        <thead>
-            <tr class="bg-gray-100 text-left">
-                <th class="p-2">Nom</th>
-                <th class="p-2 text-right">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($attributs as $attribut)
-                <tr class="border-t">
-                    <td class="p-2">{{ $attribut->nom }}</td>
-                    <td class="p-2 text-right space-x-2">
-                        <!-- Formulaire de modification inline -->
-                        <form action="{{ route('attributs.update', $attribut) }}" method="POST" class="inline-block">
-                            @csrf
-                            @method('PUT')
-                            <input type="text" name="nom" value="{{ $attribut->nom }}" required
-                                   class="p-1 border border-gray-300 rounded w-48">
-                            <button class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Modifier</button>
-                        </form>
-
-                        <!-- Supprimer -->
-                        <form action="{{ route('attributs.destroy', $attribut) }}" method="POST" class="inline-block"
-                              onsubmit="return confirm('Supprimer cet attribut ?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Supprimer</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <!-- Retour -->
-    <div class="mt-6">
-        <a href="{{ route('modeles.create') }}" class="text-blue-600 hover:underline">
-            ← Retour à la création de modèle
-        </a>
+        @endforeach
     </div>
 </div>
 @endsection

@@ -22,9 +22,10 @@ class Modele extends Model
     return $this->hasMany(DetailCommande::class);
 }
 
-public function attributs()
+public function attributValeurs()
 {
-    return $this->belongsToMany(Attribut::class, 'attribut_modeles', 'modele_id', 'attribut_id');
+    return $this->belongsToMany(AttributValeur::class)
+                ->wherePivot('approved', 1);
 }
 
 

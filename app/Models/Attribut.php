@@ -4,17 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class Attribut extends Model
 {
     /** @use HasFactory<\Database\Factories\AttributFactory> */
     use HasFactory;
 
-    protected $fillable = ['nom'];
+    protected $fillable = ['nom', 'obligatoire'];
 
-    public function modeles()
-    {
-        return $this->belongsToMany(Modele::class, 'attribut_modeles', 'attribut_id', 'modele_id');
-    }
 
+public function valeurs(): HasMany
+{
+    return $this->hasMany(AttributValeur::class);
+}
 }
