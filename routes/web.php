@@ -199,6 +199,9 @@ Route::delete('/valeurs/{valeur}', [AttributValeurController::class, 'destroy'])
 
 
 
+use App\Http\Controllers\ElementPatronController;
+
+Route::resource('element-patrons', ElementPatronController::class);
 
 
 

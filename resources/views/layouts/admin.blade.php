@@ -64,6 +64,13 @@
                             </svg>
                             Gérer les attributs
                         </a>
+                        <a href="{{ route('element-patrons.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
+                            <!-- Icon: Calendar -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16m-7 4h7M4 18h16"/>
+                            </svg>
+                            Gérer les element du patron
+                        </a>
                     @endif
 
                     @if($role === 'couturiere')
