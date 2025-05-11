@@ -71,6 +71,14 @@
                             </svg>
                             Gérer les element du patron
                         </a>
+
+                        <a href="{{ route('devis.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
+                            <!-- Icon: Clipboard -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 3h-4a2 2 0 00-2 2v14a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2zM5 3a2 2 0 00-2 2v14a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2H5z"/>
+                            </svg>
+                            Gérer les devis
+                        </a>
                     @endif
 
                     @if($role === 'couturiere')

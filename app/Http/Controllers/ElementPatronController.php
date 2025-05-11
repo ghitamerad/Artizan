@@ -18,7 +18,7 @@ class ElementPatronController extends Controller
 
     public function create()
     {
-        $categories = categorie::all();
+        $categories = categorie::leaf()->get();
         $valeurs = AttributValeur::all();
         return view('element_patrons.create', compact('categories', 'valeurs'));
     }
@@ -57,7 +57,7 @@ class ElementPatronController extends Controller
 
     public function edit(ElementPatron $elementPatron)
     {
-        $categories = Categorie::all();
+        $categories = Categorie::leaf()->get();
         $valeurs = AttributValeur::all();
         return view('element_patrons.edit', compact('elementPatron', 'categories', 'valeurs'));
     }

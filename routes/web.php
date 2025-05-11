@@ -203,6 +203,7 @@ use App\Http\Controllers\ElementPatronController;
 
 Route::resource('element-patrons', ElementPatronController::class);
 
+Route::resource('devis', \App\Http\Controllers\DevisController::class);
 
 
 //

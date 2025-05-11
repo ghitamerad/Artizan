@@ -24,8 +24,7 @@ class Devis extends Model
 
     public function attributValeurs()
     {
-        return $this->belongsToMany(AttributValeur::class)
-                    ->wherePivot('approved', 1);
+        return $this->belongsToMany(AttributValeur::class, 'attribut_valeur_devis','devis_id','attribut_valeur_id');
     }
 
 }

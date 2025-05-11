@@ -9,6 +9,23 @@ use Illuminate\Http\Request;
 
 class CategorieController extends Controller
 {
+
+    private function isCircular($categorie, $newParentId)
+{
+    if (is_null($newParentId)) return false;
+
+    $parent = \App\Models\Categorie::find($newParentId);
+
+    while ($parent) {
+        if ($parent->id === $categorie->id) {
+            return true; // boucle détectée
+        }
+        $parent = $parent->parent; // en supposant que la relation "parent" est définie dans le modèle
+    }
+
+    return false;
+}
+
     /**
      * Display a listing of the resource.
      */
@@ -40,6 +57,7 @@ class CategorieController extends Controller
         ]);
 
         $data = $request->only(['nom', 'categorie_id']);
+
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('images/categories', 'public');
@@ -83,6 +101,11 @@ class CategorieController extends Controller
             'image' => 'nullable|image|max:2048',
             'fichier_mesure' => 'nullable|file|max:2048',
         ]);
+
+            // Vérifie si on essaie de créer une association circulaire
+    if ($this->isCircular($categorie, $request->categorie_id)) {
+        return redirect()->back()->withErrors(['categorie_id' => 'Association circulaire détectée.'])->withInput();
+    }
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('images', 'public');

@@ -40,4 +40,9 @@ public function devis()
     return $this->hasMany(Devis::class);
 }
 
+public function scopeLeaf($query)
+{
+    return $query->doesntHave('enfants');
+}
+
 }

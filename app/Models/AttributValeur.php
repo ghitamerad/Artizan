@@ -19,8 +19,7 @@ class AttributValeur extends Model
 
     public function devis()
     {
-        return $this->belongsToMany(Devis::class)
-                    ->wherePivot('approved', 1);
+        return $this->belongsToMany(Devis::class,'attribut_valeur_id','devis_id');
     }
 
     public function modeles()

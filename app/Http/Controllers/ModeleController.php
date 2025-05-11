@@ -24,7 +24,7 @@ class ModeleController extends Controller
     public function create()
     {
         $this->authorize('create', Modele::class);
-        $categories = Categorie::all();
+        $categories = Categorie::leaf()->get();
         $attributs = Attribut::with('valeurs')->get();
         return view('modeles.create', compact('categories', 'attributs'));
     }
@@ -100,7 +100,7 @@ class ModeleController extends Controller
 
     public function edit(Modele $modele)
     {
-        $categories = Categorie::all();
+        $categories = Categorie::leaf()->get();
     
         // On récupère les attributs avec leurs valeurs
         $attributs = Attribut::with('valeurs')->get();
