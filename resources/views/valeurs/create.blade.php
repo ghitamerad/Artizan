@@ -31,10 +31,15 @@
 
         {{-- Attribut lié (readonly) --}}
         <div>
-            <label class="block text-sm font-medium">Attribut lié</label>
-            <input type="text" value="{{ $attribut->nom }}" disabled
-                class="w-full mt-1 bg-gray-100 border rounded-lg px-4 py-2">
-            <input type="hidden" name="attribut_id" value="{{ $attribut->id }}">
+            <label for="attribut_id" class="block text-sm font-medium">Attribut lié</label>
+            <select name="attribut_id" id="attribut_id" required
+                class="w-full mt-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @foreach($tousLesAttributs as $a)
+                    <option value="{{ $a->id }}" {{ $a->id == $attribut->id ? 'selected' : '' }}>
+                        {{ $a->nom }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
         <div class="flex justify-end">

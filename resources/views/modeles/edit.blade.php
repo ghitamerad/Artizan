@@ -24,35 +24,25 @@
         @csrf
         @method('PUT')
 
-        <!-- Attributs -->
+        <!-- Sélection des valeurs d'attributs -->
         <div>
-            <label class="block text-gray-700 font-medium mb-2">Attributs</label>
-            <div class="flex flex-wrap gap-2 mb-3">
-                @foreach ($attributs as $attribut)
-                    <button type="button"
-                            class="px-3 py-1 border border-gray-300 rounded-full text-sm hover:bg-blue-500 hover:text-white transition"
-                            onclick="toggleAttribut({{ $attribut->id }}, '{{ $attribut->nom }}')">
-                        {{ $attribut->nom }}
-                    </button>
-                @endforeach
-                <a href="{{ route('attributs.index') }}"
-                   class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm hover:bg-blue-700 transition-all duration-300">
-                    + Ajouter
-                </a>
-            </div>
-
-            <div id="selected-attributs" class="flex flex-wrap gap-2 mb-2">
-                @foreach ($modele->attributs as $att)
-                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
-                        {{ $att->nom }}
-                        <button type="button" onclick="removeAttribut({{ $att->id }})" class="text-blue-800 font-bold">×</button>
-                        <input type="hidden" name="attributs[]" value="{{ $att->id }}">
-                    </span>
-                @endforeach
-            </div>
-
-            <p class="text-sm text-gray-500 mt-1">Cliquez sur un attribut pour l’ajouter. Cliquez sur la croix pour le retirer.</p>
+            <label class="block text-gray-700 font-medium mb-2">Personnalisation des attributs</label>
+            @foreach ($attributs as $attribut)
+                <div class="mb-4">
+                    <label class="block text-gray-700">{{ $attribut->nom }}</label>
+                    <select name="valeurs[{{ $attribut->id }}]" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <option value="">-- Choisir --</option>
+                        @foreach ($attribut->valeurs as $valeur)
+                            <option value="{{ $valeur->id }}"
+                                {{ in_array($valeur->id, $selectedValeurs) ? 'selected' : '' }}>
+                                {{ $valeur->nom }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            @endforeach
         </div>
+        
 
         <!-- Nom -->
         <div>
@@ -131,27 +121,3 @@
     </form>
 </div>
 @endsection
-
-<script>
-    function toggleAttribut(id, nom) {
-        const existing = document.querySelector(`input[name="attributs[]"][value="${id}"]`);
-        if (existing) return;
-
-        const badge = document.createElement('span');
-        badge.className = 'bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2';
-        badge.innerHTML = `
-            ${nom}
-            <button type="button" onclick="removeAttribut(${id})" class="text-blue-800 font-bold">×</button>
-            <input type="hidden" name="attributs[]" value="${id}">
-        `;
-
-        document.getElementById('selected-attributs').appendChild(badge);
-    }
-
-    function removeAttribut(id) {
-        const input = document.querySelector(`input[name="attributs[]"][value="${id}"]`);
-        if (input) {
-            input.parentElement.remove();
-        }
-    }
-</script>

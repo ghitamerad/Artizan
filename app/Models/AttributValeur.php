@@ -25,7 +25,15 @@ class AttributValeur extends Model
 
     public function modeles()
     {
-        return $this->belongsToMany(Modele::class)
-                    ->wherePivot('approved', 1);
+        return $this->belongsToMany(Modele::class,'attribut_valeur_modele','attribut_valeur_id','modele_id');
     }
+        /**
+     * Les éléments de patron associés à cette valeur
+     */
+    public function elementsPatron()
+    {
+        return $this->hasMany(ElementPatron::class);
+    }
+
+
 }

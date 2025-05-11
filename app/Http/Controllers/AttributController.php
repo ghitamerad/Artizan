@@ -23,7 +23,7 @@ class AttributController extends Controller
     {
         $request->validate([
             'nom' => 'required|string|max:255',
-            'obligatoire' => 'nullable|boolean',
+            'obligatoire' => 'nullable|in:on',
         ]);
 
         Attribut::create([

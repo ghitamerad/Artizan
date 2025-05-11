@@ -10,18 +10,22 @@
     <p><span class="font-semibold">Prix :</span> {{ $modele->prix }} €</p>
     <p><span class="font-semibold">Catégorie :</span> {{ $modele->categorie->nom }}</p>
 
-    @if ($modele->attributs && count($modele->attributs))
-        <div class="mt-3">
-            <span class="font-semibold">Attributs :</span>
-            <div class="flex flex-wrap gap-2 mt-2">
-                @foreach ($modele->attributs as $attribut)
-                    <span class="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
-                        {{ $attribut->nom }}
-                    </span>
-                @endforeach
-            </div>
+    @if ($modele->attributValeurs->count())
+    <div class="mt-4">
+        <span class="font-semibold">Personnalisations :</span>
+        <div class="flex flex-wrap gap-2 mt-2">
+            @foreach ($modele->attributValeurs as $valeur)
+                <div class="inline-flex items-center space-x-2 bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
+                    @if ($valeur->image)
+                        <img src="{{ asset('storage/' . $valeur->image) }}" alt="{{ $valeur->nom }}" class="w-5 h-5 rounded-full object-cover">
+                    @endif
+                    <span>{{ $valeur->attribut->nom }} : {{ $valeur->nom }}</span>
+                </div>
+            @endforeach
         </div>
-    @endif
+    </div>
+@endif
+
 </div>
 
 
@@ -73,6 +77,8 @@
                 @endif
             </ul>
         </div>
+
+
 
         <div class="mt-6">
             <h2 class="text-xl font-bold text-gray-800 mb-3">📏 Mesures associées</h2>

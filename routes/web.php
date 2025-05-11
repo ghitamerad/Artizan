@@ -188,12 +188,16 @@ Route::prefix('attributs')->name('attributs.')->group(function () {
     Route::delete('/{attribut}', [AttributController::class, 'destroy'])->name('destroy');
 });
 
+
+
 Route::get('/attributs/{attribut}/valeurs/create', [AttributValeurController::class, 'create'])->name('valeurs.create');
+Route::post('/attributs/valeurs/store', [AttributValeurController::class, 'store'])->name('valeurs.store');
+Route::get('/valeurs/{valeur}/edit', [AttributValeurController::class, 'edit'])->name('valeurs.edit');
+Route::put('/valeurs/{valeur}', [AttributValeurController::class, 'update'])->name('valeurs.update');
+Route::delete('/valeurs/{valeur}', [AttributValeurController::class, 'destroy'])->name('valeurs.destroy');
 
-Route::prefix('valeurs')->name('valeurs.')->group(function () {
-    Route::post('/', [AttributValeurController::class, 'store'])->name('store');
 
-});
+
 
 
 

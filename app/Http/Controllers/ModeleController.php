@@ -25,110 +25,126 @@ class ModeleController extends Controller
     {
         $this->authorize('create', Modele::class);
         $categories = Categorie::all();
-        $attributs = \App\Models\Attribut::all();
+        $attributs = Attribut::with('valeurs')->get();
         return view('modeles.create', compact('categories', 'attributs'));
     }
 
     public function store(Request $request)
     {
         $this->authorize('create', Modele::class);
-
+    
         // Validation des données entrantes
         $validatedData = $request->validate([
             'nom' => 'required|string|max:255',
             'description' => 'nullable|string',
             'prix' => 'required|integer|min:0',
             'categorie_id' => 'required|exists:categories,id',
-            'stock' => 'required|boolean',
+            'stock' => 'nullable|boolean',
             'sur_commande' => 'nullable|boolean',
             'patron' => 'nullable|file|max:2048',
             'xml' => 'nullable|file|max:2048',
-            'attributs' => 'nullable|array',
-            'attributs.*' => 'exists:attributs,id',
+            'attribut_valeurs' => 'nullable|array',
+            'attribut_valeurs.*' => 'nullable|exists:attribut_valeurs,id',
         ]);
-
-        // Création du modèle dans la base de données
+    
+        // Création du modèle
         $modele = Modele::create([
             'nom' => $validatedData['nom'],
-            'description' => $validatedData['description'],
+            'description' => $validatedData['description'] ?? null,
             'prix' => $validatedData['prix'],
             'categorie_id' => $validatedData['categorie_id'],
-            'stock' => $validatedData['stock'],
-            'sur_commande' => $validatedData['sur_commande'] ?? false,  // Assurer une valeur par défaut pour 'sur_commande'
+            'stock' => $request->has('stock'),
+            'sur_commande' => $request->has('sur_commande'),
         ]);
-
-        // Si des attributs sont sélectionnés, on les lie au modèle via la table pivot
-        if ($request->has('attributs')) {
-            $modele->attributs()->sync($request->attributs);
+    
+        // Lier les valeurs d'attributs sélectionnées
+        if (!empty($validatedData['attribut_valeurs'])) {
+            $valeurIds = array_filter($validatedData['attribut_valeurs']); // enlève les champs vides
+            $modele->attributValeurs()->sync($valeurIds);
         }
-
-        // Gestion du fichier patron (si présent)
+    
+        // Gestion du fichier patron (.val)
         if ($request->hasFile('patron')) {
             $patronName = "modele-{$modele->id}-patron.val";
-            $modele->patron = $request->file('patron')->storeAs('patrons', $patronName, 'public');
+            $path = $request->file('patron')->storeAs('patrons', $patronName, 'public');
+            $modele->patron = $path;
         }
-
-        // Gestion du fichier XML (si présent)
+    
+        // Gestion du fichier XML (.vit/.xml)
         if ($request->hasFile('xml')) {
             $xmlName = "modele-{$modele->id}-mesures.vit";
-            $modele->xml = $request->file('xml')->storeAs('mesures', $xmlName, 'public');
+            $path = $request->file('xml')->storeAs('mesures', $xmlName, 'public');
+            $modele->xml = $path;
         }
-
-        // Sauvegarde du modèle (incluant les fichiers et les relations)
+    
         $modele->save();
-
-        // Redirection vers la liste des modèles avec un message de succès
+    
         return redirect()->route('modeles.index')->with('message', 'Modèle ajouté avec succès !');
     }
+    
 
 
     public function show(Modele $modele)
     {
         $this->authorize('view', $modele);
+        $modele->load([
+            'categorie',
+            'mesures',
+            'attributValeurs.attribut' // pour charger nom de l'attribut lié à chaque valeur
+        ]);
+        
         $mesures = $modele->mesures ?? collect();
+        
         return view('modeles.show', compact('modele', 'mesures'));
     }
 
     public function edit(Modele $modele)
     {
         $categories = Categorie::all();
-        $attributs = Attribut::all(); // 👉 On les récupère ici
-        return view('modeles.edit', compact('modele', 'categories', 'attributs'));
+    
+        // On récupère les attributs avec leurs valeurs
+        $attributs = Attribut::with('valeurs')->get();
+
+        $modele->load('attributValeurs');
+
+    
+        // Les valeurs actuellement liées au modèle
+        $selectedValeurs = $modele->attributValeurs()->pluck('attribut_valeur_id')->toArray();
+    
+        return view('modeles.edit', compact('modele', 'categories', 'attributs', 'selectedValeurs'));
     }
+    
 
 
     public function update(Request $request, Modele $modele)
     {
-        $this->authorize('update', $modele);
-
         $validatedData = $request->validate([
             'nom' => 'required|string|max:255',
             'description' => 'nullable|string',
             'prix' => 'required|integer|min:0',
             'categorie_id' => 'required|exists:categories,id',
+            'valeurs' => 'array',
+            'valeurs.*' => 'exists:attribut_valeurs,id',
             'patron' => 'nullable|file|max:2048',
             'xml' => 'nullable|file|max:2048',
         ]);
-
-            // Gérer les checkboxes (coché = 1, décoché = 0)
-    $validatedData['stock'] = $request->has('stock') ? 1 : 0;
-    $validatedData['sur_commande'] = $request->has('sur_commande') ? 1 : 0;
-
-        $modele->attributs()->sync($request->input('attributs', []));
-
-
+    
+        $validatedData['stock'] = $request->has('stock') ? 1 : 0;
+        $validatedData['sur_commande'] = $request->has('sur_commande') ? 1 : 0;
+    
+        // Fichiers
         if ($request->hasFile('patron')) {
             Storage::disk('public')->delete($modele->patron);
             $patronName = "modele-{$modele->id}-patron.val";
             $modele->patron = $request->file('patron')->storeAs('patrons', $patronName, 'public');
         }
-
+    
         if ($request->hasFile('xml')) {
             Storage::disk('public')->delete($modele->xml);
             $xmlName = "modele-{$modele->id}-mesures.vit";
             $modele->xml = $request->file('xml')->storeAs('mesures', $xmlName, 'public');
         }
-
+    
         $modele->update([
             'nom' => $validatedData['nom'],
             'description' => $validatedData['description'],
@@ -136,19 +152,16 @@ class ModeleController extends Controller
             'categorie_id' => $validatedData['categorie_id'],
             'stock' => $validatedData['stock'],
             'sur_commande' => $validatedData['sur_commande'],
-
+            'patron' => $modele->patron,
+            'xml' => $modele->xml,
         ]);
-
-        // Si les champs sont dans la requête, on les prend. Sinon, on garde la valeur existante :
-$validatedData['stock'] = $request->has('stock') ? 1 : $modele->stock;
-$validatedData['sur_commande'] = $request->has('sur_commande') ? 1 : $modele->sur_commande;
-
-$modele->update($validatedData);
-
-
+    
+        // On synchronise les valeurs d'attributs avec la table pivot
+        $modele->attributValeurs()->sync($validatedData['valeurs'] ?? []);
+    
         return redirect()->route('modeles.index')->with('message', 'Modèle mis à jour avec succès !');
     }
-
+    
     public function destroy(Modele $modele)
     {
         $this->authorize('delete', $modele);

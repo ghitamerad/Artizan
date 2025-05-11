@@ -12,9 +12,9 @@ class AttributValeurController extends Controller
  // Formulaire d'ajout
  public function create(Attribut $attribut)
  {
-     return view('valeurs.create', compact('attribut'));
+     $tousLesAttributs = Attribut::all();
+     return view('valeurs.create', compact('attribut', 'tousLesAttributs'));
  }
-
  // Enregistrement de la valeur
  public function store(Request $request)
  {
@@ -22,8 +22,8 @@ class AttributValeurController extends Controller
          'nom' => 'required|string|max:255',
          'attribut_id' => 'required|exists:attributs,id',
          'image' => 'nullable|image|max:2048',
-         'custom' => 'nullable|boolean',
-     ]);
+         'custom' => 'nullable|in:on',
+        ]);
 
      $data = [
          'nom' => $request->nom,
@@ -54,7 +54,7 @@ class AttributValeurController extends Controller
         $request->validate([
             'nom' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048',
-            'custom' => 'nullable|boolean',
+            'custom' => 'nullable|in:on',
         ]);
 
         $valeur->nom = $request->nom;
@@ -70,7 +70,7 @@ class AttributValeurController extends Controller
 
         $valeur->save();
 
-        return redirect()->route('attributs.show', $valeur->attribut_id)->with('success', 'Valeur mise à jour.');
+        return redirect()->route('attributs.index')->with('success', 'Valeur mise à jour.');
     }
 
     // Supprime une valeur
@@ -83,6 +83,6 @@ class AttributValeurController extends Controller
 
         $valeur->delete();
 
-        return redirect()->route('attributs.show', $valeur->attribut_id)->with('success', 'Valeur supprimée.');
+        return redirect()->route('attributs.index')->with('success', 'Valeur supprimée.');
     }
 }

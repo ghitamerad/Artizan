@@ -18,25 +18,23 @@ class Modele extends Model
     }
 
     public function detailsCommandes()
-{
-    return $this->hasMany(DetailCommande::class);
-}
+    {
+        return $this->hasMany(DetailCommande::class);
+    }
 
-public function attributValeurs()
-{
-    return $this->belongsToMany(AttributValeur::class)
-                ->wherePivot('approved', 1);
-}
+    public function attributValeurs()
+    {
+        return $this->belongsToMany(AttributValeur::class, 'attribut_valeur_modele', 'modele_id', 'attribut_valeur_id')->withTimestamps();
+    }
 
 
-/**
- * Get all of the modele for the modele
- *
- * @return \Illuminate\Database\Eloquent\Relations\HasMany
- */
-public function mesures(): HasMany
-{
-    return $this->hasMany(mesure::class);
-}
-
+    /**
+     * Get all of the modele for the modele
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function mesures(): HasMany
+    {
+        return $this->hasMany(mesure::class);
+    }
 }
