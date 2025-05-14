@@ -205,6 +205,9 @@ Route::resource('element-patrons', ElementPatronController::class);
 
 Route::resource('devis', \App\Http\Controllers\DevisController::class);
 
+Route::get('/test-image', function () {
+    return asset('storage/modeles/modele-1747207825.jpg');
+});
 
 //
 require __DIR__ . '/auth.php';

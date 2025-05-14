@@ -67,16 +67,26 @@
                         <li>Catégorie: {{ $modele->categorie->nom }}</li>
                     </ul>
                 </div>
-                @if ($modele->attributs->count())
-    <div class="mt-8 border-t border-gray-200 pt-8">
-        <h2 class="text-xl font-semibold text-[#2C3E50] mb-4">Attributs du modèle</h2>
-        <ul class="space-y-2 text-gray-600">
-            @foreach ($modele->attributs as $attribut)
-                <li>{{ $attribut->nom }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+                @if ($modele->attributValeurs->count())
+                <div class="mt-8 border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-[#2C3E50] mb-4">Personnalisation du modèle</h2>
+                    <div class="space-y-4">
+                        @foreach ($modele->attributValeurs->groupBy(fn($valeur) => $valeur->attribut->nom) as $nomAttribut => $valeurs)
+                            <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                                <h3 class="text-[#D4AF37] font-semibold text-md mb-2">{{ $nomAttribut }}</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach ($valeurs as $valeur)
+                                        <span class="bg-[#2C3E50] text-white px-3 py-1 rounded-full text-sm">
+                                            {{ $valeur->nom }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
 
             </div>
 
@@ -84,10 +94,9 @@
             <!-- Image du modèle -->
             <div class="p-8">
                 @if ($modele->image)
-                    <img src="{{ Storage::url($modele->image) }}" alt="{{ $modele->nom }}"
-                        class="w-full h-[300px] object-cover rounded-lg shadow-md">
+                <img src="{{ asset('storage/' . $modele->image) }}" alt="image du modèle" class="w-full h-[400px] w-[400px] object-cover rounded-lg shadow-md">
                 @else
-                    <div class="w-full h-[300px] bg-gray-200 flex items-center justify-center rounded-lg">
+                    <div class="w-full h-[400px] bg-gray-200 flex items-center justify-center rounded-lg">
                         <svg class="h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
