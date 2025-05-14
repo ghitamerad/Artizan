@@ -78,7 +78,7 @@
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-4">
                             <h3 class="text-xl font-semibold text-[#2C3E50]">{{ $modele->nom }}</h3>
-                            <span class="bg-[#C19B2C] text-white px-3 py-1 rounded-full text-sm">
+                            <span class="bg-[#EDEDED] border border-[#05335E] text-[#05335E] px-3 py-1 rounded-full text-sm">
                                 {{ $modele->categorie->nom }}
                             </span>
                         </div>
