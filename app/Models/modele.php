@@ -10,7 +10,7 @@ class Modele extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'description', 'prix', 'categorie_id', 'patron', 'xml', 'stock', 'sur_commande'];
+    protected $fillable = ['nom', 'description', 'prix', 'categorie_id', 'patron', 'xml', 'stock', 'sur_commande','est_phare','ordre_affichage', ];
 
     public function categorie()
     {
@@ -18,18 +18,23 @@ class Modele extends Model
     }
 
     public function detailsCommandes()
-{
-    return $this->hasMany(DetailCommande::class);
-}
+    {
+        return $this->hasMany(DetailCommande::class);
+    }
 
-/**
- * Get all of the modele for the modele
- *
- * @return \Illuminate\Database\Eloquent\Relations\HasMany
- */
-public function mesures(): HasMany
-{
-    return $this->hasMany(mesure::class);
-}
+    public function attributValeurs()
+    {
+        return $this->belongsToMany(AttributValeur::class, 'attribut_valeur_modele', 'modele_id', 'attribut_valeur_id')->withTimestamps();
+    }
 
+
+    /**
+     * Get all of the modele for the modele
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function mesures(): HasMany
+    {
+        return $this->hasMany(mesure::class);
+    }
 }

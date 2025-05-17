@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('mesure_id')->constrained('mesures')->onDelete('cascade');
             $table->foreignId('details_commande_id')->constrained('detail_commandes')->onDelete('cascade');
             $table->decimal('valeur_mesure', 8, 2); // Valeur réelle saisie par le client
-            $table->decimal('valeur_par_defauts', 8, 2); // Valeur 
+            $table->decimal('valeur_par_defauts', 8, 2); // Valeur
             $table->string('variable_xml'); // Valeur réelle saisie par le client
             $table->timestamps();
         });

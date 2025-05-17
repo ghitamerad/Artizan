@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Attribut;
 use Livewire\Component;
 use App\Models\Modele;
 use Illuminate\Support\Facades\Cache;
@@ -87,8 +88,9 @@ class ShowModele extends Component
 
     public function mount($id)
     {
-        $this->modele = Modele::with('categorie')->findOrFail($id);
+        $this->modele = Modele::with(['categorie', 'attributValeurs.attribut'])->findOrFail($id);
     }
+
 
     public function render()
     {

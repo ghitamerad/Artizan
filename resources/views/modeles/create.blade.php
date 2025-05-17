@@ -20,10 +20,38 @@
         </div>
     @endif
 
-    <form action="{{ route('modeles.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+    <form action="{{ route('modeles.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
 
-        <!-- Nom du modèle -->
+        <!-- Valeurs des Attributs -->
+        <div>
+            <label class="block text-gray-700 font-medium mb-2">Choix des options (valeurs d'attributs)</label>
+            <div class="space-y-4">
+                @foreach($attributs as $attribut)
+                <div class="mb-3">
+                    <label class="form-label">{{ $attribut->nom }}</label>
+                    <select name="attribut_valeurs[{{ $attribut->id }}]" class="form-select">
+                        <option value="">-- Aucun(e) --</option>
+                        @foreach($attribut->valeurs as $valeur)
+                            <option value="{{ $valeur->id }}"
+                                {{ old("attribut_valeurs.{$attribut->id}") == $valeur->id ? 'selected' : '' }}>
+                                {{ $valeur->valeur }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            @endforeach
+            </div>
+
+            <div class="mt-4">
+                <a href="{{ route('attributs.index') }}"
+                   class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition duration-300">
+                    + Gérer les attributs
+                </a>
+            </div>
+        </div>
+
+        <!-- Nom -->
         <div>
             <label for="nom" class="block text-gray-700 font-medium">Nom du modèle</label>
             <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required
@@ -58,6 +86,13 @@
             </select>
         </div>
 
+        <!-- Image -->
+<div>
+    <label for="image" class="block text-gray-700 font-medium">Image du modèle</label>
+    <input type="file" id="image" name="image" accept="image/*"
+           class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+</div>
+
         <!-- Stock -->
         <div class="flex items-center space-x-2">
             <input type="checkbox" id="stock" name="stock" value="1" {{ old('stock', true) ? 'checked' : '' }}
@@ -72,17 +107,17 @@
             <label for="sur_commande" class="text-gray-700">Disponible sur commande</label>
         </div>
 
-        <!-- Upload du patron (.val) -->
+        <!-- Patron (.val) -->
         <div>
             <label for="patron" class="block text-gray-700 font-medium">Fichier Patron (.val)</label>
-            <input type="file" id="patron" name="patron" accept=".val" required
+            <input type="file" id="patron" name="patron" accept=".val"
                    class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
         </div>
 
-        <!-- Upload du fichier de mesures (.xml ou .vit) -->
+        <!-- Fichier mesures (.xml/.vit) -->
         <div>
             <label for="xml" class="block text-gray-700 font-medium">Fichier de Mesures (.xml ou .vit)</label>
-            <input type="file" id="xml" name="xml" accept=".xml,.vit" required
+            <input type="file" id="xml" name="xml" accept=".xml,.vit"
                    class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
         </div>
 

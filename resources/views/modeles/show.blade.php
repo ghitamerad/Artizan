@@ -4,11 +4,30 @@
     <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
         <h1 class="text-2xl font-bold text-gray-800 mb-4">{{ $modele->nom }}</h1>
 
-        <div class="mb-6 p-4 bg-gray-100 rounded-lg">
-            <p><span class="font-semibold">Description :</span> {{ $modele->description }}</p>
-            <p><span class="font-semibold">Prix :</span> {{ $modele->prix }} €</p>
-            <p><span class="font-semibold">Catégorie :</span> {{ $modele->categorie->nom }}</p>
+<!-- Description + Attributs -->
+<div class="mb-6 p-4 bg-gray-100 rounded-lg">
+    <p><span class="font-semibold">Description :</span> {{ $modele->description }}</p>
+    <p><span class="font-semibold">Prix :</span> {{ $modele->prix }} €</p>
+    <p><span class="font-semibold">Catégorie :</span> {{ $modele->categorie->nom }}</p>
+
+    @if ($modele->attributValeurs->count())
+    <div class="mt-4">
+        <span class="font-semibold">Personnalisations :</span>
+        <div class="flex flex-wrap gap-2 mt-2">
+            @foreach ($modele->attributValeurs as $valeur)
+                <div class="inline-flex items-center space-x-2 bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
+                    @if ($valeur->image)
+                        <img src="{{ asset('storage/' . $valeur->image) }}" alt="{{ $valeur->nom }}" class="w-5 h-5 rounded-full object-cover">
+                    @endif
+                    <span>{{ $valeur->attribut->nom }} : {{ $valeur->nom }}</span>
+                </div>
+            @endforeach
         </div>
+    </div>
+@endif
+
+</div>
+
 
         <!-- Bouton Générer le Patron -->
         <div class="mt-4">
@@ -19,7 +38,6 @@
                 </button>
             </form>
         </div>
-
 
         <!-- Section des fichiers associés -->
         <div class="mt-6 bg-gray-100 p-4 rounded-lg">
@@ -59,6 +77,8 @@
                 @endif
             </ul>
         </div>
+
+
 
         <div class="mt-6">
             <h2 class="text-xl font-bold text-gray-800 mb-3">📏 Mesures associées</h2>

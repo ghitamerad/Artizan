@@ -23,6 +23,8 @@ class ModeleFactory extends Factory
             'prix' => fake()->randomFloat(2, 10, 100),
             'xml' => '<xml><data>' . fake()->word() . '</data></xml>',
             'patron' => fake()->word(),
+            'stock' => $this->faker->boolean(90),
+            'sur_commande' => $this->faker->boolean(10),
         ];
     }
 }

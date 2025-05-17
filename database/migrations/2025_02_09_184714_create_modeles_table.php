@@ -21,6 +21,8 @@ return new class extends Migration
             $table->text('xml')->nullable(); // Fiche de mesures sous forme XML
             $table->boolean('stock')->default(true);
             $table->boolean('sur_commande')->default(false);
+            $table->string('image')->nullable();
+
 
             $table->timestamps();
         });
