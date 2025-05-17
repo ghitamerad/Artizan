@@ -17,7 +17,6 @@ use App\Livewire\CouturiereDashboard;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\AttributValeurController;
 use App\Http\Controllers\ElementPatronController;
-use App\Models\Modele as ModeleModel; // Renommé pour éviter conflit avec le contrôleur ModeleController et pour la route landing
 
 /*
 |--------------------------------------------------------------------------
@@ -36,7 +35,7 @@ Route::get('/', App\Livewire\Home::class)->name('home');
 
 // Route pour la nouvelle Landing Page
 Route::get('/landing', function () {
-   
+
     return view('landing-page');
 })->name('landing-page');
 
@@ -60,14 +59,12 @@ Route::middleware(['auth', 'admin']) // Assurez-vous d'avoir un middleware 'admi
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });
-// Note: Route::post('/admin/users/store', [UserController::class, 'store'])->name('admin.users.store');
-// La ligne ci-dessus semble redondante si vous avez déjà admin.users.store dans le groupe préfixé.
-// Je la laisse commentée pour l'instant. Si elle est nécessaire pour une raison spécifique, décommentez-la.
-
 
 // Routes pour les Modèles (CRUD par admin/gérante)
 Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () { // Adaptez le middleware si besoin
+    Route::get('/modeles', [ModeleController::class, 'index'])->name('modeles.index'); // Liste des modèles
     Route::get('/modeles/create', [ModeleController::class, 'create'])->name('modeles.create');
+    Route::get('/modeles/{modele}/show', [ModeleController::class, 'show'])->name('modeles.show'); // Affichage d'un modèle spécifique via Livewire
     Route::post('/modeles', [ModeleController::class, 'store'])->name('modeles.store'); // Changé de /modeles/store
     Route::get('/modeles/{modele}/edit', [ModeleController::class, 'edit'])->name('modeles.edit');
     Route::put('/modeles/{modele}', [ModeleController::class, 'update'])->name('modeles.update'); // Changé de /modeles/{modele}/update
@@ -75,8 +72,10 @@ Route::middleware(['auth', 'can:viewAny,App\Models\Modele'])->group(function () 
 });
 
 // Routes publiques pour voir les modèles
-Route::get('/modeles', [ModeleController::class, 'index'])->name('modeles.index'); // Liste des modèles
-Route::get('/modeles/{modele}', [App\Livewire\ShowModele::class])->name('modele.show'); // Affichage d'un modèle spécifique via Livewire
+use App\Livewire\ShowModele;
+
+Route::get('/modele/{id}', ShowModele::class)->name('modele.show');
+
 
 // Routes pour les Commandes (authentification requise)
 Route::middleware('auth')->group(function () {
@@ -166,12 +165,13 @@ Route::middleware(['auth']) // Ajoutez une policy ou un middleware plus spécifi
     Route::put('/{attribut}', [AttributController::class, 'update'])->name('update');
     Route::delete('/{attribut}', [AttributController::class, 'destroy'])->name('destroy');
 
-    // Valeurs d'attributs
-    Route::get('/{attribut}/valeurs/create', [AttributValeurController::class, 'create'])->name('valeurs.create');
-    Route::post('/valeurs', [AttributValeurController::class, 'store'])->name('valeurs.store'); // Changé de /attributs/valeurs/store pour être plus RESTful
 });
-// Routes pour les Valeurs d'Attributs (suite, hors du préfixe attributs si nécessaire ou gardez-les groupées)
+
+
+
 Route::middleware(['auth'])->group(function () { // Ajoutez une policy ou un middleware
+    Route::get('/{attribut}/valeurs/create', [AttributValeurController::class, 'create'])->name('valeurs.create');
+Route::post('/valeurs', [AttributValeurController::class, 'store'])->name('valeurs.store');
     Route::get('/valeurs/{valeur}/edit', [AttributValeurController::class, 'edit'])->name('valeurs.edit');
     Route::put('/valeurs/{valeur}', [AttributValeurController::class, 'update'])->name('valeurs.update');
     Route::delete('/valeurs/{valeur}', [AttributValeurController::class, 'destroy'])->name('valeurs.destroy');
@@ -194,11 +194,6 @@ Route::post('/logout', function () {
 })->name('logout');
 
 
-// Route de test pour l'image (peut être supprimée en production)
-Route::get('/test-image', function () {
-    return asset('storage/modeles/modele-1747207825.jpg'); // Vérifiez que ce fichier existe
-});
 
 
-// Fichier des routes d'authentification Laravel Breeze/Jetstream
 require __DIR__ . '/auth.php';

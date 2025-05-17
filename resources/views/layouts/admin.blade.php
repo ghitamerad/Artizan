@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de bord</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+
     @livewireStyles
 </head>
 <body class="bg-gray-100">
@@ -12,126 +16,63 @@
 
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-white text-gray-800 border-r border-gray-200 flex flex-col shadow">
+        <aside class="w-64 bg-[#05335E] text-white border-r border-gray-200 flex flex-col">
             <!-- Logo / Titre -->
-            <div class="px-6 py-6 text-center font-bold text-xl text-gray-900 border-b border-gray-200">
+            <div class="px-6 py-6 text-center font-bold text-xl border-b border-gray-200">
                 Lebsa Zina
             </div>
 
             <!-- Navigation -->
             <nav class="flex-1 px-4 py-6 space-y-2 text-sm font-medium">
                 @if(Auth::check())
-                    @php
-                        $role = Auth::user()->role;
-                    @endphp
+                    @php $role = Auth::user()->role; @endphp
 
+                    <!-- Admin uniquement -->
                     @if($role === 'admin')
-                        <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
-                            <!-- Icon: Users -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.403 4.209a1 1 0 01-.747.791l-4.65 1.465a1 1 0 01-1.22-.828L12 16m9 0c0 1.105-.895 2-2 2h-3m4-2c0-3.866-3.134-7-7-7H7a7 7 0 00-7 7v5a7 7 0 007 7h10a7 7 0 007-7v-5z"/>
-                            </svg>
+                        <x-nav-link :href="route('admin.users.index')" icon="user" :active="request()->routeIs('admin.users.*')">
                             Gestion des utilisateurs
-                        </a>
+                        </x-nav-link>
                     @endif
 
-                    @if($role === 'admin' || $role === 'gerante')
-                        <a href="{{ route('modeles.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
-                            <!-- Icon: Dress -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v6h3V3H3zm0 6h3v6H3zm0 6h3v6H3zm18-12h-3v6h3zm0 6h-3v6h3zm0 6h-3v6h3z"/>
-                            </svg>
+                    <!-- Admin & Gérante -->
+                    @if(in_array($role, ['admin', 'gerante']))
+                        <x-nav-link :href="route('modeles.index')" icon="scissors" :active="request()->routeIs('modeles.*')">
                             Gérer les modèles
-                        </a>
-                        <a href="{{ route('commandes.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
-                            <!-- Icon: Clipboard -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 3h-4a2 2 0 00-2 2v14a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2zM5 3a2 2 0 00-2 2v14a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2H5z"/>
-                            </svg>
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('commandes.index')" icon="clipboard-list" :active="request()->routeIs('commandes.*')">
                             Gérer les commandes
-                        </a>
-                        <a href="{{ route('categories.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
-                            <!-- Icon: Clipboard -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 3h-4a2 2 0 00-2 2v14a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2zM5 3a2 2 0 00-2 2v14a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2H5z"/>
-                            </svg>
-                            gerer categorie
-                        </a>
-                        <a href="{{ route('attributs.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
-                            <!-- Icon: Calendar -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16m-7 4h7M4 18h16"/>
-                            </svg>
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('categories.index')" icon="tag" :active="request()->routeIs('categories.*')">
+                            Gérer les catégories
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('attributs.index')" icon="adjustments-horizontal" :active="request()->routeIs('attributs.*')">
                             Gérer les attributs
-                        </a>
-                        <a href="{{ route('element-patrons.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
-                            <!-- Icon: Calendar -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16m-7 4h7M4 18h16"/>
-                            </svg>
-                            Gérer les element du patron
-                        </a>
+                        </x-nav-link>
 
-                        <a href="{{ route('devis.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
-                            <!-- Icon: Clipboard -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 3h-4a2 2 0 00-2 2v14a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2zM5 3a2 2 0 00-2 2v14a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2H5z"/>
-                            </svg>
+                        <x-nav-link :href="route('element-patrons.index')" icon="puzzle" :active="request()->routeIs('element-patrons.*')">
+                            Éléments de patron
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('devis.index')" icon="mail-question" :active="request()->routeIs('devis.*')">
                             Gérer les devis
-                        </a>
+                        </x-nav-link>
                     @endif
-
-                    @if($role === 'couturiere')
-                        <a href="{{ route('couturiere.dashboard') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
-                            <!-- Icon: Clipboard Check -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-4 4-4-4m0 0V7m4 4H7"/>
-                            </svg>
-                            Valider les commandes
-                        </a>
-                        <a href="{{ route('couturiere.commandes') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
-                            <!-- Icon: Thread -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h6m-6 4h6m-6 4h6"/>
-                            </svg>
-                            Mes commandes
-                        </a>
-                        <a href="#" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
-                            <!-- Icon: Calendar -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16m-7 4h7M4 18h16"/>
-                            </svg>
-                            Mon planning
-                        </a>
-                    @endif
-
-                    <a href="{{ route('profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-900 transition">
-                        <!-- Icon: Gear -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v18m9-9H3"/>
-                        </svg>
-                        Mon profil
-                    </a>
-
-                    <form method="POST" action="{{ route('logout') }}" class="pt-4">
-                        @csrf
-                        <button type="submit"
-                                class="w-full flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
-                            <!-- Icon: Exit -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9l4-4-4-4m0 0H7m4 4l-4 4"/>
-                            </svg>
-                            Déconnexion
-                        </button>
-                    </form>
                 @endif
             </nav>
         </aside>
 
         <!-- Contenu principal -->
-        <main class="flex-1 p-10 overflow-y-auto">
+        <main class="flex-1 p-6 overflow-y-auto">
             @yield('content')
         </main>
     </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
 </body>
 </html>

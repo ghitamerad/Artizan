@@ -1,4 +1,4 @@
-@props(['active'])
+{{-- @props(['active'])
 
 @php
 $classes = ($active ?? false)
@@ -8,4 +8,28 @@ $classes = ($active ?? false)
 
 <a {{ $attributes->merge(['class' => $classes]) }}>
     {{ $slot }}
+</a> --}}
+@props(['href', 'icon' => null, 'active' => false])
+
+<a href="{{ $href }}"
+   class="group relative flex items-center px-4 py-2 rounded-full overflow-visible transition-colors duration-300">
+
+    {{-- Fond blanc débordant animé --}}
+    <span class="absolute top-0 left-0 h-full w-[120%] z-0 transition-transform duration-300 ease-in-out
+        transform origin-left rounded-full
+        {{ $active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100' }}
+        bg-gray-100">
+    </span>
+
+    {{-- Contenu du bouton --}}
+    <span class="relative z-10 flex items-center gap-2
+        {{ $active ? 'text-[#C19B2C]' : 'text-white group-hover:text-[#C19B2C]' }}">
+        @if ($icon)
+            <i data-lucide="{{ $icon }}" class="w-4 h-4"></i>
+        @endif
+        {{ $slot }}
+    </span>
 </a>
+
+
+
