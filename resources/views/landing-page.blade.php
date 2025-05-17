@@ -109,7 +109,7 @@
                 <p class="text-lg text-slate-700 max-w-2xl mx-auto">Laissez-vous séduire par une sélection de nos créations les plus convoitées.</p>
             </div>
 
-            @if(isset($modelesPhares) && $modelesPhares->count() > 0)
+            <!-- @if(isset($modelesPhares) && $modelesPhares->count() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                 @foreach($modelesPhares->take(4) as $modele)
                 <div class="group bg-brand-beige rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1.5 overflow-hidden flex flex-col">
@@ -144,7 +144,7 @@
             </div>
             @else
             <p class="text-center text-slate-600 py-10">Nos inspirations du moment seront bientôt dévoilées. Revenez nous voir !</p>
-            @endif
+            @endif -->
         </div>
     </section>
 

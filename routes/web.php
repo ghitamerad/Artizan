@@ -36,11 +36,8 @@ Route::get('/', App\Livewire\Home::class)->name('home');
 
 // Route pour la nouvelle Landing Page
 Route::get('/landing', function () {
-    $modelesPhares = ModeleModel::where('est_phare', true) // Assurez-vous que cette colonne existe
-                          ->orderBy('ordre_affichage', 'asc') // Assurez-vous que cette colonne existe si vous l'utilisez
-                          ->take(5)
-                          ->get();
-    return view('landing-page', compact('modelesPhares'));
+   
+    return view('landing-page');
 })->name('landing-page');
 
 
