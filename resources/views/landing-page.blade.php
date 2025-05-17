@@ -62,13 +62,13 @@
                     Achat, confection sur mesure et bientôt location pour sublimer tous vos événements.
                 </p>
                 <a href="{{ route('home') }}"
-                   class="inline-block bg-brand-blue hover:bg-brand-gold text-white hover:text-brand-blue py-3.5 px-10 sm:py-4 sm:px-12 rounded-lg shadow-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 border-2 border-transparent hover:border-brand-blue">
+                   class="inline-block bg-brand-blue hover:bg-[#C19B2C] text-white hover:text-white  py-3.5 px-10 sm:py-4 sm:px-12 rounded-lg shadow-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 border-2 border-transparent hover:border-brand-blue">
                     Explorer les Collections
                 </a>
             </div>
             <div class="flex justify-center md:justify-end">
                 <img src="{{ asset('images/dame.png') }}" alt="Dame élégante en tenue traditionnelle Lebsa Zina"
-                     class="w-[350px] sm:w-[380px] md:w-[450px] lg:w-[500px] object-contain rounded-lg shadow-xl transform transition-transform duration-500 hover:scale-105">
+                     class="w-[350px] sm:w-[380px] md:w-[450px] lg:w-[500px] object-contain rounded-lg transform transition-transform duration-500 hover:scale-105">
             </div>
         </div>
     </section>
