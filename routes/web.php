@@ -39,6 +39,11 @@ Route::get('/landing', function () {
     return view('landing-page');
 })->name('landing-page');
 
+Route::get('/prod', function () {
+
+    return view('prod');
+})->name('prod');
+
 
 // Dashboard et Profil (authentification requise)
 Route::view('dashboard', 'dashboard')
