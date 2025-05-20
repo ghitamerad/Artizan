@@ -7,6 +7,7 @@ use App\Models\categorie;
 use App\Models\ElementPatron;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ElementPatronController extends Controller
 {
@@ -33,11 +34,11 @@ class ElementPatronController extends Controller
 
         $file = $request->file('fichier_patron');
         $valeur = AttributValeur::findOrFail($request->attribut_valeur_id);
-    
-        // Nettoyer le nom (ex : "col en V" → "col-en-v")
-        $filename = Str::slug($valeur->nom) . '.' . $file->getClientOriginalExtension();
-    
-        // Stocker le fichier avec un nom personnalisé
+        $categorie = Categorie::findOrFail($request->categorie_id);
+
+        // Générer le nom du fichier : categorie_nom + attribut_valeur_nom
+        $filename = Str::slug($categorie->nom . '_' . $valeur->valeur) . '.' . $file->getClientOriginalExtension();
+
         $path = $file->storeAs('element-patrons', $filename, 'public');
 
         ElementPatron::create([
@@ -48,6 +49,7 @@ class ElementPatronController extends Controller
 
         return redirect()->route('element-patrons.index')->with('success', 'Élément ajouté avec succès.');
     }
+
 
     public function show(ElementPatron $elementPatron)
     {
@@ -70,26 +72,36 @@ class ElementPatronController extends Controller
             'fichier_patron' => 'nullable|file',
         ]);
 
+        $elementPatron->categorie_id = $request->categorie_id;
+        $elementPatron->attribut_valeur_id = $request->attribut_valeur_id;
+
         if ($request->hasFile('fichier_patron')) {
             $file = $request->file('fichier_patron');
             $valeur = AttributValeur::findOrFail($request->attribut_valeur_id);
-    
-            $filename = Str::slug($valeur->nom) . '.' . $file->getClientOriginalExtension();
+            $categorie = Categorie::findOrFail($request->categorie_id);
+
+            $filename = Str::slug($categorie->nom . '_' . $valeur->valeur) . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('element-patrons', $filename, 'public');
-    
+
             $elementPatron->fichier_patron = $path;
         }
 
-        $elementPatron->categorie_id = $request->categorie_id;
-        $elementPatron->attribut_valeur_id = $request->attribut_valeur_id;
         $elementPatron->save();
 
         return redirect()->route('element-patrons.index')->with('success', 'Élément modifié avec succès.');
     }
 
+
     public function destroy(ElementPatron $elementPatron)
     {
+        // Supprimer le fichier du disque s'il existe
+        if ($elementPatron->fichier_patron && Storage::disk('public')->exists($elementPatron->fichier_patron)) {
+            Storage::disk('public')->delete($elementPatron->fichier_patron);
+        }
+
+        // Supprimer l'enregistrement de la base de données
         $elementPatron->delete();
+
         return redirect()->route('element-patrons.index')->with('success', 'Élément supprimé.');
     }
 }

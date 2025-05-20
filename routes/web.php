@@ -16,6 +16,7 @@ use App\Livewire\SurMesure;
 use App\Livewire\CouturiereDashboard;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\AttributValeurController;
+use App\Http\Controllers\DevisController;
 use App\Http\Controllers\ElementPatronController;
 
 /*
@@ -186,7 +187,7 @@ Route::post('/valeurs', [AttributValeurController::class, 'store'])->name('valeu
 // Routes pour ElementPatron et Devis (Resource controllers)
 Route::middleware('auth')->group(function(){ // Ajoutez une policy ou un middleware
     Route::resource('element-patrons', ElementPatronController::class);
-    Route::resource('devis', \App\Http\Controllers\DevisController::class);
+    Route::resource('devis', DevisController::class);
 });
 
 
@@ -199,6 +200,7 @@ Route::post('/logout', function () {
 })->name('logout');
 
 
+Route::post('/devis/{devis}/generer-patron', [DevisController::class, 'genererPatron'])->name('devis.genererPatron');
 
 
 require __DIR__ . '/auth.php';

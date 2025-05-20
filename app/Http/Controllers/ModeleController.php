@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attribut;
 use App\Models\Modele;
 use App\Models\Categorie;
+use App\Models\Devis;
 use App\Models\mesure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,12 +22,18 @@ class ModeleController extends Controller
         return view('modeles.index', compact('modeles'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $this->authorize('create', Modele::class);
         $categories = Categorie::leaf()->get();
         $attributs = Attribut::with('valeurs')->get();
-        return view('modeles.create', compact('categories', 'attributs'));
+        $attributValeurs = collect();
+
+        if ($request->has('devi_id')) {
+            $devi = Devis::with('attributValeurs.attribut')->findOrFail($request->devi_id);
+            $attributValeurs = $devi->attributValeurs;
+        }
+        return view('modeles.create', compact('categories', 'attributs','attributValeurs'));
     }
 
     public function store(Request $request)

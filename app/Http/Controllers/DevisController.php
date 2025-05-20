@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Storage;
 
 class DevisController extends Controller
 {
+    public function genererPatron()
+    {
+//
+    }
+
     public function index()
     {
         $devis = Devis::with('categorie')->latest()->get();
