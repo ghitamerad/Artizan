@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de bord</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 
     @livewireStyles
 </head>
+
 <body class="bg-gray-100">
     @livewireScripts
 
@@ -24,18 +26,18 @@
 
             <!-- Navigation -->
             <nav class="flex-1 px-4 py-6 space-y-2 text-sm font-medium">
-                @if(Auth::check())
+                @if (Auth::check())
                     @php $role = Auth::user()->role; @endphp
 
                     <!-- Admin uniquement -->
-                    @if($role === 'admin')
+                    @if ($role === 'admin')
                         <x-nav-link :href="route('admin.users.index')" icon="user" :active="request()->routeIs('admin.users.*')">
                             Gestion des utilisateurs
                         </x-nav-link>
                     @endif
 
                     <!-- Admin & Gérante -->
-                    @if(in_array($role, ['admin', 'gerante']))
+                    @if (in_array($role, ['admin', 'gerante']))
                         <x-nav-link :href="route('modeles.index')" icon="scissors" :active="request()->routeIs('modeles.*')">
                             Gérer les modèles
                         </x-nav-link>
@@ -60,6 +62,16 @@
                             Gérer les devis
                         </x-nav-link>
                     @endif
+                    <!-- Couturière uniquement -->
+                    @if ($role === 'couturiere')
+                        <x-nav-link :href="route('couturiere.dashboard')" icon="home" :active="request()->routeIs('couturiere.dashboard')">
+                            Tableau de bord
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('couturiere.commandes')" icon="clipboard-list" :active="request()->routeIs('couturiere.commandes')">
+                            Mes commandes
+                        </x-nav-link>
+                    @endif
                 @endif
             </nav>
         </aside>
@@ -75,4 +87,5 @@
     </script>
 
 </body>
+
 </html>

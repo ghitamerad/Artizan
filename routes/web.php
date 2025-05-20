@@ -56,7 +56,7 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 // Routes Admin pour les Utilisateurs
-Route::middleware(['auth', 'admin']) // Assurez-vous d'avoir un middleware 'admin' ou adaptez
+Route::middleware(['auth']) // Assurez-vous d'avoir un middleware 'admin' ou adaptez
     ->prefix('admin')->name('admin.')->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
@@ -137,7 +137,7 @@ Route::get('/couturiere', function () {
     return view('couturiere.index');
 })->middleware('auth')->name('couturiere.dashboard'); // Ajout middleware auth
 
-Route::middleware(['auth', 'couturiere']) // Assurez-vous d'avoir un middleware 'couturiere' ou adaptez
+Route::middleware(['auth']) // Assurez-vous d'avoir un middleware 'couturiere' ou adaptez
     ->prefix('couturiere')->name('couturiere.')->group(function () {
     Route::get('/commandes', [DetailCommandeController::class, 'commandesCouturiere'])->name('commandes');
     Route::post('/commandes/{id}/terminer', [DetailCommandeController::class, 'terminerCommande'])->name('commandes.terminer');
@@ -201,6 +201,12 @@ Route::post('/logout', function () {
 
 
 Route::post('/devis/{devis}/generer-patron', [DevisController::class, 'genererPatron'])->name('devis.genererPatron');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/demander-devis', [DevisController::class, 'createClient'])->name('devis.demande');
+});
+
 
 
 require __DIR__ . '/auth.php';

@@ -13,7 +13,7 @@ class DevisController extends Controller
 {
     public function genererPatron()
     {
-//
+        //
     }
 
     public function index()
@@ -27,6 +27,13 @@ class DevisController extends Controller
         $categories = Categorie::leaf()->get();
         $attributs = Attribut::with('valeurs')->get();
         return view('devis.create', compact('categories', 'attributs'));
+    }
+
+    public function createClient()
+    {
+        $categories = Categorie::leaf()->get();
+        $attributs = Attribut::with('valeurs')->get();
+        return view('devis.request', compact('categories', 'attributs'));
     }
 
     public function store(Request $request)
