@@ -17,7 +17,7 @@
 </head>
 
 <body class="font-sans text-gray-900 antialiased">
-    <div class="min-h-screen bg-gray-100">
+    <div class="min-h-screen">
 
         <!-- Navbar -->
         <nav class="bg-[#F8F2E1] shadow-md fixed w-full z-10 top-0">
@@ -31,6 +31,7 @@
                         <a href="{{ route('home') }}" class="text-[#05335E] hover:text-[#C19B2C] font-medium">Accueil</a>
                         <a href="{{ route('pret-a-porter') }}" class="text-[#05335E] hover:text-[#C19B2C] font-medium">Pret a Porter</a>
                         <a href="{{ route('sur-mesure') }}" class="text-[#05335E] hover:text-[#C19B2C] font-medium">Sur Mesure</a>
+                        <a href="{{ route('devis.demande') }}" class="text-[#05335E] hover:text-[#C19B2C] font-medium">Demander un devis</a>
                     </div>
 
                     <!-- Zone utilisateur -->
