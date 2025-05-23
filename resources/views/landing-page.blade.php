@@ -76,24 +76,8 @@
     <!-- Section 2: Questionnaire "Que recherchez-vous ?" (RÉINTÉGRÉE) -->
     <section class="py-16 md:py-24 bg-brand-beige text-center px-4">
         <div class="max-w-4xl mx-auto">
-            <h2 class="font-lora text-3xl md:text-4xl font-bold text-brand-blue mb-4">Votre Expérience Idéale Commence Ici</h2>
-            <p class="text-slate-600 mb-12 md:mb-16 text-lg max-w-2xl mx-auto">Dites-nous ce qui vous ferait plaisir aujourd'hui.</p>
-            <div class="flex flex-col md:flex-row justify-center items-stretch gap-8 md:gap-12">
-                <a href="{{ route('home') }}" {{-- Lien vers la page catalogue pour l'achat --}}
-                   class="group flex flex-col items-center justify-center bg-white rounded-xl shadow-lg hover:shadow-2xl cursor-pointer transition-all duration-300 p-8 transform hover:-translate-y-2 border-2 border-transparent hover:border-brand-gold flex-1">
-                    <img src="{{ asset('icons/dress.svg') }}" {{-- Assurez-vous que le chemin est correct --}}
-                         class="w-16 h-16 md:w-20 md:h-20 mb-6 text-brand-gold transition-transform duration-300 group-hover:scale-110" alt="Acheter une Tenue">
-                    <span class="font-lora text-xl md:text-2xl font-semibold text-brand-blue group-hover:text-brand-gold transition-colors duration-300 mb-2">Acheter une Tenue</span>
-                    <span class="text-sm text-slate-600 text-center">Parcourir notre prêt-à-porter</span>
-                </a>
-                <a href="{{ route('sur-mesure') }}" {{-- Lien vers la page de création sur mesure --}}
-                   class="group flex flex-col items-center justify-center bg-white rounded-xl shadow-lg hover:shadow-2xl cursor-pointer transition-all duration-300 p-8 transform hover:-translate-y-2 border-2 border-transparent hover:border-brand-gold flex-1">
-                    <img src="{{ asset('icons/needle.svg') }}" {{-- Assurez-vous que le chemin est correct --}}
-                         class="w-16 h-16 md:w-20 md:h-20 mb-6 text-brand-gold transition-transform duration-300 group-hover:scale-110" alt="Confection Sur Mesure">
-                    <span class="font-lora text-xl md:text-2xl font-semibold text-brand-blue group-hover:text-brand-gold transition-colors duration-300 mb-2">Confectionner Sur Mesure</span>
-                    <span class="text-sm text-slate-600 text-center">Créer votre pièce unique</span>
-                </a>
-            </div>
+@livewire('questionnaire-selector')
+
              {{-- Si vous avez un composant Livewire pour un questionnaire plus détaillé : --}}
             {{-- <div class="mt-16">
                 @livewire('questionnaire-selector')

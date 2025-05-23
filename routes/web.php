@@ -45,6 +45,10 @@ Route::get('/prod', function () {
     return view('prod');
 })->name('prod');
 
+Route::get('/questionnaire', function () {
+
+    return view('questionnaire');
+})->name('questionnaire');
 
 // Dashboard et Profil (authentification requise)
 Route::view('dashboard', 'dashboard')
