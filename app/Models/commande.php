@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class commande extends Model
+class Commande extends Model
 {
     /** @use HasFactory<\Database\Factories\CommandeFactory> */
     use HasFactory;
@@ -33,7 +33,7 @@ class commande extends Model
         return $this->hasMany(DetailCommande::class);
     }
 
-    
+
 }
 
 

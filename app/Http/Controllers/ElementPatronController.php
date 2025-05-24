@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttributValeur;
-use App\Models\categorie;
+use App\Models\Categorie;
 use App\Models\ElementPatron;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -19,7 +19,7 @@ class ElementPatronController extends Controller
 
     public function create()
     {
-        $categories = categorie::leaf()->get();
+        $categories = Categorie::leaf()->get();
         $valeurs = AttributValeur::all();
         return view('element_patrons.create', compact('categories', 'valeurs'));
     }

@@ -27,7 +27,7 @@ class DetailCommande extends Model
      */
     public function commande()
     {
-        return $this->belongsTo(commande::class, 'commande_id');
+        return $this->belongsTo(Commande::class, 'commande_id');
     }
 
     /**
@@ -35,7 +35,7 @@ class DetailCommande extends Model
      */
     public function modele()
     {
-        return $this->belongsTo(modele::class, 'modele_id');
+        return $this->belongsTo(Modele::class, 'modele_id');
     }
 /**
  * Get the user that owns the DetailCommande

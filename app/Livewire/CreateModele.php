@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use App\Models\modele;
+use App\Models\Modele;
 use Illuminate\Support\Facades\Storage;
 
 class CreateModele extends Component
@@ -34,7 +34,7 @@ class CreateModele extends Component
         $patronPath = $this->patron->store('modeles', 'public');
         $xmlPath = $this->xml->store('modeles', 'public');
 
-        modele::create([
+        Modele::create([
             'nom' => $this->nom,
             'description' => $this->description,
             'prix' => $this->prix,
@@ -50,13 +50,13 @@ class CreateModele extends Component
     public function generateAndDownloadPatron($id)
 {
     $modele = Modele::findOrFail($id);
-    
+
     // Récupérer les chemins des fichiers depuis la base de données
     $valFilePath = storage_path("app/public/{$modele->patron}");
     $vitFilePath = storage_path("app/public/{$modele->xml}");
     $outputDirectory = storage_path("app/public/modeles/"); // Dossier de sortie
     $outputFilePath = $outputDirectory . "{$modele->nom}.pdf"; // Fichier PDF généré
-    
+
     // Vérifier que les fichiers existent
     if (!file_exists($valFilePath) || !file_exists($vitFilePath)) {
         return back()->with('error', 'Fichier patron ou mesures introuvable.');
@@ -82,7 +82,7 @@ class CreateModele extends Component
     public function render()
     {
         return view('livewire.create-modele', [
-            'categories' => \App\Models\categorie::all(),
+            'categories' => \App\Models\Categorie::all(),
         ])->layout('layouts.guest2');
     }
 }

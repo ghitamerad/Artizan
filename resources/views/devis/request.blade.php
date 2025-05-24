@@ -59,7 +59,7 @@
                             @foreach($attribut->valeurs as $valeur)
                                 <label class="inline-flex items-center">
                                     <input type="radio" name="attribut_valeurs[{{ $attribut->id }}]" value="{{ $valeur->id }}" {{ old("attribut_valeurs.{$attribut->id}") == $valeur->id ? 'checked' : '' }} class="text-[#05335E] focus:ring-[#C19B2C]">
-                                    <span class="ml-2 text-sm text-[#2C3E50]">{{ $valeur->valeur }}</span>
+                                    <span class="ml-2 text-sm text-[#2C3E50]">{{ $valeur->nom }}</span>
                                 </label>
                             @endforeach
                         </div>

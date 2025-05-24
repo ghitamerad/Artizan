@@ -31,7 +31,7 @@ class User extends Authenticatable
      */
     public function commandes()
     {
-        return $this->hasMany(commande::class);
+        return $this->hasMany(Commande::class);
     }
 
     /**

@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\mesure_detail_commande;
-use App\Http\Requests\Storemesure_detail_commandeRequest;
-use App\Http\Requests\Updatemesure_detail_commandeRequest;
+use App\Http\Requests\StoreMesureDetailCommandeRequest;
+use App\Http\Requests\UpdateMesureDetailCommandeRequest;
 use App\Models\MesureDetailCommande;
 
 class MesureDetailCommandeController extends Controller
@@ -28,15 +27,15 @@ class MesureDetailCommandeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Storemesure_detail_commandeRequest $request)
-    {
-        //
-    }
+    // public function store(StoreMesureDetailCommandeRequest $request)
+    // {
+    //     //
+    // }
 
     /**
      * Display the specified resource.
      */
-    public function show(MesureDetailCommande $mesure_detail_commande)
+    public function show(MesureDetailCommande $MesureDetailCommande)
     {
         //
     }
@@ -44,7 +43,7 @@ class MesureDetailCommandeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(MesureDetailCommande $mesure_detail_commande)
+    public function edit(MesureDetailCommande $MesureDetailCommande)
     {
         //
     }
@@ -52,15 +51,15 @@ class MesureDetailCommandeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Updatemesure_detail_commandeRequest $request, MesureDetailCommande $mesure_detail_commande)
-    {
-        //
-    }
+    // public function update(UpdateMesureDetailCommandeRequest $request, MesureDetailCommande $MesureDetailCommande)
+    // {
+    //     //
+    // }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(MesureDetailCommande $mesure_detail_commande)
+    public function destroy(MesureDetailCommande $MesureDetailCommande)
     {
         //
     }

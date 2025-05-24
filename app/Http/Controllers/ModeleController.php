@@ -6,7 +6,7 @@ use App\Models\Attribut;
 use App\Models\Modele;
 use App\Models\Categorie;
 use App\Models\Devis;
-use App\Models\mesure;
+use App\Models\Mesure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;

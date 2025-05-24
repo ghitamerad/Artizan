@@ -45,7 +45,7 @@ class CommandeCreate extends Component
             'selectedModeles' => 'required|array|min:1',
             'selectedModeles.*.id' => 'required|exists:modeles,id',
             'selectedModeles.*.quantite' => 'required|integer|min:1',
-'selectedModeles.*.custom' => 'required|in:0,1',
+            'selectedModeles.*.custom' => 'required|in:0,1',
             'selectedModeles.*.user_id' => 'nullable|exists:users,id',
         ]);
 
@@ -92,7 +92,6 @@ class CommandeCreate extends Component
             DB::commit();
             session()->flash('success', 'Commande enregistrée avec succès.');
             return redirect()->route('commandes.index');
-
         } catch (\Exception $e) {
             DB::rollBack();
             session()->flash('error', 'Une erreur est survenue : ' . $e->getMessage());

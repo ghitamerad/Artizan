@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class mesure extends Model
+class Mesure extends Model
 {
     /** @use HasFactory<\Database\Factories\MesureFactory> */
     use HasFactory;
@@ -21,7 +21,7 @@ class mesure extends Model
      */
     public function modele(): BelongsTo
     {
-        return $this->belongsTo(modele::class, 'modele_id');
+        return $this->belongsTo(Modele::class, 'modele_id');
     }
 
         /**

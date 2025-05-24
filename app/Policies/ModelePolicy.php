@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\modele;
+use App\Models\Modele;
 
 class ModelePolicy
 {
@@ -18,7 +18,7 @@ class ModelePolicy
     /**
      * Déterminer si un utilisateur peut voir un modèle spécifique.
      */
-    public function view(User $user, modele $modele): bool
+    public function view(User $user, Modele $modele): bool
     {
         return in_array($user->role, ['gerante', 'admin']);
     }
@@ -35,7 +35,7 @@ class ModelePolicy
     /**
      * Déterminer si un utilisateur peut modifier un modèle.
      */
-    public function update(User $user, modele $modele): bool
+    public function update(User $user, Modele $modele): bool
     {
 
         return in_array($user->role, ['gerante', 'admin']);
@@ -44,7 +44,7 @@ class ModelePolicy
     /**
      * Déterminer si un utilisateur peut supprimer un modèle.
      */
-    public function delete(User $user, modele $modele): bool
+    public function delete(User $user, Modele $modele): bool
     {
         return in_array($user->role, ['gerante', 'admin']);
     }

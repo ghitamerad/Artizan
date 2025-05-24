@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Attribut;
-use App\Models\categorie;
+use App\Models\Categorie;
 use App\Models\Modele;
 use Livewire\Component;
 
@@ -45,7 +45,7 @@ class QuestionnaireSelector extends Component
         $this->selectedValeurs = [];
 
         if (empty($this->categorieSelectionnees)) {
-            $this->categoriesActuelles = categorie::whereNull('categorie_id')->get();
+            $this->categoriesActuelles = Categorie::whereNull('categorie_id')->get();
         } else {
             $this->categoriesActuelles = $this->categorieSelectionnees[count($this->categorieSelectionnees) - 1]->enfants;
         }

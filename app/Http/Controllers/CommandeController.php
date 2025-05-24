@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Commande;
 use App\Models\DetailCommande;
-use App\Models\modele;
+use App\Models\Modele;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +29,7 @@ class CommandeController extends Controller
     public function create()
     {
         $this->authorize('create', Commande::class); // Vérifie si l'utilisateur peut créer une commande
-        $modeles = modele::latest()->get();
+        $modeles = Modele::latest()->get();
         return view('commandes.create', compact('modeles'));
     }
     /**
@@ -149,7 +149,7 @@ class CommandeController extends Controller
         $this->authorize('update', $commande); // Vérifie les permissions
 
         $users = User::all(); // Récupère tous les utilisateurs
-        $modeles = modele::all();
+        $modeles = Modele::all();
 
         return view('commandes.edit', compact('commande', 'users', 'modeles'));
     }

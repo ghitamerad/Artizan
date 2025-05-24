@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\categorie;
+use App\Models\Categorie;
 use App\Http\Requests\StorecategorieRequest;
 use App\Http\Requests\UpdatecategorieRequest;
 use Illuminate\Http\Request;
@@ -75,7 +75,7 @@ class CategorieController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(categorie $categorie)
+    public function show(Categorie $categorie)
     {
         //
     }

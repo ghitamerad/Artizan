@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\modele;
+use App\Models\Modele;
 use App\Models\DetailCommande;
 use App\Models\MesureDetailCommande;
 use Illuminate\Support\Facades\Log;

@@ -35,6 +35,6 @@ class Modele extends Model
      */
     public function mesures(): HasMany
     {
-        return $this->hasMany(mesure::class);
+        return $this->hasMany(Mesure::class);
     }
 }

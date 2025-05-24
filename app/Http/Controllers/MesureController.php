@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\mesure;
-use App\Models\modele;
+use App\Models\Mesure;
+use App\Models\Modele;
 use App\Http\Requests\StoremesureRequest;
 use App\Http\Requests\UpdatemesureRequest;
 use Illuminate\Http\Request;
@@ -56,7 +56,7 @@ class MesureController extends Controller
      */
     public function showMesuresForm($modeleId)
     {
-        $modele = \App\Models\modele::findOrFail($modeleId);
+        $modele = \App\Models\Modele::findOrFail($modeleId);
         $mesures = Mesure::where('modele_id', $modeleId)->get();
 
         return view('mesures.form', compact('modele', 'mesures'));
