@@ -26,7 +26,7 @@
                 <div class="flex justify-between items-center h-16">
                     <!-- Logo -->
                     <a href="{{ route('home') }}" class="flex items-center gap-2">
-                        <img src="{{ asset('images/logoLebsaZina.png') }}" alt="Logo Lebsa Zina" class="h-20 w-auto">
+                        <img src="{{ asset('images/logoLebsaZinaCopy.png') }}" alt="Logo Lebsa Zina" class="mb-2 h-16 w-auto">
                         <span class="text-2xl font-bold text-[#05335E]">Lebsa Zina</span>
                     </a>
                     <!-- Bouton hamburger -->
@@ -42,9 +42,7 @@
                         <a href="{{ route('home') }}" class="text-[#05335E] hover:text-[#C19B2C] font-medium">Accueil</a>
                         <a href="{{ route('pret-a-porter') }}" class="text-[#05335E] hover:text-[#C19B2C] font-medium">Pret à Porter</a>
                         <a href="{{ route('sur-mesure') }}" class="text-[#05335E] hover:text-[#C19B2C] font-medium">Sur Mesure</a>
-                        @auth
-                            <a href="{{ route('devis.demande') }}" class="text-[#05335E] hover:text-[#C19B2C] font-medium">Demander un devis</a>
-                        @endauth
+                        <a href="{{ route('devis.demande') }}" class="text-[#05335E] hover:text-[#C19B2C] font-medium">Demander un devis</a>
                     </div>
 
                     <!-- Zone utilisateur -->
@@ -86,8 +84,9 @@
                     <a href="{{ route('home') }}" class="block text-[#05335E] font-medium">Accueil</a>
                     <a href="{{ route('pret-a-porter') }}" class="block text-[#05335E] font-medium">Pret à Porter</a>
                     <a href="{{ route('sur-mesure') }}" class="block text-[#05335E] font-medium">Sur Mesure</a>
+                    <a href="{{ route('devis.demande') }}" class="block text-[#05335E] font-medium">Demander un devis</a>
+
                     @auth
-                        <a href="{{ route('devis.demande') }}" class="block text-[#05335E] font-medium">Demander un devis</a>
                         <a href="{{ route('dashboard') }}" class="block text-[#05335E] font-medium">Tableau de bord</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

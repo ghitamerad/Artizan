@@ -1,8 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
     <div class="container">
-        <h2>Patron personnalisé</h2>
+        <h2>apercu du patron personnalisé</h2>
 
         {{-- Vérifier si le fichier existe --}}
         @if($customPatronPath)

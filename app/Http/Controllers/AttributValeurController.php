@@ -33,7 +33,7 @@ class AttributValeurController extends Controller
 
      // Enregistrement de l'image si présente
      if ($request->hasFile('image')) {
-         $data['image'] = $request->file('image')->store('attribut_valeurs', 'public');
+         $data['image'] = $request->file('image')->store('valeurs', 'public');
      }
 
      AttributValeur::create($data);

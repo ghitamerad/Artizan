@@ -51,7 +51,7 @@
 
                 <!-- Prix -->
                 <div class="text-2xl font-bold text-[#05335E] mb-6">
-                    {{ number_format($modele->prix, 2, ',', ' ') }} €
+                    {{ number_format($modele->prix, 2, ',', ' ') }} DZD
                 </div>
 
                 <!-- Description -->

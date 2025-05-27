@@ -117,7 +117,7 @@
 
             <!-- Prix -->
             <div>
-                <label for="prix" class="block text-gray-700 font-medium">Prix (en €)</label>
+                <label for="prix" class="block text-gray-700 font-medium">Prix (en DZD)</label>
                 <input type="number" id="prix" name="prix" min="0" value="{{ old('prix') }}" required
                     class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
             </div>

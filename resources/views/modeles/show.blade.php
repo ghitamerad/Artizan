@@ -7,7 +7,7 @@
 <!-- Description + Attributs -->
 <div class="mb-6 p-4 bg-gray-100 rounded-lg">
     <p><span class="font-semibold">Description :</span> {{ $modele->description }}</p>
-    <p><span class="font-semibold">Prix :</span> {{ $modele->prix }} €</p>
+    <p><span class="font-semibold">Prix :</span> {{ $modele->prix }} DZD</p>
     <p><span class="font-semibold">Catégorie :</span> {{ $modele->categorie->nom }}</p>
 
     @if ($modele->attributValeurs->count())

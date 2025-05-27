@@ -70,77 +70,78 @@ class PatronController extends Controller
 
 
 
-    public function customPattern($detailCommandeId)
-    {
-        $detailCommande = DetailCommande::findOrFail($detailCommandeId);
-        $modele = $detailCommande->modele;
+public function customPattern($detailCommandeId)
+{
+    $detailCommande = DetailCommande::findOrFail($detailCommandeId);
+    $modele = $detailCommande->modele;
 
-        if (!$modele) {
-            Log::error("Modèle introuvable pour la commande ID $detailCommandeId");
-            return null;
-        }
+    if (!$modele) {
+        Log::error("Modèle introuvable pour la commande ID $detailCommandeId");
+        return redirect()->back()->with('error', 'Modèle introuvable pour cette commande.');
+    }
 
-        // Chemins
-        $originalXmlPath = storage_path("app/public/{$modele->xml}");
-        $patronPath = storage_path("app/public/{$modele->patron}");
-        $measurementDir = storage_path("app/public/client_measurements/");
-        $customPatternDir = storage_path("app/public/custom_patterns/");
+    // Chemins
+    $originalXmlPath = storage_path("app/public/{$modele->xml}");
+    $patronPath = storage_path("app/public/{$modele->patron}");
+    $measurementDir = storage_path("app/public/client_measurements/");
+    $customPatternDir = storage_path("app/public/custom_patterns/");
 
-        if (!file_exists($measurementDir)) mkdir($measurementDir, 0777, true);
-        if (!file_exists($customPatternDir)) mkdir($customPatternDir, 0777, true);
+    if (!file_exists($measurementDir)) mkdir($measurementDir, 0777, true);
+    if (!file_exists($customPatternDir)) mkdir($customPatternDir, 0777, true);
 
-        $modifiedXmlPath = $measurementDir . "measurement_{$detailCommande->id}.xml";
-        copy($originalXmlPath, $modifiedXmlPath);
+    $modifiedXmlPath = $measurementDir . "measurement_{$detailCommande->id}.xml";
+    copy($originalXmlPath, $modifiedXmlPath);
 
-        $xml = simplexml_load_file($modifiedXmlPath);
-        if (!$xml) {
-            Log::error("Erreur chargement XML pour commande $detailCommandeId");
-            return null;
-        }
+    $xml = simplexml_load_file($modifiedXmlPath);
+    if (!$xml) {
+        Log::error("Erreur chargement XML pour commande $detailCommandeId");
+        return redirect()->back()->with('error', 'Erreur lors du chargement du fichier de mesures.');
+    }
 
-        // Mise à jour des mesures dans le XML
-        $mesures = MesureDetailCommande::where('details_commande_id', $detailCommande->id)->get();
-        foreach ($mesures as $mesure) {
-            $variableXml = $mesure->variable_xml;
-            $valeurMesure = $mesure->valeur_mesure ?? $mesure->valeur_par_defauts;
+    // Mise à jour des mesures dans le XML
+    $mesures = MesureDetailCommande::where('details_commande_id', $detailCommande->id)->get();
+    foreach ($mesures as $mesure) {
+        $variableXml = $mesure->variable_xml;
+        $valeurMesure = $mesure->valeur_mesure ?? $mesure->valeur_par_defauts;
 
-            foreach ($xml->{"body-measurements"}->m as $m) {
-                if ((string) $m['name'] === $variableXml) {
-                    $m['value'] = $valeurMesure;
-                    break;
-                }
+        foreach ($xml->{"body-measurements"}->m as $m) {
+            if ((string) $m['name'] === $variableXml) {
+                $m['value'] = $valeurMesure;
+                break;
             }
         }
-
-        $xml->asXML($modifiedXmlPath);
-
-        // Génération du fichier SVG
-        $nomFichier = strtolower(str_replace(' ', '_', $modele->nom)) . "_{$detailCommande->id}";
-        $outputFile = $customPatternDir . "{$nomFichier}.svg";
-
-        $valentinaPath = 'C:\Program Files (x86)\Valentina';
-        $command = "\"$valentinaPath\\valentina.exe\" -b \"$nomFichier\" -d \"$customPatternDir\" -f svg -m \"$modifiedXmlPath\" \"$patronPath\"";
-
-        $output = null;
-        $return_var = null;
-        exec($command, $output, $return_var);
-
-        $generatedPattern = glob("{$customPatternDir}{$nomFichier}_1.svg");
-
-        if (!empty($generatedPattern)) {
-            $svgPath = "custom_patterns/" . basename($generatedPattern[0]);
-
-            $detailCommande->fichier_patron = $svgPath;
-            $detailCommande->custom = true;
-            $detailCommande->save();
-
-            Log::info("SVG généré avec succès : $svgPath");
-            return $svgPath;
-        } else {
-            Log::error("SVG non généré pour $nomFichier");
-            return null;
-        }
     }
+
+    $xml->asXML($modifiedXmlPath);
+
+    // Génération du fichier PDF
+    $nomFichier = strtolower(str_replace(' ', '_', $modele->nom)) . "_{$detailCommande->id}";
+    $outputFile = $customPatternDir . "{$nomFichier}.pdf";
+
+    $valentinaPath = 'C:\Program Files (x86)\Valentina';
+    $command = "\"$valentinaPath\\valentina.exe\" -b \"$nomFichier\" -d \"$customPatternDir\" -f 1 -p 0 -m \"$modifiedXmlPath\" \"$patronPath\"";
+
+    $output = null;
+    $return_var = null;
+    exec($command, $output, $return_var);
+
+    $generatedPattern = glob("{$customPatternDir}{$nomFichier}_1.pdf");
+
+    if (!empty($generatedPattern)) {
+        $pdfPath = "custom_patterns/" . basename($generatedPattern[0]);
+
+        $detailCommande->fichier_patron = $pdfPath;
+        $detailCommande->custom = true;
+        $detailCommande->save();
+
+        Log::info("PDF généré avec succès : $pdfPath");
+        return redirect()->back()->with('success', 'Le patron PDF a été généré avec succès.');
+    } else {
+        Log::error("PDF non généré pour $nomFichier");
+        return redirect()->back()->with('error', 'Échec de la génération du patron PDF.');
+    }
+}
+
 
 
 

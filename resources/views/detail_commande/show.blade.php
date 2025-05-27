@@ -27,6 +27,46 @@
         </p>
     </div>
 
+     @if(Auth::check())
+    @php
+        $role = Auth::user()->role;
+    @endphp
+    @if(in_array($role, ['admin', 'gerante']))
+    <h4 class="text-2xl font-bold text-gray-700 mt-8">👩‍🎨 Sélectionner une couturière :</h4>
+    <div class="bg-white p-6 rounded-lg shadow-sm mt-4">
+        <form action="{{ route('commandes.assigner_couturiere', $detail_commande->id) }}" method="POST">
+            @csrf
+            <div class="flex flex-col space-y-4">
+                <select name="user_id" class="form-select border-gray-300 rounded-lg p-3 text-gray-700 shadow-sm focus:ring focus:ring-blue-300 w-full">
+                    <option value="">-- Choisir une couturière --</option>
+                    @foreach($couturieres as $couturiere)
+                        <option value="{{ $couturiere->id }}" {{ $detail_commande->user_id == $couturiere->id ? 'selected' : '' }}>
+                            {{ $couturiere->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <button type="submit" class="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition duration-300 shadow-md w-full">
+                    ✅ Assigner
+                </button>
+            </div>
+        </form>
+    </div>
+    @endif
+    @endif
+
+    @if($detail_commande->fichier_patron)
+    <div class="mt-4 p-4 bg-gray-100 rounded-lg shadow-sm">
+        <p class="text-lg font-semibold">📂 Patron généré :</p>
+        <p class="text-gray-800">{{ basename($detail_commande->fichier_patron) }}</p>
+
+        <a href="{{ route('patron.telecharger', $detail_commande->id) }}"
+           class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 shadow-md flex items-center gap-2 mt-2">
+            ⬇️ Télécharger le patron
+        </a>
+    </div>
+@endif
+
     <div class="mt-6">
         <h2 class="text-xl font-bold text-gray-800 mb-3">📏 Mesures associées</h2>
 
@@ -67,45 +107,7 @@
     </div>
     <!-- 🔼🔼🔼 FIN TABLEAU DES MESURES 🔼🔼🔼 -->
 
-    @if(Auth::check())
-    @php
-        $role = Auth::user()->role;
-    @endphp
-    @if(in_array($role, ['admin', 'gerante']))
-    <h4 class="text-2xl font-bold text-gray-700 mt-8">👩‍🎨 Sélectionner une couturière :</h4>
-    <div class="bg-white p-6 rounded-lg shadow-sm mt-4">
-        <form action="{{ route('commandes.assigner_couturiere', $detail_commande->id) }}" method="POST">
-            @csrf
-            <div class="flex flex-col space-y-4">
-                <select name="user_id" class="form-select border-gray-300 rounded-lg p-3 text-gray-700 shadow-sm focus:ring focus:ring-blue-300 w-full">
-                    <option value="">-- Choisir une couturière --</option>
-                    @foreach($couturieres as $couturiere)
-                        <option value="{{ $couturiere->id }}" {{ $detail_commande->user_id == $couturiere->id ? 'selected' : '' }}>
-                            {{ $couturiere->name }}
-                        </option>
-                    @endforeach
-                </select>
 
-                <button type="submit" class="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition duration-300 shadow-md w-full">
-                    ✅ Assigner
-                </button>
-            </div>
-        </form>
-    </div>
-    @endif
-    @endif
-
-    @if($detail_commande->fichier_patron)
-    <div class="mt-4 p-4 bg-gray-100 rounded-lg shadow-sm">
-        <p class="text-lg font-semibold">📂 Patron généré :</p>
-        <p class="text-gray-800">{{ basename($detail_commande->fichier_patron) }}</p>
-
-        <a href="{{ route('patron.telecharger', $detail_commande->id) }}"
-           class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 shadow-md flex items-center gap-2 mt-2">
-            ⬇️ Télécharger le patron
-        </a>
-    </div>
-@endif
 
 
     <div class="mt-8 flex justify-between">

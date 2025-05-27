@@ -26,10 +26,11 @@
 
             <div>
                 <label for="categorie_id" class="block text-sm font-medium text-[#05335E]">Catégorie</label>
-                <select name="categorie_id" id="categorie_id" required class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 focus:ring-[#2C3E50] focus:border-[#2C3E50]">
+<select name="categorie_id" id="categorie_id" required
+    class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 focus:ring-[#2C3E50] focus:border-[#2C3E50] text-[#05335E] bg-white">
                     <option value="">Choisir une catégorie</option>
                     @foreach($categories as $categorie)
-                        <option value="{{ $categorie->id }}" {{ old('categorie_id') == $categorie->id ? 'selected' : '' }}>
+                        <option class="text-[#05335E]" value="{{ $categorie->id }}" {{ old('categorie_id') == $categorie->id ? 'selected' : '' }}>
                             {{ $categorie->nom }}
                         </option>
                     @endforeach
@@ -43,7 +44,7 @@
 
             <div>
                 <label for="image" class="block text-sm font-medium text-[#05335E]">Image d'inspiration (optionnelle)</label>
-                <input type="file" name="image" id="image" accept="image/*" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-4 text-sm focus:ring-[#2C3E50] focus:border-[#2C3E50]">
+                <input type="file" name="image" id="image" accept="image/*" class="  text-[#05335E] mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-4 text-sm focus:ring-[#2C3E50] focus:border-[#2C3E50]">
             </div>
 
             <div>
@@ -57,10 +58,16 @@
                         </p>
                         <div class="flex flex-wrap gap-2 mt-2">
                             @foreach($attribut->valeurs as $valeur)
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="attribut_valeurs[{{ $attribut->id }}]" value="{{ $valeur->id }}" {{ old("attribut_valeurs.{$attribut->id}") == $valeur->id ? 'checked' : '' }} class="text-[#05335E] focus:ring-[#C19B2C]">
-                                    <span class="ml-2 text-sm text-[#2C3E50]">{{ $valeur->nom }}</span>
-                                </label>
+<label class="inline-flex items-center space-x-2 p-2 border rounded-md shadow-sm cursor-pointer hover:bg-gray-100">
+    <input type="radio" name="attribut_valeurs[{{ $attribut->id }}]" value="{{ $valeur->id }}" {{ old("attribut_valeurs.{$attribut->id}") == $valeur->id ? 'checked' : '' }} class="text-[#05335E] focus:ring-[#C19B2C]">
+
+    @if($valeur->image)
+        <img src="{{ Storage::url($valeur->image) }}" alt="{{ $valeur->nom }}" class="w-12 h-12 object-cover rounded-md">
+    @endif
+
+    <span class="text-sm text-[#2C3E50]">{{ $valeur->nom }}</span>
+</label>
+
                             @endforeach
                         </div>
                     </div>

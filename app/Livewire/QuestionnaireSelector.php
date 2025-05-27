@@ -80,8 +80,8 @@ class QuestionnaireSelector extends Component
         foreach ($attributs as $attribut) {
             $this->attributs[$attribut->id] = [
                 'nom' => $attribut->nom,
-                'valeurs' => $attribut->valeurs->pluck('nom', 'id')->toArray(),
-                'images' => $attribut->valeurs->pluck('image', 'id')->toArray(),
+    'valeurs' => $attribut->valeurs->keyBy('id')->toArray(), // tableaux complets (nom + image)
+
             ];
         }
         $this->dispatch('questionnaireTermine', $this->categorieFinale, $this->attributs, $this->selectedValeurs);

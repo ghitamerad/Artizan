@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('mesures', function (Blueprint $table) {
             $table->id();
             $table->foreignId('modele_id')->constrained('modeles')->onDelete('cascade')->nullable();
-            $table->foreignId('patron_element_id')->constrained('modeles')->onDelete('cascade')->nullable();
             $table->string('label'); // Nom de la mesure (ex: "Tour de poitrine")
             $table->decimal('valeur_par_defaut', 8, 2); // Valeur par défaut
             $table->string('variable_xml'); // Correspondance avec XML

@@ -22,7 +22,7 @@
             <thead>
                 <tr class="bg-gray-300 text-gray-800">
                     <th class="px-6 py-3 text-left font-semibold">Nom</th>
-                    <th class="px-6 py-3 text-left font-semibold">Prix (€)</th>
+                    <th class="px-6 py-3 text-left font-semibold">Prix (DZD)</th>
                     <th class="px-6 py-3 text-left font-semibold">Actions</th>
                 </tr>
             </thead>
@@ -30,7 +30,7 @@
                 @foreach($modeles as $modele)
                     <tr class="border-b border-gray-200 hover:bg-gray-200 transition">
                         <td class="px-6 py-4">{{ $modele->nom }}</td>
-                        <td class="px-6 py-4">{{ $modele->prix }} €</td>
+                        <td class="px-6 py-4">{{ $modele->prix }} DZD</td>
                         <td class="px-6 py-4 flex space-x-2">
                             <a href="{{ route('modeles.show', $modele) }}"
                                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">

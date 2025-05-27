@@ -33,7 +33,7 @@ class ModeleController extends Controller
             $devi = Devis::with('attributValeurs.attribut')->findOrFail($request->devi_id);
             $attributValeurs = $devi->attributValeurs;
         }
-        return view('modeles.create', compact('categories', 'attributs','attributValeurs'));
+        return view('modeles.create', compact('categories', 'attributs', 'attributValeurs'));
     }
 
     public function store(Request $request)
@@ -150,10 +150,10 @@ class ModeleController extends Controller
         $validatedData['sur_commande'] = $request->has('sur_commande') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-            // Supprimer l'ancienne si elle existe
-            if ($modele->image) {
+            if (!empty($modele->image) && Storage::disk('public')->exists($modele->image)) {
                 Storage::disk('public')->delete($modele->image);
             }
+
             $imageName = 'modele-' . time() . '.' . $request->file('image')->getClientOriginalExtension();
             $path = $request->file('image')->storeAs('modeles', $imageName, 'public');
             $modele->image = $path;

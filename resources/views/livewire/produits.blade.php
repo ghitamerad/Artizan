@@ -76,7 +76,7 @@
                             </span>
                         </div>
                         <div class="flex flex-col gap-3">
-                            <span class="text-2xl font-bold text-[#2C3E50]">{{ number_format($modele->prix, 2, ',', ' ') }} €</span>
+                            <span class="text-2xl font-bold text-[#2C3E50]">{{ number_format($modele->prix, 2, ',', ' ') }} DZD</span>
                             <button
                                 wire:click="ajouterAuPanier({{ $modele->id }})"
                                 class="w-full bg-[#05335E] text-white px-4 py-2 rounded-lg hover:bg-[#1A252F] transition-colors duration-300 flex items-center justify-center gap-2"
