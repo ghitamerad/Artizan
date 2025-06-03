@@ -17,9 +17,10 @@
 </head>
 
 
-<body class="font-sans text-[#F7F3E6] antialiased bg-[#FDFBF1]">
+<body class="font-sans antialiased bg-[#FDFBF1]">
 
     <div class="min-h-screen">
+
 
         <!-- Navbar -->
         <nav class="bg-[#F8F2E1] shadow-md fixed w-full z-10 top-0">
@@ -47,7 +48,7 @@
                     </div>
 
                     <!-- Zone utilisateur -->
-                    <div class="hidden md:flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-4 text-[#F7F3E6]">
                         <livewire:panier-bouton />
 
                         @auth
@@ -105,6 +106,17 @@
 <main class="flex-1 p-10">
     @yield('content')
 </main>
+    <script>
+        function toggleMenu() {
+            let menu = document.getElementById("user-menu");
+            menu.classList.toggle("hidden");
+        }
+
+        document.getElementById("menu-toggle").addEventListener("click", function () {
+            let mobileMenu = document.getElementById("mobile-menu");
+            mobileMenu.classList.toggle("hidden");
+        });
+    </script>
 
     </div>
 </body>

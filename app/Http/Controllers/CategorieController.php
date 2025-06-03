@@ -53,7 +53,7 @@ class CategorieController extends Controller
             'nom' => 'required|string|max:255',
             'categorie_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'fichier_mesure' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'fichier_mesure' => 'nullable|file|max:2048',
         ]);
 
         $data = $request->only(['nom', 'categorie_id']);
@@ -63,10 +63,13 @@ class CategorieController extends Controller
             $data['image'] = $request->file('image')->store('images/categories', 'public');
         }
 
-        if ($request->hasFile('fichier_mesure')) {
-            $data['fichier_mesure'] = $request->file('fichier_mesure')->store('mesures/categories', 'public');
-        }
-
+if ($request->hasFile('fichier_mesure')) {
+    $file = $request->file('fichier_mesure');
+    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME); // nom sans extension
+    $newFilename = $originalName . '_' . uniqid() . '.vit';
+    $path = $file->storeAs('mesures', $newFilename, 'public');
+    $validated['fichier_mesure'] = $path;
+}
         Categorie::create($data);
 
         return redirect()->back()->with('success', 'Catégorie créée avec succès.');
@@ -111,9 +114,13 @@ class CategorieController extends Controller
             $validated['image'] = $request->file('image')->store('images', 'public');
         }
 
-        if ($request->hasFile('fichier_mesure')) {
-            $validated['fichier_mesure'] = $request->file('fichier_mesure')->store('mesures', 'public');
-        }
+if ($request->hasFile('fichier_mesure')) {
+    $file = $request->file('fichier_mesure');
+    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME); // nom sans extension
+    $newFilename = $originalName . '_' . uniqid() . '.vit';
+    $path = $file->storeAs('mesures', $newFilename, 'public');
+    $validated['fichier_mesure'] = $path;
+}
 
         $categorie->update($validated);
 

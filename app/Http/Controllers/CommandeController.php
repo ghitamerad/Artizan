@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Notifications\NouvelleCommandeNotification;
+
 
 class CommandeController extends Controller
 {
@@ -129,6 +131,13 @@ class CommandeController extends Controller
                 }
             }
 
+            // Récupérer les gérantes
+$gerantes = User::where('role', 'gerante')->get();
+
+// Notifier les gérantes
+foreach ($gerantes as $gerante) {
+    $gerante->notify(new NouvelleCommandeNotification($commande));
+}
             // Vider le panier après validation de la commande
             Cache::forget("panier_{$userId}");
 

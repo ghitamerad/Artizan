@@ -55,16 +55,16 @@ class GeneratePatronService{
 
         // Génération du fichier SVG
         $nomFichier = strtolower(str_replace(' ', '_', $modele->nom)) . "_{$detailCommande->id}";
-        $outputFile = $customPatternDir . "{$nomFichier}.svg";
+        $outputFile = $customPatternDir . "{$nomFichier}.pdf";
 
         $valentinaPath = 'C:\Program Files (x86)\Valentina';
-        $command = "\"$valentinaPath\\valentina.exe\" -b \"$nomFichier\" -d \"$customPatternDir\" -f svg -m \"$modifiedXmlPath\" \"$patronPath\"";
+        $command = "\"$valentinaPath\\valentina.exe\" -b \"$nomFichier\" -d \"$customPatternDir\" -f 1 -p 0 -m \"$modifiedXmlPath\" \"$patronPath\"";
 
         $output = null;
         $return_var = null;
         exec($command, $output, $return_var);
 
-        $generatedPattern = glob("{$customPatternDir}{$nomFichier}_1.svg");
+        $generatedPattern = glob("{$customPatternDir}{$nomFichier}_1.pdf");
 
         if (!empty($generatedPattern)) {
             $svgPath = "custom_patterns/" . basename($generatedPattern[0]);

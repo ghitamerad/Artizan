@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->foreignId('categorie_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->enum('statut', ['en_attente','aceptee', 'refusee'])->default('en_attente');
+            $table->decimal('tarif', 10, 2)->nullable();
+
             $table->timestamps();
         });
     }

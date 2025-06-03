@@ -110,7 +110,7 @@
                     </div>
 
                     <!-- Bouton -->
-                    <a href="{{ route('devis.index') }}"
+                    <a href="{{ route('devis.demande') }}"
                         class="bg-[#05335E] hover:bg-[#1E90FF] text-white font-semibold px-5 py-2 rounded-lg transition-colors duration-300">
                         Faire une demande de devis
                     </a>

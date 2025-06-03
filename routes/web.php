@@ -203,14 +203,28 @@ Route::post('/logout', function () {
     return redirect('/');
 })->name('logout');
 
+Route::get('devis/{devis}/generer-patron', [DevisController::class, 'formGenererPatron'])
+    ->name('devis.formGenererPatron');
 
-Route::post('/devis/{devis}/generer-patron', [DevisController::class, 'genererPatron'])->name('devis.genererPatron');
-
+Route::post('devis/{devis}/generer-patron', [DevisController::class, 'genererPatron'])
+    ->name('devis.genererPatron');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/demander-devis', [DevisController::class, 'createClient'])->name('devis.demande');
 });
 
+Route::post('/patrons/generer', [ElementPatronController::class, 'genererPatronPersonnalise'])->name('patrons.generer');
+
+Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+Route::patch('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+
+Route::put('/devis/{devi}/repondre', [DevisController::class, 'repondre'])->name('devis.repondre');
+
+Route::get('/mes-devis', [DevisController::class, 'indexClient'])->name('mes-devis.index');
+
+Route::get('/mes-devis/{devi}', [DevisController::class, 'showClient'])->name('devis.client.show');
+
+Route::post('/devis/{devi}/reponse', [DevisController::class, 'repondreClient'])->name('devis.repondreClient');
 
 
 require __DIR__ . '/auth.php';

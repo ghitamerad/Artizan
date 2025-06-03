@@ -5,22 +5,142 @@ namespace App\Http\Controllers;
 use App\Models\Devis;
 use App\Models\Categorie;
 use App\Models\Attribut;
+use App\Models\AttributValeur;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\DevisProposeNotification;
+use App\Notifications\DevisReponduParClientNotification;
+use Illuminate\Support\Facades\Notification;
 
 class DevisController extends Controller
 {
-    public function genererPatron()
+
+    public function indexClient()
     {
-        //
+$filtre = request('filtre', 'attente');
+
+    $query = Devis::where('user_id', Auth::id());
+
+    switch ($filtre) {
+        case 'acceptes':
+            $query->where('statut', 'aceptee');
+            break;
+        case 'refuses':
+            $query->where('statut', 'refusee');
+            break;
+        case 'attente':
+        default:
+            $query->where('statut', 'en_attente');
+            break;
     }
 
-    public function index()
+    $devis = $query->latest()->get();
+
+    return view('devis.mes-devis', compact('devis', 'filtre'));
+    }
+
+    public function repondre(Request $request, Devis $devi)
     {
-        $devis = Devis::with('categorie')->latest()->get();
+        $request->validate([
+            'tarif' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $devi->update([
+            'tarif' => $request->tarif,
+        ]);
+
+        $client = $devi->utilisateur; // ou $devi->client selon ta relation
+
+        // Envoi de la notification (application + email)
+        Notification::route('mail', $client->email)
+            ->notify(new DevisProposeNotification($devi));
+
+        $client->notify(new DevisProposeNotification($devi)); // notification in-app
+
+        return redirect()->route('devis.show', $devi)->with('success', 'Tarif proposé avec succès. Le client a été notifié.');
+    }
+
+    public function repondreClient(Request $request, Devis $devi)
+{
+    $request->validate([
+        'statut' => 'required|in:aceptee,refusee',
+    ]);
+
+    // Vérifie que l'utilisateur est bien le client concerné
+    if ($devi->user_id !== Auth::id()) {
+        abort(403, 'Action non autorisée.');
+    }
+
+    // Le devis doit avoir un tarif proposé et ne pas déjà avoir été répondu
+    if (!$devi->tarif || $devi->statut !== "en_attente") {
+        return redirect()->back()->with('error', 'Action impossible.');
+    }
+
+    $devi->update([
+        'statut' => $request->statut,
+    ]);
+
+     $gerantes = User::where('role', 'gerante')->get();
+    Notification::send($gerantes, new DevisReponduParClientNotification($devi));
+
+
+    return redirect()->route('devis.show-client', $devi)->with('success', 'Réponse enregistrée avec succès.');
+}
+
+
+
+    public function formGenererPatron(Devis $devis)
+    {
+        $categorieId = $devis->categorie_id;
+
+        // Charger uniquement les attributs requis
+
+        $attributs = Attribut::with(['valeurs' => function ($query) use ($categorieId) {
+            $query->whereHas('elementsPatron', function ($q) use ($categorieId) {
+                $q->where('categorie_id', $categorieId);
+            });
+        }])
+            ->where('obligatoire', true)
+            ->whereHas('valeurs.elementsPatron', function ($q) use ($categorieId) {
+                $q->where('categorie_id', $categorieId);
+            })
+            ->get();
+
+        return view('devis.generer-patron', [
+            'devi' => $devis,
+            'attributs' => $attributs
+        ]);
+    }
+
+    public function genererPatron(Request $request, Devis $devis)
+    {
+        // Ici tu traiteras la génération du patron selon les données reçues
+    }
+
+
+    public function index(Request $request)
+    {
+        $filtre = $request->get('filtre');
+
+        $query = Devis::query();
+
+        if ($filtre === 'nouvelles') {
+            $query->whereNull('tarif');
+        } elseif ($filtre === 'proposes') {
+            $query->whereNotNull('tarif')->whereNull('statut'); // pas encore accepté/refusé
+        } elseif ($filtre === 'acceptes') {
+            $query->where('statut', 'aceptee');
+        } elseif ($filtre === 'refuses') {
+            $query->where('statut', 'refusee');
+        }
+
+        $devis = $query->latest()->paginate(10);
+
         return view('devis.index', compact('devis'));
     }
+
 
     public function create()
     {
@@ -90,6 +210,20 @@ class DevisController extends Controller
         $devi->load('categorie', 'attributValeurs.attribut');
         return view('devis.show', compact('devi'));
     }
+
+    public function showClient(Devis $devi)
+{
+    // Vérifie que le client est bien l'utilisateur connecté
+    if ($devi->user_id !== Auth::id()) {
+        abort(403, 'Accès non autorisé.');
+    }
+
+    // Charger les relations utiles
+    $devi->load('categorie', 'attributValeurs.attribut');
+
+    return view('devis.show-client', compact('devi'));
+}
+
 
     public function edit(Devis $devi)
     {

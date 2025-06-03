@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable(); // Description facultative
             $table->integer('prix'); // Description facultative
             $table->string('patron')->nullable(); // Ajout du champ pour le patron
+            $table->enum('type',['normal', 'frangment'])->default('normal'); // Ajout du champ pour le patron
             $table->text('xml')->nullable(); // Fiche de mesures sous forme XML
             $table->boolean('stock')->default(true);
             $table->boolean('sur_commande')->default(false);
