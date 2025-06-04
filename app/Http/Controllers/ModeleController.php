@@ -49,6 +49,7 @@ class ModeleController extends Controller
             'stock' => 'nullable|boolean',
             'sur_commande' => 'nullable|boolean',
             'patron' => 'nullable|file|max:2048',
+            'type' => 'required|in:normal,fragment',
             'xml' => 'nullable|file|max:2048',
             'image' => 'nullable|image|max:2048',
             'attribut_valeurs' => 'nullable|array',
@@ -64,6 +65,7 @@ class ModeleController extends Controller
             'categorie_id' => $validatedData['categorie_id'],
             'stock' => $request->has('stock'),
             'sur_commande' => $request->has('sur_commande'),
+            'type' => $validatedData['type'],
         ]);
 
         if ($request->hasFile('image')) {
@@ -143,6 +145,8 @@ class ModeleController extends Controller
             'patron' => 'nullable|file|max:2048',
             'xml' => 'nullable|file|max:2048',
             'image' => 'nullable|image|max:2048',
+            'type' => 'required|in:normal,fragment',
+
 
         ]);
 
@@ -182,6 +186,8 @@ class ModeleController extends Controller
             'sur_commande' => $validatedData['sur_commande'],
             'patron' => $modele->patron,
             'xml' => $modele->xml,
+            'type' => $validatedData['type'],
+
         ]);
 
         // On synchronise les valeurs d'attributs avec la table pivot

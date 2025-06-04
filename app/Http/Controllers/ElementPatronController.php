@@ -193,7 +193,10 @@ class ElementPatronController extends Controller
 
         Log::info('Fusion des fichiers terminée, fichier PDF généré.');
 
-        return response()->download($outputFolder . '/fusionne.pdf');
+$pdfName = 'patron_' . Str::slug($categorieAvecFiche->nom) . '_' . now()->format('Ymd_His') . '.pdf';
+
+
+return response()->download($outputFolder . '/' . $pdfName);
     }
 
 

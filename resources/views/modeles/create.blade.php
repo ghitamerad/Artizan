@@ -23,54 +23,50 @@
             </div>
         @endif
 
-        @if($attributValeurs->isNotEmpty())
-    <div class="mb-6">
-        <h2 class="text-xl font-semibold text-gray-800 mb-3">Attributs pré-sélectionnés du devis</h2>
-        <div class="flex flex-wrap gap-3">
-            @foreach($attributValeurs as $valeur)
-                <span class="inline-flex items-center px-4 py-1.5 border text-sm font-medium rounded-full bg-blue-100 text-blue-800 border-blue-400">
-                    {{ $valeur->attribut->nom }} : {{ $valeur->valeur ?? $valeur->nom }}
-                </span>
-                <input type="hidden" name="attribut_valeurs[]" value="{{ $valeur->id }}">
-            @endforeach
-        </div>
-    </div>
-@endif
+        @if ($attributValeurs->isNotEmpty())
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Attributs pré-sélectionnés du devis</h2>
+                <div class="flex flex-wrap gap-3">
+                    @foreach ($attributValeurs as $valeur)
+                        <span
+                            class="inline-flex items-center px-4 py-1.5 border text-sm font-medium rounded-full bg-blue-100 text-blue-800 border-blue-400">
+                            {{ $valeur->attribut->nom }} : {{ $valeur->valeur ?? $valeur->nom }}
+                        </span>
+                        <input type="hidden" name="attribut_valeurs[]" value="{{ $valeur->id }}">
+                    @endforeach
+                </div>
+            </div>
+        @endif
 
 
         <form action="{{ route('modeles.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             <!-- Valeurs des Attributs -->
-            <div
-                x-data="{
-                    selectedAttributs: [],
-                    valeursSelectionnees: @js($attributValeurs->mapWithKeys(fn($v) => [$v->attribut_id => $v->id])),
-                    attributValeurs: @js($attributs->mapWithKeys(fn($a) => [$a->id => $a->valeurs])->toArray()),
-                    attributNoms: @js($attributs->pluck('nom', 'id')),
-                    toggleAttribut(id) {
-                        if (this.selectedAttributs.includes(id)) {
-                            this.selectedAttributs = this.selectedAttributs.filter(i => i !== id);
-                        } else {
-                            this.selectedAttributs.push(id);
-                        }
+            <div x-data="{
+                selectedAttributs: [],
+                valeursSelectionnees: @js($attributValeurs->mapWithKeys(fn($v) => [$v->attribut_id => $v->id])),
+                attributValeurs: @js($attributs->mapWithKeys(fn($a) => [$a->id => $a->valeurs])->toArray()),
+                attributNoms: @js($attributs->pluck('nom', 'id')),
+                toggleAttribut(id) {
+                    if (this.selectedAttributs.includes(id)) {
+                        this.selectedAttributs = this.selectedAttributs.filter(i => i !== id);
+                    } else {
+                        this.selectedAttributs.push(id);
                     }
-                }"
-                class="space-y-4"
-            >
+                }
+            }" class="space-y-4">
 
                 <div>
                     <h3 class="text-lg font-semibold text-gray-700 mb-2">Sélection des Attributs</h3>
                     <div class="flex flex-wrap gap-2">
-                        @foreach($attributs as $attribut)
-                            <button
-                                type="button"
-                                :class="selectedAttributs.includes({{ $attribut->id }})
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-200 text-gray-800'"
+                        @foreach ($attributs as $attribut)
+                            <button type="button"
+                                :class="selectedAttributs.includes({{ $attribut->id }}) ?
+                                    'bg-blue-600 text-white' :
+                                    'bg-gray-200 text-gray-800'"
                                 class="px-3 py-1 rounded-full text-sm hover:bg-blue-500 hover:text-white transition"
-                                @click="toggleAttribut({{ $attribut->id }})"
-                            >
+                                @click="toggleAttribut({{ $attribut->id }})">
                                 {{ $attribut->nom }}
                             </button>
                         @endforeach
@@ -84,11 +80,8 @@
                         <div class="flex flex-wrap gap-4">
                             <template x-for="valeur in attributValeurs[attributId]" :key="valeur.id">
                                 <label class="flex items-center space-x-2">
-                                    <input type="radio"
-                                           :name="`attribut_valeurs[${attributId}]`"
-                                           :value="valeur.id"
-                                           class="text-blue-600"
-                                           :checked="valeursSelectionnees[attributId] == valeur.id">
+                                    <input type="radio" :name="`attribut_valeurs[${attributId}]`" :value="valeur.id"
+                                        class="text-blue-600" :checked="valeursSelectionnees[attributId] == valeur.id">
                                     <span x-text="valeur.nom"></span>
                                 </label>
                             </template>
@@ -136,6 +129,17 @@
                     @endforeach
                 </select>
             </div>
+
+            <!-- Type de Modèle -->
+            <div>
+                <label for="type" class="block text-gray-700 font-medium">Type de modèle</label>
+                <select id="type" name="type" required
+                    class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <option value="normal" {{ old('type') == 'normal' ? 'selected' : '' }}>Normal</option>
+                    <option value="fragment" {{ old('type') == 'fragment' ? 'selected' : '' }}>Fragment</option>
+                </select>
+            </div>
+
 
             <!-- Image -->
             <div>

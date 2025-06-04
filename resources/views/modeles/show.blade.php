@@ -9,6 +9,7 @@
     <p><span class="font-semibold">Description :</span> {{ $modele->description }}</p>
     <p><span class="font-semibold">Prix :</span> {{ $modele->prix }} DZD</p>
     <p><span class="font-semibold">Catégorie :</span> {{ $modele->categorie->nom }}</p>
+    <p><span class="font-semibold">Catégorie :</span> {{ $modele->type }}</p>
 
     @if ($modele->attributValeurs->count())
     <div class="mt-4">
