@@ -9,6 +9,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
+            <!-- Favicon -->
+    <link rel="icon" href="{{ asset('images/logolebsazinacopy.png') }}" type="image/png">
+
 
     @livewireStyles
 </head>

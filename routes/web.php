@@ -18,6 +18,7 @@ use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\AttributValeurController;
 use App\Http\Controllers\DevisController;
 use App\Http\Controllers\ElementPatronController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -215,8 +216,9 @@ Route::middleware(['auth'])->group(function () {
 
 Route::post('/patrons/generer', [ElementPatronController::class, 'genererPatronPersonnalise'])->name('patrons.generer');
 
-Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
-Route::patch('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+
 
 Route::put('/devis/{devi}/repondre', [DevisController::class, 'repondre'])->name('devis.repondre');
 

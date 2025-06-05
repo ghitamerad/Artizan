@@ -2,43 +2,45 @@
 
 namespace App\Notifications;
 
+use App\Models\Devis;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class DevisProposeNotification extends Notification implements ShouldQueue
+
+class DevisProposeNotification extends Notification
 {
     use Queueable;
 
-    public $devis;
+    protected $devis;
 
-    public function __construct($devis)
+    public function __construct(Devis $devis)
     {
         $this->devis = $devis;
     }
 
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['database','mail']; // ou ['database', 'mail'] si tu veux l'email aussi
     }
 
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-            ->subject('Un devis vous a été proposé')
-            ->greeting('Bonjour ' . $notifiable->name)
-            ->line('Un tarif vous a été proposé pour le devis n°' . $this->devis->id)
-            ->line('Tarif : ' . number_format($this->devis->tarif, 2, ',', ' ') . ' DA')
-            ->action('Voir le devis', route('mes-devis.show', $this->devis->id)) // adapte cette route
-            ->line('Veuillez accepter ou refuser ce devis depuis votre espace client.');
-    }
-
-    public function toArray($notifiable)
+    public function toDatabase($notifiable)
     {
         return [
             'devis_id' => $this->devis->id,
-            'message' => 'Un tarif vous a été proposé pour votre demande de devis.',
+            'message' => "Le responsable a proposé un tarif pour votre devis.",
+            'tarif' => $this->devis->tarif,
         ];
+    }
+
+        public function toMail($notifiable)
+    {
+        return (new MailMessage)
+                    ->subject('Réponse à votre demande de devis')
+                    ->greeting('Bonjour ' . $notifiable->name . ',')
+                    ->line('Le responsable a proposé un tarif pour votre demande de devis.')
+                    ->line('Tarif proposé : ' . number_format($this->devis->tarif, 2) . ' DA')
+                    ->action('Voir le devis', url(route('devis.show', $this->devis->id)))
+                    ->line('Merci de votre confiance.');
     }
 }

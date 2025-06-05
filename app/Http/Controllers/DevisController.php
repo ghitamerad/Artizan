@@ -41,26 +41,24 @@ $filtre = request('filtre', 'attente');
     return view('devis.mes-devis', compact('devis', 'filtre'));
     }
 
-    public function repondre(Request $request, Devis $devi)
-    {
-        $request->validate([
-            'tarif' => ['required', 'numeric', 'min:0'],
-        ]);
+public function repondre(Request $request, Devis $devi)
+{
+    $request->validate([
+        'tarif' => ['required', 'numeric', 'min:0'],
+    ]);
 
-        $devi->update([
-            'tarif' => $request->tarif,
-        ]);
+    $devi->update(['tarif' => $request->tarif]);
 
-        $client = $devi->utilisateur; // ou $devi->client selon ta relation
+    $client = $devi->utilisateur;
 
-        // Envoi de la notification (application + email)
-        Notification::route('mail', $client->email)
-            ->notify(new DevisProposeNotification($devi));
+    // Notification in-app
+    $client->notify(new DevisProposeNotification($devi));
 
-        $client->notify(new DevisProposeNotification($devi)); // notification in-app
+    return redirect()->route('devis.show', $devi)
+        ->with('success', 'Tarif proposé avec succès. Le client a été notifié.');
+}
 
-        return redirect()->route('devis.show', $devi)->with('success', 'Tarif proposé avec succès. Le client a été notifié.');
-    }
+
 
     public function repondreClient(Request $request, Devis $devi)
 {

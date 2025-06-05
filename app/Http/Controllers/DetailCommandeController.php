@@ -10,6 +10,8 @@ use App\Http\Requests\UpdateDetailCommandeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use App\Notifications\CommandeTerminee;
+use App\Notifications\DetailCommandeTermine;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -244,6 +246,11 @@ public function index()
         if ($commandeDetail->user_id == Auth::id()) {
             $commandeDetail->update(['statut' => 'fini']);
 
+                    // Notifier le client que ce détail est terminé
+        $client = $commandeDetail->commande->user;
+        $client->notify(new DetailCommandeTermine());
+
+
             // Vérifier si tous les détails de la commande sont finis
             $commande = $commandeDetail->commande; // Relation entre détail et commande
             $tousFinis = $commande->details()
@@ -252,7 +259,10 @@ public function index()
                 ->doesntExist();
 
             if ($tousFinis) {
-                $commande->update(['statut' => 'expediee']);
+                $commande->update(['statut' => 'validee']);
+
+                            // Notifier le client que la commande est complète
+            $client->notify(new CommandeTerminee($commande));
             }
 
             return redirect()->route('couturiere.commandes')->with('success', 'Détail de la commande terminé.');

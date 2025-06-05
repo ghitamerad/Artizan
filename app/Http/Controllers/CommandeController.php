@@ -6,6 +6,7 @@ use App\Models\Commande;
 use App\Models\DetailCommande;
 use App\Models\Modele;
 use App\Models\User;
+use App\Notifications\CommandeTerminee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -132,12 +133,12 @@ class CommandeController extends Controller
             }
 
             // Récupérer les gérantes
-$gerantes = User::where('role', 'gerante')->get();
+            $gerantes = User::where('role', 'gerante')->get();
 
-// Notifier les gérantes
-foreach ($gerantes as $gerante) {
-    $gerante->notify(new NouvelleCommandeNotification($commande));
-}
+            // Notifier les gérantes
+            foreach ($gerantes as $gerante) {
+                $gerante->notify(new NouvelleCommandeNotification($commande));
+            }
             // Vider le panier après validation de la commande
             Cache::forget("panier_{$userId}");
 
@@ -185,7 +186,11 @@ foreach ($gerantes as $gerante) {
     {
         $this->authorize('validateCommande', $commande);
 
+        $client=$commande->user;
+
         $commande->update(['statut' => 'validee']);
+        $client->notify(new CommandeTerminee($commande));
+
 
         return redirect()->back()->with('success', 'Commande validée.');
     }
