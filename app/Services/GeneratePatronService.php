@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 
 
-class GeneratePatronService{
+class GeneratePatronService
+{
     public function generatePattern($detailCommandeId): ?string
     {
         $detailCommande = DetailCommande::findOrFail($detailCommandeId);
@@ -57,7 +58,12 @@ class GeneratePatronService{
         $nomFichier = strtolower(str_replace(' ', '_', $modele->nom)) . "_{$detailCommande->id}";
         $outputFile = $customPatternDir . "{$nomFichier}.pdf";
 
-        $valentinaPath = 'C:\Program Files (x86)\Valentina';
+        $valentinaPath = env('VALENTINA_EXE_PATH');
+
+        if (!$valentinaPath || !file_exists($valentinaPath)) {
+            Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
+            return back()->withErrors(['Le chemin vers l\'exécutable Valentina est invalide ou non défini.']);
+        }
         $command = "\"$valentinaPath\\valentina.exe\" -b \"$nomFichier\" -d \"$customPatternDir\" -f 1 -p 0 -m \"$modifiedXmlPath\" \"$patronPath\"";
 
         $output = null;
@@ -146,7 +152,12 @@ class GeneratePatronService{
     //     $nomFichier = strtolower(str_replace(' ', '_', $modele->nom)) . "_{$detailCommande->id}";
     //     $outputFile = $customPatternDir . "{$nomFichier}.svg";
 
-    //     $valentinaPath = 'C:\Program Files (x86)\Valentina';
+    // $valentinaPath = env('VALENTINA_EXE_PATH');
+
+    // if (!$valentinaPath || !file_exists($valentinaPath)) {
+    //     Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
+    //     return back()->withErrors(['Le chemin vers l\'exécutable Valentina est invalide ou non défini.']);
+    // }
     //     $command = "\"$valentinaPath\\valentina.exe\" -b \"$nomFichier\" -d \"$customPatternDir\" -f svg -m \"$modifiedXmlPath\" \"$patronPath\"";
 
     //     system($command);

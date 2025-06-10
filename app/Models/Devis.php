@@ -10,7 +10,7 @@ class Devis extends Model
     /** @use HasFactory<\Database\Factories\DevisFactory> */
     use HasFactory;
 
-    protected $fillable = ['description', 'image', 'categorie_id', 'user_id','statut', 'tarif'];
+    protected $fillable = ['description', 'image', 'categorie_id', 'user_id','statut', 'tarif', 'chemin_patron'];
 
     public function categorie()
     {

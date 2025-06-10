@@ -164,19 +164,38 @@
                 <label for="sur_commande" class="text-gray-700">Disponible sur commande</label>
             </div>
 
-            <!-- Patron (.val) -->
-            <div>
-                <label for="patron" class="block text-gray-700 font-medium">Fichier Patron (.val)</label>
-                <input type="file" id="patron" name="patron" accept=".val"
-                    class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            </div>
+            @if ($cheminFichierVal)
+                <div class="bg-green-50 border border-green-200 text-green-800 p-4 rounded mb-4">
+                    Le patron a été généré automatiquement : <strong>{{ basename($cheminFichierVal) }}</strong>
+                </div>
+
+                <input type="hidden" name="fichier_val_auto" value="{{ $cheminFichierVal }}">
+            @else
+                <!-- Patron (.val) -->
+                <div>
+                    <label for="patron" class="block text-gray-700 font-medium">Fichier Patron (.val)</label>
+                    <input type="file" id="patron" name="patron" accept=".val"
+                        class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            @endif
+
 
             <!-- Fichier mesures (.xml/.vit) -->
-            <div>
-                <label for="xml" class="block text-gray-700 font-medium">Fichier de Mesures (.xml ou .vit)</label>
-                <input type="file" id="xml" name="xml" accept=".xml,.vit"
-                    class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            </div>
+            @if ($cheminFichierMesure)
+                <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded mb-4">
+                    Le fichier de mesures sélectionné automatiquement est :
+                    <strong>{{ basename($cheminFichierMesure) }}</strong>
+                </div>
+                <input type="hidden" name="fichier_mesure_auto" value="{{ $cheminFichierMesure }}">
+            @else
+                <div>
+                    <label for="xml" class="block text-gray-700 font-medium">Fichier de Mesures (.xml ou
+                        .vit)</label>
+                    <input type="file" id="xml" name="xml" accept=".xml,.vit"
+                        class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            @endif
+
 
             <!-- Boutons -->
             <div class="flex space-x-4">

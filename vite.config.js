@@ -8,4 +8,12 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+server: {
+  host: 'localhost',
+  port: 5173,
+  strictPort: true,
+  proxy: {
+    '/api': 'http://localhost:8000', // adapter au port Laravel
+  },
+},
 });

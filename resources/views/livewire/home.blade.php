@@ -1,74 +1,42 @@
 <div class="min-h-screen bg-[#F7F3E6] p-8">
     <div class="max-w-6xl mx-auto mb-10">
-<!-- Notification utilisateur avec bouton -->
-<div class="max-w-6xl mx-auto mb-6">
-    <div
-        class="bg-[#E6F2FF] border-l-4 border-[#1E90FF] text-[#2C3E50] p-5 rounded-xl shadow flex items-center justify-between gap-4">
-        <div class="flex items-center gap-4">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-            </svg>
+        <!-- Notification utilisateur avec bouton -->
+        <div class="max-w-6xl mx-auto mb-6">
+            <div
+                class="bg-[#E6F2FF] border-l-4 border-[#1E90FF] text-[#2C3E50] p-5 rounded-xl shadow flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                    </svg>
 
-            <div>
-                <p class="font-semibold text-lg">Faites notre <a href="{{ route('questionnaire') }}"
-                        class="font-bold underline">
-                        questionnaire</a> </p>
-                <p class="text-sm text-gray-700">Trouvez plus rapidement le modèle qui vous correspond.</p>
+                    <div>
+                        <p class="font-semibold text-lg">Faites notre <a href="{{ route('questionnaire') }}"
+                                class="font-bold underline">
+                                questionnaire</a> </p>
+                        <p class="text-sm text-gray-700">Trouvez plus rapidement le modèle qui vous correspond.</p>
+                    </div>
+                </div>
+                <a href="{{ route('questionnaire') }}"
+                    class="bg-[#05335E] hover:bg-[#1E90FF] text-white font-semibold px-5 py-2 rounded-lg transition-colors duration-300">
+                    Commencer
+                </a>
             </div>
         </div>
-        <a href="{{ route('questionnaire') }}"
-            class="bg-[#05335E] hover:bg-[#1E90FF] text-white font-semibold px-5 py-2 rounded-lg transition-colors duration-300">
-            Commencer
-        </a>
-    </div>
+
+<!-- Champ de recherche masqué -->
+<div class="w-full lg:flex-1 relative hidden">
+    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Rechercher un modèle..."
+        class="w-full px-5 py-3 pl-12 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#2C3E50] focus:border-transparent outline-none text-[#2C3E50]">
+    <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+        stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+            d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
+    </svg>
 </div>
 
 
-        <div class="flex flex-col lg:flex-row items-center gap-4 bg-white p-6 rounded-xl shadow-lg">
-            <!-- Champ de recherche -->
-            <div class="w-full lg:flex-1 relative">
-                <input type="text" wire:model.live.debounce.300ms="search" placeholder="Rechercher un modèle..."
-                    class="w-full px-5 py-3 pl-12 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#2C3E50] focus:border-transparent outline-none text-[#2C3E50]">
-                <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
-                    stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
-                </svg>
-            </div>
-
-            <!-- Sélection de catégorie -->
-            <div class="w-full lg:w-64">
-                <select wire:model.live.debounce.300ms="selectedCategorie"
-                    class="w-full px-4 py-3 text-[#2C3E50] rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#2C3E50] outline-none">
-                    <option value="">Toutes les catégories</option>
-                    @foreach ($categories as $categorie)
-                        <option value="{{ $categorie->id }}">{{ $categorie->nom }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Prix min -->
-            <div class="w-full sm:w-1/2 lg:w-32">
-                <input type="number" wire:model.live.debounce.300ms="minPrix" placeholder="Min DZD"
-                    class="w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#2C3E50] outline-none">
-            </div>
-
-            <!-- Prix max -->
-            <div class="w-full sm:w-1/2 lg:w-32">
-                <input type="number" wire:model.live.debounce.300ms="maxPrix" placeholder="Max DZD"
-                    class="w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#2C3E50] outline-none">
-            </div>
-
-            <!-- Bouton de réinitialisation -->
-            <div>
-                <button wire:click="resetFiltres"
-                    class="px-5 py-3 bg-[#05335E] text-white rounded-lg hover:bg-[#C19B2C] transition-colors duration-300">
-                    Réinitialiser
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- Grille des modèles -->
@@ -99,21 +67,21 @@
                             </span>
                         </div>
                         @if ($modele->sur_commande === true)
-    <div class="relative group">
-        <!-- Icône sur commande -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#B87333] cursor-pointer" fill="none"
-            viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 19l9 2-4-8 4-8-9 2L3 3l4 8-4 8 9-2z" />
-        </svg>
+                            <div class="relative group">
+                                <!-- Icône sur commande -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#B87333] cursor-pointer"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 19l9 2-4-8 4-8-9 2L3 3l4 8-4 8 9-2z" />
+                                </svg>
 
-        <!-- Tooltip visible au survol -->
-        <div
-            class="absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 text-xs text-white bg-black rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-            Ce modèle est confectionné sur commande
-        </div>
-    </div>
-@endif
+                                <!-- Tooltip visible au survol -->
+                                <div
+                                    class="absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 text-xs text-white bg-black rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                                    Ce modèle est confectionné sur commande
+                                </div>
+                            </div>
+                        @endif
                         <div class="flex flex-col gap-3">
                             <span
                                 class="text-2xl font-bold text-[#2C3E50]">{{ number_format($modele->prix, 2, ',', ' ') }}

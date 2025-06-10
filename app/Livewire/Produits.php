@@ -15,6 +15,8 @@ class Produits extends Component
 
     public $categorieSelectionnee = null;
     public $valeursSelectionnees = [];
+    public $afficherFiltres = false;
+
 
     protected $updatesQueryString = ['categorieSelectionnee', 'valeursSelectionnees'];
 
@@ -57,6 +59,22 @@ class Produits extends Component
         }
 
         return $query->with('categorie')->paginate(6);
+    }
+
+       public function afficherFormulaireFiltres()
+    {
+        $this->afficherFiltres = !$this->afficherFiltres;
+    }
+
+    public function appliquerFiltres()
+    {
+        $this->resetPage();
+    }
+
+    public function reinitialiserFiltres()
+    {
+        $this->valeursSelectionnees = [];
+        $this->resetPage();
     }
 
     public function render()

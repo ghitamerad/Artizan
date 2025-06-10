@@ -49,7 +49,12 @@ class PatronController extends Controller
         $outputFile = $outputDir . "generated_{$modele->id}.val"; // Nom du fichier généré
 
         // Exécuter la commande Valentina
-        $valentinaPath = 'C:\Program Files (x86)\Valentina';
+        $valentinaPath = env('VALENTINA_EXE_PATH');
+
+        if (!$valentinaPath || !file_exists($valentinaPath)) {
+            Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
+            return back()->withErrors(['Le chemin vers l\'exécutable Valentina est invalide ou non défini.']);
+        }
         $nomFichier = str_replace(' ', '_', strtolower($modele->nom)); // Remplace les espaces par des underscores
         $command = "\"$valentinaPath\\valentina.exe\" -b \"$nomFichier\" -d \"$outputDir\" -f 0 -m \"$xmlPath\" \"$patronPath\"";
 
@@ -118,7 +123,12 @@ class PatronController extends Controller
         $nomFichier = strtolower(str_replace(' ', '_', $modele->nom)) . "_{$detailCommande->id}";
         $outputFile = $customPatternDir . "{$nomFichier}.pdf";
 
-        $valentinaPath = 'C:\Program Files (x86)\Valentina';
+        $valentinaPath = env('VALENTINA_EXE_PATH');
+
+        if (!$valentinaPath || !file_exists($valentinaPath)) {
+            Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
+            return back()->withErrors(['Le chemin vers l\'exécutable Valentina est invalide ou non défini.']);
+        }
 
         $type = $modele->type; // 'normal' ou 'fragment'
 

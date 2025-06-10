@@ -11,30 +11,98 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use SimpleXMLElement;
+use App\Services\FusionPatronService;
+
 
 
 class ModeleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Modele::class);
-        $modeles = Modele::latest()->get();
-        return view('modeles.index', compact('modeles'));
-    }
+        $filtre = $request->get('filtre');
 
-    public function create(Request $request)
-    {
-        $this->authorize('create', Modele::class);
-        $categories = Categorie::leaf()->get();
-        $attributs = Attribut::with('valeurs')->get();
-        $attributValeurs = collect();
+        $modeles = Modele::query();
 
-        if ($request->has('devi_id')) {
-            $devi = Devis::with('attributValeurs.attribut')->findOrFail($request->devi_id);
-            $attributValeurs = $devi->attributValeurs;
+        if ($filtre === 'pretaporter') {
+            $modeles->where('sur_commande', false);
+        } elseif ($filtre === 'surmesure') {
+            $modeles->where('sur_commande', true);
+        } elseif ($filtre === 'rupture') {
+            $modeles->where('stock', 0);
         }
-        return view('modeles.create', compact('categories', 'attributs', 'attributValeurs'));
+
+        $modeles = $modeles->latest()->paginate(12); // ou selon ta pagination
+
+        return view('modeles.index', compact('modeles', 'filtre'));
     }
+
+public function create(Request $request)
+{
+    $this->authorize('create', Modele::class);
+
+    $categories = Categorie::leaf()->get();
+    $attributs = Attribut::with('valeurs')->get();
+    $attributValeurs = collect();
+    $cheminFichierVal = null;
+    $cheminFichierMesure = null;
+
+    if ($request->has('devis_id')) {
+        $devi = Devis::with([
+            'attributValeurs.attribut',
+            'categorie'
+        ])->findOrFail($request->devis_id);
+
+        $attributValeurs = $devi->attributValeurs;
+
+        // Récupérer uniquement les attributs obligatoires
+        $valeursObligatoires = $attributValeurs->filter(function ($valeur) {
+            return $valeur->attribut && $valeur->attribut->obligatoire;
+        });
+
+        // Injecter les données nécessaires dans la requête
+        $request->merge([
+            'categorie_id' => $devi->categorie_id,
+            'attribut_valeurs' => $valeursObligatoires->pluck('id')->toArray(),
+        ]);
+
+        // Appeler le service de fusion
+        $fusionService = new FusionPatronService();
+        $fusionService->genererPatronPersonnalise($request, $devi->id);
+
+        // Récupérer le chemin du fichier .val généré
+        if ($devi->chemin_patron) {
+            $cheminFichierVal = 'storage/' . $devi->chemin_patron;
+        }
+
+        // Retrouver la fiche de mesure utilisée pendant la génération
+        $categorie = $devi->categorie;
+
+        $categoriesAscendantes = collect([$categorie]);
+
+        if ($categorie->parent) {
+            $categoriesAscendantes->prepend($categorie->parent);
+        }
+
+        $categorieAvecFiche = $categoriesAscendantes->first(function ($c) {
+            return $c->fichier_mesure;
+        });
+
+        if ($categorieAvecFiche && Storage::disk('public')->exists($categorieAvecFiche->fichier_mesure)) {
+            $cheminFichierMesure = $categorieAvecFiche->fichier_mesure;
+        }
+    }
+
+    return view('modeles.create', compact(
+        'categories',
+        'attributs',
+        'attributValeurs',
+        'cheminFichierVal',
+        'cheminFichierMesure'
+    ));
+}
+
+
 
     public function store(Request $request)
     {
@@ -73,6 +141,22 @@ class ModeleController extends Controller
             $path = $request->file('image')->storeAs('modeles', $imageName, 'public');
             $modele->image = $path;
         }
+
+
+        if ($request->filled('fichier_val_auto')) {
+            $chemin = $request->input('fichier_val_auto'); // ex: 'patrons_generes/modele-123-fusionne.val'
+
+            if (Storage::exists($chemin)) {
+                $nomFinal = "patrons/modele-{$modele->id}-patron.val";
+
+                // Copier le fichier fusionné dans le dossier "public/patrons" avec un nom standardisé
+                Storage::disk('public')->put($nomFinal, Storage::get($chemin));
+
+                // Enregistrer le nouveau chemin dans la colonne "patron"
+                $modele->patron = $nomFinal;
+            }
+        }
+
 
         // Lier les valeurs d'attributs sélectionnées
         if (!empty($validatedData['attribut_valeurs'])) {

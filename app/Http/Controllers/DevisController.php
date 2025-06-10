@@ -19,73 +19,73 @@ class DevisController extends Controller
 
     public function indexClient()
     {
-$filtre = request('filtre', 'attente');
+        $filtre = request('filtre', 'attente');
 
-    $query = Devis::where('user_id', Auth::id());
+        $query = Devis::where('user_id', Auth::id());
 
-    switch ($filtre) {
-        case 'acceptes':
-            $query->where('statut', 'aceptee');
-            break;
-        case 'refuses':
-            $query->where('statut', 'refusee');
-            break;
-        case 'attente':
-        default:
-            $query->where('statut', 'en_attente');
-            break;
+        switch ($filtre) {
+            case 'acceptes':
+                $query->where('statut', 'aceptee');
+                break;
+            case 'refuses':
+                $query->where('statut', 'refusee');
+                break;
+            case 'attente':
+            default:
+                $query->where('statut', 'en_attente');
+                break;
+        }
+
+        $devis = $query->latest()->get();
+
+        return view('devis.mes-devis', compact('devis', 'filtre'));
     }
 
-    $devis = $query->latest()->get();
+    public function repondre(Request $request, Devis $devi)
+    {
+        $request->validate([
+            'tarif' => ['required', 'numeric', 'min:0'],
+        ]);
 
-    return view('devis.mes-devis', compact('devis', 'filtre'));
+        $devi->update(['tarif' => $request->tarif]);
+
+        $client = $devi->utilisateur;
+
+        // Notification in-app
+        $client->notify(new DevisProposeNotification($devi));
+
+        return redirect()->route('devis.show', $devi)
+            ->with('success', 'Tarif proposé avec succès. Le client a été notifié.');
     }
-
-public function repondre(Request $request, Devis $devi)
-{
-    $request->validate([
-        'tarif' => ['required', 'numeric', 'min:0'],
-    ]);
-
-    $devi->update(['tarif' => $request->tarif]);
-
-    $client = $devi->utilisateur;
-
-    // Notification in-app
-    $client->notify(new DevisProposeNotification($devi));
-
-    return redirect()->route('devis.show', $devi)
-        ->with('success', 'Tarif proposé avec succès. Le client a été notifié.');
-}
 
 
 
     public function repondreClient(Request $request, Devis $devi)
-{
-    $request->validate([
-        'statut' => 'required|in:aceptee,refusee',
-    ]);
+    {
+        $request->validate([
+            'statut' => 'required|in:aceptee,refusee',
+        ]);
 
-    // Vérifie que l'utilisateur est bien le client concerné
-    if ($devi->user_id !== Auth::id()) {
-        abort(403, 'Action non autorisée.');
+        // Vérifie que l'utilisateur est bien le client concerné
+        if ($devi->user_id !== Auth::id()) {
+            abort(403, 'Action non autorisée.');
+        }
+
+        // Le devis doit avoir un tarif proposé et ne pas déjà avoir été répondu
+        if (!$devi->tarif || $devi->statut !== "en_attente") {
+            return redirect()->back()->with('error', 'Action impossible.');
+        }
+
+        $devi->update([
+            'statut' => $request->statut,
+        ]);
+
+        $gerantes = User::where('role', 'gerante')->get();
+        Notification::send($gerantes, new DevisReponduParClientNotification($devi));
+
+
+        return redirect()->route('devis.show-client', $devi)->with('success', 'Réponse enregistrée avec succès.');
     }
-
-    // Le devis doit avoir un tarif proposé et ne pas déjà avoir été répondu
-    if (!$devi->tarif || $devi->statut !== "en_attente") {
-        return redirect()->back()->with('error', 'Action impossible.');
-    }
-
-    $devi->update([
-        'statut' => $request->statut,
-    ]);
-
-     $gerantes = User::where('role', 'gerante')->get();
-    Notification::send($gerantes, new DevisReponduParClientNotification($devi));
-
-
-    return redirect()->route('devis.show-client', $devi)->with('success', 'Réponse enregistrée avec succès.');
-}
 
 
 
@@ -125,9 +125,9 @@ public function repondre(Request $request, Devis $devi)
         $query = Devis::query();
 
         if ($filtre === 'nouvelles') {
-            $query->whereNull('tarif');
+            $query->where('statut','en_attente');
         } elseif ($filtre === 'proposes') {
-            $query->whereNotNull('tarif')->whereNull('statut'); // pas encore accepté/refusé
+            $query->whereNotNull('tarif')->where('statut','en_attente'); // pas encore accepté/refusé
         } elseif ($filtre === 'acceptes') {
             $query->where('statut', 'aceptee');
         } elseif ($filtre === 'refuses') {
@@ -210,17 +210,17 @@ public function repondre(Request $request, Devis $devi)
     }
 
     public function showClient(Devis $devi)
-{
-    // Vérifie que le client est bien l'utilisateur connecté
-    if ($devi->user_id !== Auth::id()) {
-        abort(403, 'Accès non autorisé.');
+    {
+        // Vérifie que le client est bien l'utilisateur connecté
+        if ($devi->user_id !== Auth::id()) {
+            abort(403, 'Accès non autorisé.');
+        }
+
+        // Charger les relations utiles
+        $devi->load('categorie', 'attributValeurs.attribut');
+
+        return view('devis.show-client', compact('devi'));
     }
-
-    // Charger les relations utiles
-    $devi->load('categorie', 'attributValeurs.attribut');
-
-    return view('devis.show-client', compact('devi'));
-}
 
 
     public function edit(Devis $devi)

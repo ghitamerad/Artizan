@@ -22,12 +22,28 @@ class CommandeController extends Controller
     /**
      * Afficher la liste des commandes (réservé aux admins et gérantes).
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Commande::class);
 
-        $commandes = Commande::latest()->get();
-        return view('commandes.index', compact('commandes'));
+        $filtre = $request->get('filtre');
+
+        $commandes = Commande::query();
+
+        if ($filtre === 'nouvellesCommandes') {
+            $commandes->where('statut', 'en_attente');
+        } elseif ($filtre === 'encours') {
+            $commandes->where('statut', 'validee')
+                      ->orWhere('statut', 'assigner');
+        } elseif ($filtre === 'terminees') {
+            $commandes->where('statut', 'expediee');
+        } elseif ($filtre === 'refusees') {
+            $commandes->where('statut', 'annulee');
+        }
+
+        $commandes = $commandes->latest()->paginate(10);
+
+        return view('commandes.index', compact('commandes', 'filtre'));
     }
     public function create()
     {
@@ -186,7 +202,7 @@ class CommandeController extends Controller
     {
         $this->authorize('validateCommande', $commande);
 
-        $client=$commande->user;
+        $client = $commande->user;
 
         $commande->update(['statut' => 'validee']);
         $client->notify(new CommandeTerminee($commande));

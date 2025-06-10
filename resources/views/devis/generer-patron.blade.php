@@ -4,7 +4,7 @@
 <div class="max-w-5xl mx-auto p-6 bg-white rounded-md shadow-md mt-8">
     <h1 class="text-3xl font-bold mb-6 text-gray-800">Générer un patron personnalisé</h1>
 
-    <form action="{{ route('patrons.generer') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+<form action="{{ route('devis.generer', ['id' => $devi->id]) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
 
         <!-- Catégorie sélectionnée -->

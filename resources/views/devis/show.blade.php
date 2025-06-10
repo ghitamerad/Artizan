@@ -106,12 +106,30 @@
     </div>
     @endif
 
-    <!-- Bouton retour -->
-    <div class="mt-8 flex justify-center">
+    <!-- Actions supplémentaires -->
+<div class="mt-8 flex flex-col md:flex-row items-center justify-center gap-4">
+
+        <!-- Bouton retour -->
         <a href="{{ route('devis.index') }}"
             class="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition duration-300">
             Retour à la liste des devis
         </a>
+    <!-- Bouton Créer un modèle -->
+    <a href="{{ route('modeles.create', ['devis_id' => $devi->id]) }}"
+        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+        Créer un modèle
+    </a>
+
+    @if ($canGeneratePatron)
+    <!-- Bouton Générer un patron -->
+    <a href="{{ route('devis.formGenererPatron', $devi) }}"
+        class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300">
+        Générer le patron
+    </a>
+    @endif
+
+
+
     </div>
 </div>
 @endsection

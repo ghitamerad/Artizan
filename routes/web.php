@@ -46,6 +46,12 @@ Route::get('/prod', function () {
     return view('prod');
 })->name('prod');
 
+Route::get('/graph', function () {
+
+    return view('statistiques.graph');
+})->name('prod');
+
+
 Route::get('/questionnaire', function () {
 
     return view('questionnaire');
@@ -214,7 +220,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/demander-devis', [DevisController::class, 'createClient'])->name('devis.demande');
 });
 
-Route::post('/patrons/generer', [ElementPatronController::class, 'genererPatronPersonnalise'])->name('patrons.generer');
+Route::post('/patrons/generer/{id}', [ElementPatronController::class, 'genererPatronPersonnalise'])->name('devis.generer');
 
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
