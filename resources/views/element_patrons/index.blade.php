@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="max-w-7xl mx-auto py-10 px-6">
+<div class="max-w-6xl mx-auto py-10 px-6">
     <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-bold text-gray-800">Éléments de Patron</h1>
         <a href="{{ route('element-patrons.create') }}" class="inline-flex items-center gap-2 bg-[#05335E] hover:bg-blue-800 text-white px-5 py-2 rounded-xl shadow transition">
@@ -18,15 +18,15 @@
 
     <div class="bg-white rounded-2xl shadow overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50 text-gray-700 text-sm font-semibold">
+            <thead class="bg-gray-200 text-gray-700 text-5xs font-semibold">
                 <tr>
                     <th class="px-6 py-4 text-left">Catégorie</th>
                     <th class="px-6 py-4 text-left">Valeur d'attribut</th>
-                    <th class="px-6 py-4 text-left">Fichier</th>
+                    <th class="px-6 py-4 text-left">Fichier Patron</th>
                     <th class="px-6 py-4 text-left">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 text-sm text-gray-800">
+            <tbody class="divide-y divide-gray-100 text-3xs text-gray-800">
                 @forelse($elements as $e)
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4">{{ $e->categorie->nom }}</td>

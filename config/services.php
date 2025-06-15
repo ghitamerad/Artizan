@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'valentina' => [
+        'exe_path' => env('VALENTINA_EXE_PATH'),
+    ],
+
+
 ];

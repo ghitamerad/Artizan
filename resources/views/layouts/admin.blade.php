@@ -12,7 +12,7 @@
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('images/logolebsazinacopy.png') }}" type="image/png">
 
-    @vite('resources/js/app.js')  {{-- pour Vite --}}
+    @vite('resources/js/app.js') {{-- pour Vite --}}
 
     @livewireStyles
 </head>
@@ -51,6 +51,9 @@
 
                     <!-- Admin & Gérante -->
                     @if (in_array($role, ['admin', 'gerante']))
+                        <x-nav-link :href="route('graph')" icon="chart-spline" :active="request()->routeIs('graph')">
+                            Statistiques
+                        </x-nav-link>
                         <x-nav-link :href="route('categories.index')" icon="tag" :active="request()->routeIs('categories.*')">
                             Gestion des catégories
                         </x-nav-link>
@@ -126,7 +129,7 @@
                             </button>
 
                             <div x-show="open" x-transition class="mt-2 ml-6 space-y-1 text-sm">
-                                <x-nav-link :href="route('commandes.index', ['filtre' => 'nouvellesCommande'])" :active="request()->get('filtre') === 'nouvelles'">
+                                <x-nav-link :href="route('commandes.index', ['filtre' => 'nouvellesCommande'])" :active="request()->get('filtre') === 'nouvellesCommande'">
                                     Nouvelles commandes
                                 </x-nav-link>
                                 <x-nav-link :href="route('commandes.index', ['filtre' => 'encours'])" :active="request()->get('filtre') === 'encours'">
@@ -187,16 +190,16 @@
                     <!-- Couturière uniquement -->
                     @if ($role === 'couturiere')
                         <x-nav-link :href="route('couturiere.dashboard')" icon="home" :active="request()->routeIs('couturiere.dashboard')">
-                            Tableau de bord
+                            Nouvelles commandes
                         </x-nav-link>
 
                         <x-nav-link :href="route('couturiere.commandes')" icon="clipboard-list" :active="request()->routeIs('couturiere.commandes')">
-                            Mes commandes
+                            Commandes validee
                         </x-nav-link>
                     @endif
                 @endif
                 <br />
-                @if (Auth::check())
+                {{-- @if (Auth::check())
                     <x-nav-link :href="route('notifications.index')" icon="bell" :active="request()->routeIs('notifications.index')">
                         Notifications
                         @if (auth()->user()->unreadNotifications->count() > 0)
@@ -206,7 +209,7 @@
                             </span>
                         @endif
                     </x-nav-link>
-                @endif
+                @endif --}}
 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -266,7 +269,7 @@
                     </a>
 
 
-                      <a href="{{ route('profile') }}"
+                    <a href="{{ route('profile') }}"
                         class="group relative flex items-center px-4 py-2 rounded-full overflow-hidden transition-colors duration-300 bg-gray-100">
 
                         {{-- Fond bleu animé qui vient de la gauche --}}

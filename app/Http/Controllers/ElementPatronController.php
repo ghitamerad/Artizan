@@ -114,11 +114,11 @@ class ElementPatronController extends Controller
 
 
 
-public function genererPatronPersonnalise(Request $request, $id)
+    public function genererPatronPersonnalise(Request $request, $id)
     {
         Log::info('Début de genererPatronPersonnalise');
 
-        $valentinaExePath = env('VALENTINA_EXE_PATH');
+        $valentinaExePath = config('services.valentina.exe_path');
 
         if (!$valentinaExePath || !file_exists($valentinaExePath)) {
             Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
@@ -355,4 +355,3 @@ public function genererPatronPersonnalise(Request $request, $id)
         return $outputVal;
     }
 }
-

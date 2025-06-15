@@ -49,7 +49,7 @@ Route::get('/prod', function () {
 Route::get('/graph', function () {
 
     return view('statistiques.graph');
-})->name('prod');
+})->name('graph');
 
 
 Route::get('/questionnaire', function () {

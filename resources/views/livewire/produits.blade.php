@@ -25,51 +25,47 @@
 
 
         {{-- Filtres par attribut --}}
-{{-- Bouton pour afficher/masquer les filtres --}}
-<div class="text-center mt-6">
-    <button wire:click="afficherFormulaireFiltres"
-        class="bg-[#05335E] text-white px-4 py-2 rounded-lg hover:bg-[#1A252F] transition-colors duration-300">
-        {{ $afficherFiltres ? 'Masquer les filtres' : 'Filtrer les modèles' }}
-    </button>
-</div>
+        {{-- Bouton pour afficher/masquer les filtres --}}
+        <div class="text-center mt-6">
+            <button wire:click="afficherFormulaireFiltres"
+                class="bg-[#05335E] text-white px-4 py-2 rounded-lg hover:bg-[#1A252F] transition-colors duration-300">
+                {{ $afficherFiltres ? 'Masquer les filtres' : 'Filtrer les modèles' }}
+            </button>
+        </div>
 
-{{-- Filtres par attribut, affichés seulement si $afficherFiltres est vrai --}}
-@if ($afficherFiltres)
-    <div class="w-full overflow-x-auto mt-6">
-        <div class="flex flex-wrap md:flex-nowrap gap-6">
-            @foreach ($attributs as $attribut)
-                <div class="min-w-[200px] bg-white border rounded-xl p-4 shadow-md flex-shrink-0">
-                    <p class="text-sm font-semibold text-gray-700 mb-3 text-center">{{ $attribut->nom }}</p>
-                    <div class="flex flex-col gap-2">
-                        @foreach ($attribut->valeurs as $valeur)
-                            <label class="flex items-center gap-2 text-sm text-gray-700">
-                                <input
-                                    type="checkbox"
-                                    wire:model.lazy="valeursSelectionnees"
-                                    value="{{ $valeur->id }}"
-                                    class="rounded"
-                                >
-                                {{ $valeur->nom }}
-                            </label>
-                        @endforeach
-                    </div>
+        {{-- Filtres par attribut, affichés seulement si $afficherFiltres est vrai --}}
+        @if ($afficherFiltres)
+            <div class="w-full overflow-x-auto mt-6">
+                <div class="flex flex-wrap md:flex-nowrap gap-6">
+                    @foreach ($attributs as $attribut)
+                        <div class="min-w-[200px] bg-white border rounded-xl p-4 shadow-md flex-shrink-0">
+                            <p class="text-sm font-semibold text-gray-700 mb-3 text-center">{{ $attribut->nom }}</p>
+                            <div class="flex flex-col gap-2">
+                                @foreach ($attribut->valeurs as $valeur)
+                                    <label class="flex items-center gap-2 text-sm text-gray-700">
+                                        <input type="checkbox" wire:model.lazy="valeursSelectionnees"
+                                            value="{{ $valeur->id }}" class="rounded">
+                                        {{ $valeur->nom }}
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
-            @endforeach
-        </div>
 
-        {{-- Boutons appliquer et réinitialiser --}}
-        <div class="flex justify-center gap-4 mt-6">
-            <button wire:click="appliquerFiltres"
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300">
-                Appliquer les filtres
-            </button>
-            <button wire:click="resetFiltres"
-                class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors duration-300">
-                Réinitialiser
-            </button>
-        </div>
-    </div>
-@endif
+                {{-- Boutons appliquer et réinitialiser --}}
+                <div class="flex justify-center gap-4 mt-6">
+                    <button wire:click="appliquerFiltres"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                        Appliquer les filtres
+                    </button>
+                    <button wire:click="resetFiltres"
+                        class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors duration-300">
+                        Réinitialiser
+                    </button>
+                </div>
+            </div>
+        @endif
 
         <hr class="my-8 border-t border-gray-300">
 

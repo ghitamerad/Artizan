@@ -1,128 +1,128 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-lg mt-6">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-800">Liste des commandes</h2>
+    <div class="max-w-7xl mx-auto py-10 px-6">
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-8 shadow-sm">
 
-            <a href="{{ route('commandes.create') }}"
-                class="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center space-x-2">
-                <i data-lucide="plus" class="w-5 h-5 text-white"></i>
-                <span>Créer une commande</span>
-            </a>
-        </div>
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Liste des Commandes</h1>
 
-        @if (session('success'))
-            <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-lg">
-                {{ session('success') }}
+                <a href="{{ route('commandes.create') }}"
+                    class="inline-flex items-center gap-2 bg-[#05335E] hover:bg-blue-800 text-white px-5 py-2 rounded-xl shadow transition">
+                    <i data-lucide="plus" class="w-5 h-5"></i>
+                    <span>Créer une commande</span>
+                </a>
             </div>
-        @endif
 
-        <div class="overflow-x-auto">
-            <table class="w-full border-collapse bg-gray-100 rounded-lg shadow-md" x-data="{ openRow: null }">
-                <thead>
-                    <tr class="bg-gray-300 text-gray-800">
-                        <th class="px-6 py-3 text-left font-semibold">ID</th>
-                        <th class="px-6 py-3 text-left font-semibold">Client</th>
-                        <th class="px-6 py-3 text-left font-semibold">Montant Total (€)</th>
-                        <th class="px-6 py-3 text-left font-semibold">Statut</th>
-                        <th class="px-6 py-3 text-left font-semibold">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($commandes as $index => $commande)
-                        <tr class="border-b border-gray-200 hover:bg-gray-200 transition"
-                            @click="window.location='{{ route('commandes.show', $commande) }}'">
-                            <td class="px-6 py-4">{{ $commande->id }}</td>
-                            <td class="px-6 py-4">{{ $commande->user->name }}</td>
-                            <td class="px-6 py-4">{{ number_format($commande->montant_total, 2) }} €</td>
-                            <td class="px-6 py-4">
-                                <span
-                                    class="px-3 py-1 rounded-full text-white
-                                {{ $commande->statut == 'validee'
-                                    ? 'bg-green-500'
-                                    : ($commande->statut == 'refusee'
-                                        ? 'bg-red-500'
-                                        : 'bg-yellow-500') }}">
-                                    {{ ucfirst($commande->statut) }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 flex flex-wrap gap-2 items-center">
-                                <button
-                                    @click="openRow === {{ $index }} ? openRow = null : openRow = {{ $index }}"
-                                    class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 flex items-center space-x-1">
-                                    <i data-lucide="chevron-down" class="w-4 h-4"
-                                        :class="{ 'rotate-180': openRow === {{ $index }} }"></i>
-                                    <span>Détails</span>
-                                </button>
+            @if (session('success'))
+                <div class="bg-green-100 text-green-800 border border-green-300 rounded-lg px-4 py-3 mb-6">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                                @can('update', $commande)
-                                    <a href="{{ route('commandes.edit', $commande) }}"
-                                        class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 flex items-center space-x-1">
-                                        <i data-lucide="pencil" class="w-4 h-4 text-white"></i>
-                                        <span>Modifier</span>
-                                    </a>
-                                @endcan
-
-                                @can('validateCommande', $commande)
-                                    <form action="{{ route('commandes.validate', $commande) }}" method="POST">
-                                        @csrf
-                                        <button type="submit"
-                                            class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 flex items-center space-x-1">
-                                            <i data-lucide="check" class="w-4 h-4 text-white"></i>
-                                            <span>Valider</span>
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('commandes.invalidate', $commande) }}" method="POST">
-                                        @csrf
-                                        <button type="submit"
-                                            class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 flex items-center space-x-1">
-                                            <i data-lucide="x" class="w-4 h-4 text-white"></i>
-                                            <span>Refuser</span>
-                                        </button>
-                                    </form>
-                                @endcan
-
-                                {{-- @can('delete', $commande)
-                                <form action="{{ route('commandes.destroy', $commande) }}" method="POST"
-                                      onsubmit="return confirm('Supprimer cette commande ?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit"
-                                            class="bg-gray-500 text-white px-3 py-1 rounded-lg hover:bg-gray-600 flex items-center space-x-1">
-                                        <i data-lucide="trash" class="w-4 h-4 text-white"></i>
-                                        <span>Supprimer</span>
-                                    </button>
-                                </form>
-                            @endcan --}}
-                            </td>
+            <div class="bg-white rounded-2xl shadow overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200" x-data="{ openRow: null }">
+                    <thead class="bg-gray-200 text-gray-700 text-base font-semibold">
+                        <tr>
+                            <th class="px-6 py-4 text-left">ID</th>
+                            <th class="px-6 py-4 text-left">Client</th>
+                            <th class="px-6 py-4 text-left">Montant Total (DZD)</th>
+                            <th class="px-6 py-4 text-left">Statut</th>
+                            <th class="px-6 py-4 text-center">Actions</th>
                         </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-base text-gray-800">
+                        @foreach ($commandes as $index => $commande)
+                            <tr class="hover:bg-gray-50 transition cursor-pointer"
+                                @click="window.location='{{ route('commandes.show', $commande) }}'">
+                                <td class="px-6 py-4">{{ $commande->id }}</td>
+                                <td class="px-6 py-4">{{ $commande->user->name }}</td>
+                                <td class="px-6 py-4">{{ number_format($commande->montant_total, 2)}} DZD</td>
+                                <td class="px-6 py-4">
+                                    <span
+                                        class="px-3 py-1 rounded-full text-white text-base
+                                        {{ $commande->statut === 'validee' ? 'bg-green-500' : ($commande->statut === 'refusee' ? 'bg-red-500' : 'bg-yellow-500') }}">
+                                        {{ ucfirst($commande->statut) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex gap-3 flex-wrap items-center">
 
-                        <tr x-show="openRow === {{ $index }}" x-transition x-cloak class="bg-white">
-                            <td colspan="5" class="px-6 pb-4">
-                                <div class="border-l-4 border-blue-500 pl-4 mt-2">
-                                    <h4 class="font-semibold text-gray-700 mb-2">Détails :</h4>
-                                    @if ($commande->details->isNotEmpty())
-                                        <ul class="list-disc list-inside text-gray-600 space-y-1">
-                                            @foreach ($commande->details as $detail)
-                                                <li>
-                                                    <a href="{{ route('commandes.detail_commande', $detail) }}"
-                                                        class="hover:underline">
-                                                        Modèle : {{ $detail->modele->nom ?? '—' }},
-                                                        Quantité : {{ $detail->quantite }},
-                                                        Prix : {{ number_format($detail->prix_unitaire, 2) }} DZD
-                                                    </a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <p class="text-gray-500 text-sm">Aucun détail pour cette commande.</p>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                                        <button
+                                            @click.stop="openRow === {{ $index }} ? openRow = null : openRow = {{ $index }}"
+                                            class="flex items-center gap-1 px-3 py-1 border border-blue-200 bg-blue-50 text-blue-700 rounded-md shadow-sm hover:bg-blue-100 transition">
+                                            <i data-lucide="chevron-down" class="w-4 h-4"
+                                                :class="{ 'rotate-180': openRow === {{ $index }} }"></i>
+                                            <span>Détails</span>
+                                        </button>
+
+                                        @can('update', $commande)
+                                            <a href="{{ route('commandes.edit', $commande) }}"
+                                                class="flex items-center gap-1 px-3 py-1 border border-yellow-200 bg-yellow-50 text-yellow-700 rounded-md shadow-sm hover:bg-yellow-100 transition">
+                                                <i data-lucide="pencil" class="w-4 h-4"></i> Modifier
+                                            </a>
+                                        @endcan
+
+                                        @can('validateCommande', $commande)
+                                            <form action="{{ route('commandes.validate', $commande) }}" method="POST">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="flex items-center gap-1 px-3 py-1 border border-green-200 bg-green-50 text-green-700 rounded-md shadow-sm hover:bg-green-100 transition">
+                                                    <i data-lucide="check" class="w-4 h-4"></i> Valider
+                                                </button>
+                                            </form>
+
+                                            <form action="{{ route('commandes.invalidate', $commande) }}" method="POST">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="flex items-center gap-1 px-3 py-1 border border-red-200 bg-red-50 text-red-700 rounded-md shadow-sm hover:bg-red-100 transition">
+                                                    <i data-lucide="x" class="w-4 h-4"></i> Refuser
+                                                </button>
+                                            </form>
+                                        @endcan
+
+                                        {{-- Suppression désactivée
+                                        @can('delete', $commande)
+                                            <form action="{{ route('commandes.destroy', $commande) }}" method="POST"
+                                                onsubmit="return confirm('Supprimer cette commande ?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit"
+                                                    class="flex items-center gap-1 px-3 py-1 border border-gray-200 bg-gray-50 text-gray-700 rounded-md shadow-sm hover:bg-gray-100 transition">
+                                                    <i data-lucide="trash" class="w-4 h-4"></i> Supprimer
+                                                </button>
+                                            </form>
+                                        @endcan --}}
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr x-show="openRow === {{ $index }}" x-transition x-cloak class="bg-gray-50">
+                                <td colspan="5" class="px-6 pb-4">
+                                    <div class="border-l-4 border-blue-500 pl-4 mt-2">
+                                        <h4 class="font-semibold text-gray-700 mb-2">Détails :</h4>
+                                        @if ($commande->details->isNotEmpty())
+                                            <ul class="list-disc list-inside text-gray-600 space-y-1 text-base">
+                                                @foreach ($commande->details as $detail)
+                                                    <li>
+                                                        <a href="{{ route('commandes.detail_commande', $detail) }}"
+                                                            class="hover:underline">
+                                                            Modèle : {{ $detail->modele->nom ?? '—' }},
+                                                            Quantité : {{ $detail->quantite }},
+                                                            Prix : {{ number_format($detail->prix_unitaire, 2) }} DZD
+                                                        </a>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        @else
+                                            <p class="text-gray-500 text-base">Aucun détail pour cette commande.</p>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 @endsection

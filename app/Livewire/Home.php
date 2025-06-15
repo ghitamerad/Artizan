@@ -6,66 +6,96 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Modele;
 use App\Models\Categorie;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Attribut;
 use App\Models\Panier;
+use Illuminate\Support\Facades\Auth;
 
 class Home extends Component
 {
     use WithPagination;
 
-    // Propriétés publiques liées aux filtres
-    public $search = ''; // Texte recherché
-    public $selectedCategorie = ''; // Filtrage par catégorie (désactivé ici)
-    public $minPrix = null; // Filtrage prix min (désactivé ici)
-    public $maxPrix = null; // Filtrage prix max (désactivé ici)
+    // Filtres
+    public $search = '';
+    public $categorieSelectionnee = null;
+    public $valeursSelectionnees = [];
+    public $afficherFiltres = false;
+        public $filtre = null;
 
-    // Permet d’ajouter les filtres dans l’URL
+
+    // Query string
     protected $queryString = [
         'search' => ['except' => ''],
-        // 'selectedCategorie' => ['except' => ''],
-        // 'minPrix' => ['except' => null],
-        // 'maxPrix' => ['except' => null],
+        'categorieSelectionnee' => ['except' => null],
+        'valeursSelectionnees' => ['except' => []],
+        'filtre',
     ];
 
-    // Événement Livewire pour forcer le rafraîchissement
     protected $listeners = [
         'refreshComponent' => '$refresh',
         'searchUpdated' => 'setSearchTerm',
     ];
+
+    public function mount()
+    {
+        $this->search = request()->query('search', '');
+                $this->filtre = request()->get('filtre');
+
+    }
 
     public function setSearchTerm($value)
     {
         $this->search = $value;
         $this->resetPage();
     }
+    public function filtrerParType($type)
+{
+    if (in_array($type, ['pretaporter', 'surmesure'])) {
+        $this->filtre = $type;
+    } else {
+        $this->filtre = null;
+    }
 
-    // Réinitialise la pagination quand on modifie la recherche
+    $this->resetPage();
+}
+
+
     public function updatedSearch()
     {
         $this->resetPage();
     }
 
-    // Fonctions désactivées (liées à filtres non utilisés)
-    public function updatedSelectedCategorie() { $this->resetPage(); }
-    public function updatedMinPrix() { $this->resetPage(); }
-    public function updatedMaxPrix() { $this->resetPage(); }
-
-    // Fonction de réinitialisation de tous les filtres (inutile ici)
-    public function resetFiltres()
+    public function updatingCategorieSelectionnee()
     {
-        $this->search = '';
-        $this->selectedCategorie = '';
-        $this->minPrix = null;
-        $this->maxPrix = null;
+        $this->resetPage();
     }
 
-public function mount()
-{
-    $this->search = request()->query('search', '');
-}
+    public function updatingValeursSelectionnees()
+    {
+        $this->resetPage();
+    }
 
+    public function selectCategorie($id)
+    {
+        $this->categorieSelectionnee = $id;
+        $this->resetPage();
+    }
 
-    // Ajout d’un modèle au panier (fonctionnalité conservée)
+    public function afficherFormulaireFiltres()
+    {
+        $this->afficherFiltres = !$this->afficherFiltres;
+    }
+
+    public function appliquerFiltres()
+    {
+        $this->resetPage();
+    }
+
+    public function reinitialiserFiltres()
+    {
+        $this->valeursSelectionnees = [];
+        $this->resetPage();
+    }
+
     public function ajouterAuPanier($modeleId)
     {
         if (!Auth::check()) {
@@ -87,16 +117,60 @@ public function mount()
         $this->dispatch('panierMisAJour');
     }
 
-    // Méthode principale pour afficher les modèles
+    public function getCategoriesActuellesProperty()
+    {
+        if ($this->categorieSelectionnee) {
+            $categorie = Categorie::with('enfants')->find($this->categorieSelectionnee);
+
+            // Si la catégorie a des enfants, on les affiche
+            if ($categorie && $categorie->enfants->isNotEmpty()) {
+                return $categorie->enfants;
+            }
+
+            // Si c'est une feuille => on n'affiche rien
+            return null;
+        }
+
+        // Aucune catégorie sélectionnée : on affiche les racines
+        return Categorie::whereNull('categorie_id')->get();
+    }
+
+    public function getModelesProperty()
+    {
+        $query = Modele::query();
+
+         if ($this->filtre === 'pretaporter') {
+            $query->where('sur_commande', false);
+        } elseif ($this->filtre === 'surmesure') {
+            $query->where('sur_commande', true);
+        }
+
+        if ($this->search) {
+            $query->where(function ($q) {
+                $q->where('nom', 'like', '%' . $this->search . '%')
+                  ->orWhere('description', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        if ($this->categorieSelectionnee) {
+            $query->where('categorie_id', $this->categorieSelectionnee);
+        }
+
+        if (!empty($this->valeursSelectionnees)) {
+            $query->whereHas('attributValeurs', function ($q) {
+                $q->whereIn('attribut_valeurs.id', $this->valeursSelectionnees);
+            });
+        }
+
+        return $query->with('categorie')->orderBy('created_at', 'desc')->paginate(9);
+    }
+
     public function render()
     {
-    $modeles = Modele::where('nom', 'like', '%' . $this->search . '%')
-        ->orWhere('description', 'like', '%' . $this->search . '%')
-        ->orderBy('created_at', 'desc')
-        ->paginate(9);
-
-    return view('livewire.home', [
-        'modeles' => $modeles,
-    ])->layout('layouts.test');
+        return view('livewire.home', [
+            'categoriesActuelles' => $this->categoriesActuelles,
+            'attributs' => Attribut::with('valeurs')->get(),
+            'modeles' => $this->modeles,
+        ])->layout('layouts.test');
     }
 }

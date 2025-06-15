@@ -58,7 +58,7 @@ class GeneratePatronService
         $nomFichier = strtolower(str_replace(' ', '_', $modele->nom)) . "_{$detailCommande->id}";
         $outputFile = $customPatternDir . "{$nomFichier}.pdf";
 
-        $valentinaPath = env('VALENTINA_EXE_PATH');
+        $valentinaPath = config('services.valentina.exe_path');
 
         if (!$valentinaPath || !file_exists($valentinaPath)) {
             Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
@@ -152,7 +152,7 @@ class GeneratePatronService
     //     $nomFichier = strtolower(str_replace(' ', '_', $modele->nom)) . "_{$detailCommande->id}";
     //     $outputFile = $customPatternDir . "{$nomFichier}.svg";
 
-    // $valentinaPath = env('VALENTINA_EXE_PATH');
+    //$valentinaPath = config('services.valentina.exe_path');
 
     // if (!$valentinaPath || !file_exists($valentinaPath)) {
     //     Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");

@@ -120,10 +120,10 @@
                 <label for="type" class="block text-gray-700 font-medium">Type de modèle</label>
                 <select id="type" name="type" required
                     class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <option value="standard" {{ old('type', $modele->type) == 'standard' ? 'selected' : '' }}>Standard
+                    <option value="normal" {{ old('type', $modele->type) == 'normal' ? 'selected' : '' }}>Normal
                     </option>
-                    <option value="personnalise" {{ old('type', $modele->type) == 'personnalise' ? 'selected' : '' }}>
-                        Personnalisé</option>
+                    <option value="fragment" {{ old('type', $modele->type) == 'fragment' ? 'selected' : '' }}>
+                        fragment</option>
                 </select>
             </div>
 

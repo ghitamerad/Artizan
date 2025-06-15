@@ -16,7 +16,7 @@
         <div class="mb-4">
             <label for="nom" class="block text-gray-700 font-semibold mb-2">Nom de la catégorie</label>
             <input type="text" name="nom" id="nom" value="{{ old('nom') }}"
-                   class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+       class="w-full h-8 border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
             @error('nom')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror

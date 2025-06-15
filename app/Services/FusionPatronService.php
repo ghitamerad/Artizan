@@ -22,11 +22,11 @@ class FusionPatronService
     {
         Log::info('Début de genererPatronPersonnalise');
 
-        $valentinaExePath = env('VALENTINA_EXE_PATH');
-
+        $valentinaExePath = config('services.valentina.exe_path');
+        
         if (!$valentinaExePath || !file_exists($valentinaExePath)) {
-            Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
-            return back()->withErrors(['Le chemin vers l\'exécutable Valentina est invalide ou non défini.']);
+            Log::error('Le chemin vers l\'exécutable Valentina est invalide ou non défini.');
+            return back()->withErrors(['Erreur : le chemin de Valentina est incorrect ou manquant.']);
         }
 
         $categorieId = $request->input('categorie_id');
