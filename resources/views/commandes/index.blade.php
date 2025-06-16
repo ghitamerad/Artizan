@@ -37,14 +37,21 @@
                                 @click="window.location='{{ route('commandes.show', $commande) }}'">
                                 <td class="px-6 py-4">{{ $commande->id }}</td>
                                 <td class="px-6 py-4">{{ $commande->user->name }}</td>
-                                <td class="px-6 py-4">{{ number_format($commande->montant_total, 2)}} DZD</td>
+                                <td class="px-6 py-4">{{ number_format($commande->montant_total, 2) }} DZD</td>
                                 <td class="px-6 py-4">
                                     <span
                                         class="px-3 py-1 rounded-full text-white text-base
-                                        {{ $commande->statut === 'validee' ? 'bg-green-500' : ($commande->statut === 'refusee' ? 'bg-red-500' : 'bg-yellow-500') }}">
+        @switch($commande->statut)
+            @case('validee') bg-green-500 @break
+            @case('refusee') bg-red-500 @break
+            @case('annulee') bg-red-500 @break
+            @case('assigner') bg-purple-600 @break
+            @default bg-yellow-500
+        @endswitch">
                                         {{ ucfirst($commande->statut) }}
                                     </span>
                                 </td>
+
                                 <td class="px-6 py-4">
                                     <div class="flex gap-3 flex-wrap items-center">
 

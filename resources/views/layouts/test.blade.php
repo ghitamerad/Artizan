@@ -50,17 +50,27 @@
                     <div class="hidden md:flex space-x-8 items-center">
                         <a href="{{ route('home') }}"
                             class="text-[#05335E] hover:text-[#C19B2C] font-medium">Accueil</a>
+
+                        <a href="{{ route('home') }}"
+                            class="text-[#05335E] hover:text-[#C19B2C] font-medium">Catalogue</a>
                         {{-- <a href="{{ route('pret-a-porter') }}"
                             class="text-[#05335E] hover:text-[#C19B2C] font-medium">Pret à Porter</a>
                         <a href="{{ route('sur-mesure') }}" class="text-[#05335E] hover:text-[#C19B2C] font-medium">Sur
                             Mesure</a> --}}
                         <a href="{{ route('devis.demande') }}"
                             class="text-[#05335E] hover:text-[#C19B2C] font-medium">Demander un devis</a>
+
+
                     </div>
 
                     <!-- Champ de recherche Livewire -->
                     <div class="hidden md:block">
                         @livewire('recherche-bar')
+                       {{-- <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 hover:text-[#2C3E50]"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>--}}
                     </div>
 
 
@@ -105,6 +115,7 @@
                 <!-- Menu mobile (caché par défaut) -->
                 <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2">
                     <a href="{{ route('home') }}" class="block text-[#05335E] font-medium">Accueil</a>
+                    <a href="{{ route('home') }}" class="block text-[#05335E] font-medium">Catalogue</a>
                     {{-- <a href="{{ route('pret-a-porter') }}" class="block text-[#05335E] font-medium">Pret à Porter</a>
                     <a href="{{ route('sur-mesure') }}" class="block text-[#05335E] font-medium">Sur Mesure</a> --}}
                     <a href="{{ route('devis.demande') }}" class="block text-[#05335E] font-medium">Demander un
@@ -133,7 +144,7 @@
 
     </div>
 
-        <script>
+    <script>
         lucide.createIcons();
     </script>
 

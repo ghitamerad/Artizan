@@ -14,7 +14,7 @@
     @if (!$categorieFinale)
         <div>
             <h2 class="text-xl font-semibold text-[#05335E] mb-6">Choisissez une catégorie</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 justify-center">
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center">
                 @foreach ($categoriesActuelles as $categorie)
                     <button wire:click="selectCategorie({{ $categorie->id }})"
                         class="group w-48 flex flex-col items-center justify-center px-4 h-[300px] bg-white border border-gray-200 rounded-full shadow-sm hover:shadow-lg hover:border-blue-400 transition duration-300">
@@ -44,10 +44,15 @@
     @endif
 
     {{-- Choix des attributs --}}
-    @if ($categorieFinale)
+@if ($categorieFinale)
         <div>
             <h2 class="text-xl font-semibold text-[#05335E] mb-6">Personnalisez votre tenue :
                 {{ $categorieFinale->nom }}</h2>
+                        @if (count($attributs) === 0)
+            <div class="text-gray-600 bg-yellow-100 border border-yellow-300 rounded-lg px-4 py-3 mb-6">
+                Aucun attribut n’est lié à cette catégorie pour la personnalisation.
+            </div>
+        @endif
 
             @foreach ($attributs as $attributId => $data)
                 <div class="mb-8">
@@ -58,17 +63,19 @@
                                 x-data="{ isActive: {{ isset($selectedValeurs[$attributId]) && $selectedValeurs[$attributId] == $valeurId ? 'true' : 'false' }} }" x-on:click="isActive = true"
                                 :class="isActive ? 'border-blue-500 ring-2 ring-blue-300 scale-105' : 'border-gray-300'"
                                 class="cursor-pointer border rounded-xl p-3 w-32 h-28 flex flex-col items-center justify-center transition-all duration-300 ease-in-out bg-white hover:shadow-lg">
-        @if (!empty($valeur['image']))
-            <img src="{{ asset('storage/' . $valeur['image']) }}" alt="{{ $valeur['nom'] }}"
-                class="w-16 h-16 object-cover rounded-md mb-2">
-        @endif
+                                @if (!empty($valeur['image']))
+                                    <img src="{{ asset('storage/' . $valeur['image']) }}" alt="{{ $valeur['nom'] }}"
+                                        class="w-16 h-16 object-cover rounded-md mb-2">
+                                @endif
 
-        <span class="text-sm text-gray-700 text-center">{{ $valeur['nom'] }}</span>
+                                <span class="text-sm text-gray-700 text-center">{{ $valeur['nom'] }}</span>
                             </div>
                         @endforeach
                     </div>
                 </div>
             @endforeach
+                            <button wire:click="retour" class="text-sm text-blue-600 hover:underline transition">← Changer de
+                    catégorie</button>
 
             <div class="mt-6 flex gap-4">
                 <button wire:click="genererResultats"
@@ -76,8 +83,6 @@
                     Voir les modèles correspondants
                 </button>
 
-                <button wire:click="retour" class="text-sm text-blue-600 hover:underline transition">← Changer de
-                    catégorie</button>
             </div>
         </div>
     @endif

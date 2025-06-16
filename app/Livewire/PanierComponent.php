@@ -49,20 +49,27 @@ class PanierComponent extends Component
             $userId = Auth::id();
             $panier = Cache::get("panier_{$userId}", []);
 
-            // Ajout des mesures à chaque item du panier
             foreach ($panier as $modeleId => $item) {
                 $mesures = Cache::get("mesures_user_{$userId}_modele_{$modeleId}", []);
                 $item['mesures'] = $mesures;
+
+                // ✅ Ajout de l'image
+                $modele = Modele::find($modeleId);
+                $item['image'] = $modele?->image;
+
                 $panier[$modeleId] = $item;
             }
         } else {
             $panier = Session::get('panier_invite', []);
 
-            // Si tu souhaites aussi gérer des mesures pour les invités (optionnel),
-            // tu pourrais les stocker dans la session et les récupérer ici.
             foreach ($panier as $modeleId => $item) {
                 $mesures = Session::get("mesures_invite_modele_{$modeleId}", []);
                 $item['mesures'] = $mesures;
+
+                // ✅ Ajout de l'image aussi pour invités
+                $modele = Modele::find($modeleId);
+                $item['image'] = $modele?->image;
+
                 $panier[$modeleId] = $item;
             }
         }
@@ -70,6 +77,7 @@ class PanierComponent extends Component
         $this->panier = $panier;
         $this->totalArticles = array_sum(array_column($this->panier, 'quantite'));
     }
+
 
 
     public function retirerDuPanier($modeleId)
@@ -98,7 +106,6 @@ class PanierComponent extends Component
         $this->chargerPanier();
 
         $this->dispatch('panierMisAJour', $this->totalArticles);
-
     }
 
     public function viderPanier()
@@ -111,7 +118,6 @@ class PanierComponent extends Component
 
         $this->chargerPanier();
         $this->dispatch('panierMisAJour', 0);
-
     }
 
     public function render()

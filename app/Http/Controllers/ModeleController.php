@@ -224,8 +224,8 @@ public function create(Request $request)
             'description' => 'nullable|string',
             'prix' => 'required|integer|min:0',
             'categorie_id' => 'required|exists:categories,id',
-            'valeurs' => 'array',
-            'valeurs.*' => 'exists:attribut_valeurs,id',
+            'attribut_valeurs' => 'array',
+            'attribut_valeurs.*' => 'exists:attribut_valeurs,id',
             'patron' => 'nullable|file|max:2048',
             'xml' => 'nullable|file|max:2048',
             'image' => 'nullable|image|max:2048',
@@ -275,7 +275,7 @@ public function create(Request $request)
         ]);
 
         // On synchronise les valeurs d'attributs avec la table pivot
-        $modele->attributValeurs()->sync($validatedData['valeurs'] ?? []);
+        $modele->attributValeurs()->sync(array_values($validatedData['attribut_valeurs'] ?? []));
 
         return redirect()->route('modeles.index')->with('message', 'Modèle mis à jour avec succès !');
     }

@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Livewire;
 
 use Livewire\Component;
@@ -14,15 +15,12 @@ class Home extends Component
 {
     use WithPagination;
 
-    // Filtres
     public $search = '';
     public $categorieSelectionnee = null;
     public $valeursSelectionnees = [];
     public $afficherFiltres = false;
-        public $filtre = null;
+    public $filtre = null;
 
-
-    // Query string
     protected $queryString = [
         'search' => ['except' => ''],
         'categorieSelectionnee' => ['except' => null],
@@ -38,8 +36,16 @@ class Home extends Component
     public function mount()
     {
         $this->search = request()->query('search', '');
-                $this->filtre = request()->get('filtre');
+        $this->filtre = request()->get('filtre');
+    }
 
+    public function resetFiltres()
+    {
+        $this->valeursSelectionnees = [];
+        $this->categorieSelectionnee = null;
+        $this->filtre = null;
+        $this->afficherFiltres = false;
+        $this->appliquerFiltres();
     }
 
     public function setSearchTerm($value)
@@ -47,32 +53,16 @@ class Home extends Component
         $this->search = $value;
         $this->resetPage();
     }
+
     public function filtrerParType($type)
-{
-    if (in_array($type, ['pretaporter', 'surmesure'])) {
-        $this->filtre = $type;
-    } else {
-        $this->filtre = null;
-    }
-
-    $this->resetPage();
-}
-
-
-    public function updatedSearch()
     {
+        $this->filtre = in_array($type, ['pretaporter', 'surmesure']) ? $type : null;
         $this->resetPage();
     }
 
-    public function updatingCategorieSelectionnee()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingValeursSelectionnees()
-    {
-        $this->resetPage();
-    }
+    public function updatedSearch() { $this->resetPage(); }
+    public function updatingCategorieSelectionnee() { $this->resetPage(); }
+    public function updatingValeursSelectionnees() { $this->resetPage(); }
 
     public function selectCategorie($id)
     {
@@ -85,16 +75,8 @@ class Home extends Component
         $this->afficherFiltres = !$this->afficherFiltres;
     }
 
-    public function appliquerFiltres()
-    {
-        $this->resetPage();
-    }
-
-    public function reinitialiserFiltres()
-    {
-        $this->valeursSelectionnees = [];
-        $this->resetPage();
-    }
+    public function appliquerFiltres() { $this->resetPage(); }
+    public function reinitialiserFiltres() { $this->valeursSelectionnees = []; $this->resetPage(); }
 
     public function ajouterAuPanier($modeleId)
     {
@@ -117,29 +99,38 @@ class Home extends Component
         $this->dispatch('panierMisAJour');
     }
 
+    // ✅ Méthode récursive pour récupérer tous les IDs enfants
+    public function getCategorieAvecEnfants($categorieId)
+    {
+        $ids = [$categorieId];
+        $categorie = Categorie::with('enfants')->find($categorieId);
+
+        if ($categorie) {
+            foreach ($categorie->enfants as $enfant) {
+                $ids = array_merge($ids, $this->getCategorieAvecEnfants($enfant->id));
+            }
+        }
+
+        return $ids;
+    }
+
+    // ✅ Carrousel des catégories
     public function getCategoriesActuellesProperty()
     {
         if ($this->categorieSelectionnee) {
             $categorie = Categorie::with('enfants')->find($this->categorieSelectionnee);
-
-            // Si la catégorie a des enfants, on les affiche
-            if ($categorie && $categorie->enfants->isNotEmpty()) {
-                return $categorie->enfants;
-            }
-
-            // Si c'est une feuille => on n'affiche rien
-            return null;
+            return ($categorie && $categorie->enfants->isNotEmpty()) ? $categorie->enfants : null;
         }
 
-        // Aucune catégorie sélectionnée : on affiche les racines
         return Categorie::whereNull('categorie_id')->get();
     }
 
+    // ✅ Liste filtrée des modèles
     public function getModelesProperty()
     {
         $query = Modele::query();
 
-         if ($this->filtre === 'pretaporter') {
+        if ($this->filtre === 'pretaporter') {
             $query->where('sur_commande', false);
         } elseif ($this->filtre === 'surmesure') {
             $query->where('sur_commande', true);
@@ -152,8 +143,10 @@ class Home extends Component
             });
         }
 
+        // ✅ Appliquer catégorie + enfants
         if ($this->categorieSelectionnee) {
-            $query->where('categorie_id', $this->categorieSelectionnee);
+            $ids = $this->getCategorieAvecEnfants($this->categorieSelectionnee);
+            $query->whereIn('categorie_id', $ids);
         }
 
         if (!empty($this->valeursSelectionnees)) {
@@ -174,3 +167,4 @@ class Home extends Component
         ])->layout('layouts.test');
     }
 }
+

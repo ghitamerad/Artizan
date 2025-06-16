@@ -129,7 +129,7 @@
                             </button>
 
                             <div x-show="open" x-transition class="mt-2 ml-6 space-y-1 text-sm">
-                                <x-nav-link :href="route('commandes.index', ['filtre' => 'nouvellesCommande'])" :active="request()->get('filtre') === 'nouvellesCommande'">
+                                <x-nav-link :href="route('commandes.index', ['filtre' => 'nouvellesCommandes'])" :active="request()->get('filtre') === 'nouvellesCommandes'">
                                     Nouvelles commandes
                                 </x-nav-link>
                                 <x-nav-link :href="route('commandes.index', ['filtre' => 'encours'])" :active="request()->get('filtre') === 'encours'">

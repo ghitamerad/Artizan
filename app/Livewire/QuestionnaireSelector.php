@@ -14,7 +14,7 @@ class QuestionnaireSelector extends Component
     public $categorieSelectionnees = []; // Tableau des catégories sélectionnées
     public $categoriesActuelles; // Liste des sous-catégories à ce niveau
 
-    public $categorieFinale; // La catégorie leaf sélectionnée
+    public $categorieFinale = null; // La catégorie leaf sélectionnée
 
     public $attributs = []; // Attributs liés à cette catégorie
     public $selectedValeurs = []; // attribut_id => attribut_valeur_id
@@ -52,9 +52,9 @@ class QuestionnaireSelector extends Component
     }
 
     public function getImageUrlAttribute()
-{
-    return $this->image ? asset('storage/' . $this->image) : asset('images/default-category.png');
-}
+    {
+        return $this->image ? asset('storage/' . $this->image) : asset('images/default-category.png');
+    }
 
 
     public function chargerAttributs()
@@ -80,25 +80,44 @@ class QuestionnaireSelector extends Component
         foreach ($attributs as $attribut) {
             $this->attributs[$attribut->id] = [
                 'nom' => $attribut->nom,
-    'valeurs' => $attribut->valeurs->keyBy('id')->toArray(), // tableaux complets (nom + image)
+                'valeurs' => $attribut->valeurs->keyBy('id')->toArray(), // tableaux complets (nom + image)
 
             ];
         }
         $this->dispatch('questionnaireTermine', $this->categorieFinale, $this->attributs, $this->selectedValeurs);
-
     }
 
-    public function genererResultats()
-{
-    $valeursIds = array_values($this->selectedValeurs);
 
-    $this->modelesFiltres = Modele::where('categorie_id', $this->categorieFinale->id)
-        ->whereHas('attributValeurs', function ($query) use ($valeursIds) {
-            $query->whereIn('attribut_valeur_id', $valeursIds);
-        })
-        ->with('categorie')
-        ->get();
+public function genererResultats()
+{
+    // Si aucune catégorie finale sélectionnée, on ne peut rien filtrer
+    if (!$this->categorieFinale) {
+        $this->modelesFiltres = [];
+        return;
+    }
+
+    // Récupérer tous les modèles de la catégorie finale
+    $modeles = $this->categorieFinale->modeles()->with('attributValeurs')->get();
+
+    // Si aucun attribut sélectionné, renvoyer tous les modèles de cette catégorie
+    if (empty($this->selectedValeurs)) {
+        $this->modelesFiltres = $modeles;
+        return;
+    }
+
+    // Sinon, filtrer en fonction des attributs sélectionnés
+    $modelesFiltres = $modeles->filter(function ($modele) {
+        foreach ($this->selectedValeurs as $attributId => $valeurId) {
+            if (!$modele->attributValeurs->contains('id', $valeurId)) {
+                return false;
+            }
+        }
+        return true;
+    });
+
+    $this->modelesFiltres = $modelesFiltres->values(); // reset les clés
 }
+
 
 
 
