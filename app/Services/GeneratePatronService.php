@@ -32,13 +32,13 @@ class GeneratePatronService
         $modifiedXmlPath = $measurementDir . "measurement_{$detailCommande->id}.xml";
         copy($originalXmlPath, $modifiedXmlPath);
 
+        // Charger et modifier le XML
         $xml = simplexml_load_file($modifiedXmlPath);
         if (!$xml) {
-            Log::error("Erreur chargement XML pour commande $detailCommandeId");
+            Log::error("Erreur lors du chargement du fichier XML pour la commande ID $detailCommandeId");
             return null;
         }
 
-        // Mise à jour des mesures dans le XML
         $mesures = MesureDetailCommande::where('details_commande_id', $detailCommande->id)->get();
         foreach ($mesures as $mesure) {
             $variableXml = $mesure->variable_xml;
@@ -54,38 +54,40 @@ class GeneratePatronService
 
         $xml->asXML($modifiedXmlPath);
 
-        // Génération du fichier SVG
+        // Préparer la commande de génération
         $nomFichier = strtolower(str_replace(' ', '_', $modele->nom)) . "_{$detailCommande->id}";
-        $outputFile = $customPatternDir . "{$nomFichier}.pdf";
-
         $valentinaPath = config('services.valentina.exe_path');
 
         if (!$valentinaPath || !file_exists($valentinaPath)) {
             Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
-            return back()->withErrors(['Le chemin vers l\'exécutable Valentina est invalide ou non défini.']);
+            return null;
         }
-        $command = "\"$valentinaPath\\valentina.exe\" -b \"$nomFichier\" -d \"$customPatternDir\" -f 1 -p 0 -m \"$modifiedXmlPath\" \"$patronPath\"";
+
+        $extraOption = $modele->type === 'fragment' ? '--exportOnlyDetails' : '';
+        $command = "\"$valentinaPath\" -b \"$nomFichier\" -d \"$customPatternDir\" -f 1 -p 0 -m \"$modifiedXmlPath\" $extraOption \"$patronPath\"";
 
         $output = null;
         $return_var = null;
         exec($command, $output, $return_var);
 
+        // Vérifier la génération du fichier PDF
         $generatedPattern = glob("{$customPatternDir}{$nomFichier}_1.pdf");
 
         if (!empty($generatedPattern)) {
-            $svgPath = "custom_patterns/" . basename($generatedPattern[0]);
+            $pdfPath = "custom_patterns/" . basename($generatedPattern[0]);
 
-            $detailCommande->fichier_patron = $svgPath;
+            $detailCommande->fichier_patron = $pdfPath;
             $detailCommande->custom = true;
             $detailCommande->save();
 
-            Log::info("SVG généré avec succès : $svgPath");
-            return $svgPath;
+            Log::info("Patron PDF généré automatiquement : $pdfPath");
+            return $pdfPath;
         } else {
-            Log::error("SVG non généré pour $nomFichier");
+            Log::error("Échec de la génération du PDF pour $nomFichier");
             return null;
         }
     }
+
 
     public function downloadPattern($detailCommandeId)
     {

@@ -10,7 +10,7 @@ class Modele extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'description', 'prix', 'categorie_id', 'patron', 'xml', 'stock', 'sur_commande','ordre_affichage', ];
+    protected $fillable = ['nom', 'description', 'prix', 'categorie_id', 'patron', 'xml', 'stock', 'sur_commande','type','ordre_affichage', ];
 
     public function categorie()
     {

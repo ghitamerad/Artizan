@@ -21,7 +21,7 @@ class DevisProposeNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database','mail']; // ou ['database', 'mail'] si tu veux l'email aussi
+        return ['database', 'mail']; // ou ['database', 'mail'] si tu veux l'email aussi
     }
 
     public function toDatabase($notifiable)
@@ -33,14 +33,19 @@ class DevisProposeNotification extends Notification
         ];
     }
 
-        public function toMail($notifiable)
+    public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject('Réponse à votre demande de devis')
-                    ->greeting('Bonjour ' . $notifiable->name . ',')
-                    ->line('Le responsable a proposé un tarif pour votre demande de devis.')
-                    ->line('Tarif proposé : ' . number_format($this->devis->tarif, 2) . ' DA')
-                    ->action('Voir le devis', url(route('devis.show', $this->devis->id)))
-                    ->line('Merci de votre confiance.');
+            ->subject('💼 Votre devis est prêt : tarif proposé')
+            ->greeting('Bonjour ' . $notifiable->name . ',')
+            ->line("Suite à votre demande de devis concernant une commande personnalisée, nous avons le plaisir de vous transmettre une **proposition tarifaire**.")
+            ->line("📄 **Détails du devis :**")
+            ->line("- Numéro du devis : #{$this->devis->id}")
+            ->line("- Tarif proposé : **" . number_format($this->devis->tarif, 2) . " DA**")
+            ->line("- Date de la proposition : " . $this->devis->updated_at->format('d/m/Y à H:i'))
+            ->action('📥 Consulter le devis', route('devis.show', $this->devis->id))
+            ->line("Nous vous invitons à consulter le devis et à **accepter ou refuser la proposition** directement depuis votre espace client.")
+            ->line("💡 Pour toute question ou précision, n'hésitez pas à nous contacter.")
+            ->salutation('Cordialement, l’équipe Lebsa Zina');
     }
 }

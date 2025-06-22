@@ -84,7 +84,7 @@ class DevisController extends Controller
         Notification::send($gerantes, new DevisReponduParClientNotification($devi));
 
 
-        return redirect()->route('devis.show-client', $devi)->with('success', 'Réponse enregistrée avec succès.');
+        return redirect()->route('devis.client.show', $devi)->with('success', 'Réponse enregistrée avec succès.');
     }
 
 
@@ -199,7 +199,7 @@ class DevisController extends Controller
         $devis = \App\Models\Devis::create($data);
         $devis->attributValeurs()->sync($valeursSelectionnees);
 
-        return redirect()->route('devis.index')->with('message', 'Devis créé avec succès');
+        return redirect()->back()->with('message', 'Devis créé avec succès');
     }
 
 

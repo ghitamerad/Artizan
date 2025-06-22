@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\Modele;
 use App\Models\DetailCommande;
 use App\Models\MesureDetailCommande;
-use Illuminate\Support\Facades\Log;
+    use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Response;
+
+
 
 
 class PatronController extends Controller
@@ -33,40 +36,77 @@ class PatronController extends Controller
     }
 
 
-    public function generatePatron($modeleId)
-    {
-        $modele = Modele::findOrFail($modeleId);
 
-        // Définir les chemins des fichiers
-        $patronPath = storage_path("app/public/{$modele->patron}");
-        $xmlPath = storage_path("app/public/{$modele->xml}");
-        $outputDir = storage_path("app/public/generated_patterns/");
 
-        if (!file_exists($outputDir)) {
-            mkdir($outputDir, 0777, true); // Créer le dossier s'il n'existe pas
-        }
 
-        $outputFile = $outputDir . "generated_{$modele->id}.val"; // Nom du fichier généré
+public function generatePatron($modeleId)
+{
+    $modele = Modele::findOrFail($modeleId);
 
-        // Exécuter la commande Valentina
-        $valentinaPath = config('services.valentina.exe_path');
+    Log::info("Début de génération du PDF pour le modèle ID: {$modele->id}");
 
-        if (!$valentinaPath || !file_exists($valentinaPath)) {
-            Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
-            return back()->withErrors(['Le chemin vers l\'exécutable Valentina est invalide ou non défini.']);
-        }
-        $nomFichier = str_replace(' ', '_', strtolower($modele->nom)); // Remplace les espaces par des underscores
-        $command = "\"$valentinaPath\\valentina.exe\" -b \"$nomFichier\" -d \"$outputDir\" -f 0 -m \"$xmlPath\" \"$patronPath\"";
+    $patronPath = storage_path("app/public/{$modele->patron}");
+    $xmlPath = storage_path("app/public/{$modele->xml}");
+    $outputDir = storage_path("app/public/generated_patterns/");
+    $nomFichierBase = 'generated_' . $modele->id;
 
-        system($command);
-
-        // Vérifier si le fichier a été généré
-        if (file_exists($outputFile)) {
-            return response()->download($outputFile)->deleteFileAfterSend();
-        } else {
-            return response()->json(['error' => 'Le fichier n\'a pas été généré'], 500);
-        }
+    if (!file_exists($outputDir)) {
+        mkdir($outputDir, 0777, true);
     }
+
+    $valentinaPath = config('services.valentina.exe_path');
+    if (!$valentinaPath || !file_exists($valentinaPath)) {
+        Log::error("Valentina introuvable");
+        return response()->json(['error' => 'Valentina introuvable.'], 500);
+    }
+
+    // Gérer les options selon le type de modèle
+    $type = $modele->type; // 'normal' ou 'fragment'
+    $extraOption = $type === 'fragment' ? '--exportOnlyDetails' : '';
+
+    // Construction de la commande
+    $command = "\"$valentinaPath\" -b \"$nomFichierBase\" -d \"$outputDir\" -f 1 -p 0 -m \"$xmlPath\" $extraOption \"$patronPath\"";
+    Log::info("Commande exécutée : $command");
+
+    $output = [];
+    $return_var = 0;
+    exec($command, $output, $return_var);
+
+    if ($return_var !== 0) {
+        Log::error("Erreur lors de l'exécution de Valentina. Code : $return_var");
+        return response()->json(['error' => 'Erreur lors de la génération du patron.'], 500);
+    }
+
+    // Recherche du fichier généré
+    $pattern = "{$outputDir}{$nomFichierBase}_*.pdf";
+    $pdfOutput = collect(glob($pattern))
+        ->sortByDesc(fn($file) => filemtime($file))
+        ->first();
+
+    if (!$pdfOutput || !file_exists($pdfOutput)) {
+        Log::error("Fichier PDF non généré : $pattern");
+        return response()->json(['error' => 'Fichier PDF non généré.'], 500);
+    }
+
+    // Téléchargement
+    $relativePath = 'generated_patterns/' . basename($pdfOutput);
+    $fullPath = storage_path("app/public/{$relativePath}");
+
+    if (!file_exists($fullPath)) {
+        Log::error("Fichier PDF introuvable sur le disque : {$fullPath}");
+        return response()->json(['error' => 'Fichier introuvable.'], 404);
+    }
+
+    Log::info("Téléchargement du fichier généré : {$relativePath}");
+
+    return Response::download($fullPath);
+}
+
+
+
+
+
+
 
 
 
@@ -135,7 +175,7 @@ class PatronController extends Controller
         // Commande selon le type
         $extraOption = $type === 'fragment' ? '--exportOnlyDetails' : '';
 
-        $command = "\"$valentinaPath\\valentina.exe\" -b \"$nomFichier\" -d \"$customPatternDir\" -f 1 -p 0 -m \"$modifiedXmlPath\" $extraOption \"$patronPath\"";
+        $command = "\"$valentinaPath\" -b \"$nomFichier\" -d \"$customPatternDir\" -f 1 -p 0 -m \"$modifiedXmlPath\" $extraOption \"$patronPath\"";
 
 
         $output = null;

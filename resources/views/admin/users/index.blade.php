@@ -1,69 +1,87 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="max-w-6xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-2xl">
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">Liste des Utilisateurs</h2>
-        <a href="{{ route('admin.users.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-            <i data-lucide="plus" class="w-5 h-5"></i> Ajouter
-        </a>
+    <div class="max-w-6xl mx-auto py-10 px-6">
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-8 shadow-sm">
+
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Liste des Utilisateurs</h1>
+
+                <a href="{{ route('admin.users.create') }}"
+                    class="inline-flex items-center gap-2 bg-[#05335E] hover:bg-blue-800 text-white px-5 py-2 rounded-xl shadow transition">
+                    <i data-lucide="plus" class="w-5 h-5"></i>
+                    <span>Ajouter</span>
+                </a>
+            </div>
+
+            @if (session()->has('message'))
+                <div class="bg-green-100 text-green-800 border border-green-300 rounded-lg px-4 py-3 mb-6">
+                    {{ session('message') }}
+                </div>
+            @endif
+
+            <div class="bg-white rounded-2xl shadow overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-200 text-gray-700 text-5xs font-semibold">
+                        <tr>
+                            <th class="px-6 py-4 text-left">ID</th>
+                            <th class="px-6 py-4 text-left">Nom</th>
+                            <th class="px-6 py-4 text-left">Email</th>
+                            <th class="px-6 py-4 text-left">Rôle</th>
+                            <th class="px-6 py-4 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-3xs text-gray-800">
+                        @forelse ($users as $user)
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-4">{{ $user->id }}</td>
+                                <td class="px-6 py-4 font-medium">{{ $user->name }}</td>
+                                <td class="px-6 py-4">{{ $user->email }}</td>
+                                <td class="px-6 py-4 capitalize">
+                                    @php
+                                        $roleColors = [
+                                            'admin' => 'bg-purple-100 text-purple-800',
+                                            'gerante' => 'bg-indigo-100 text-indigo-800',
+                                            'couturiere' => 'bg-yellow-100 text-yellow-800',
+                                            'client' => 'bg-blue-200 text-blue-800',
+                                        ];
+                                        $color = $roleColors[$user->role] ?? 'bg-blue-100 text-gray-700';
+                                        $roleLabel = $user->role === 'gerante' ? 'responsable' : $user->role;
+                                    @endphp
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 text-sm rounded {{ $color }}">
+                                        <i data-lucide="user" class="w-4 h-4"></i> {{ $roleLabel }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center gap-4 flex-wrap items-center">
+                                        <a href="{{ route('admin.users.edit', $user->id) }}"
+                                            class="flex items-center gap-1 px-3 py-1 border border-yellow-200 bg-yellow-50 text-yellow-700 rounded-md shadow-sm hover:bg-yellow-100 transition">
+                                            <i data-lucide="pencil" class="w-4 h-4"></i> Modifier
+                                        </a>
+                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
+                                            onsubmit="return confirm('Supprimer cet utilisateur ?');" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="flex items-center gap-1 px-3 py-1 border border-red-200 bg-red-50 text-red-700 rounded-md shadow-sm hover:bg-red-100 transition">
+                                                <i data-lucide="trash-2" class="w-4 h-4"></i> Supprimer
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-4 text-center text-gray-500">Aucun utilisateur trouvé.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <div class="overflow-x-auto">
-        <table class="min-w-full border border-gray-200 rounded-lg">
-            <thead>
-                <tr class="bg-gray-100 text-gray-700">
-                    <th class="p-4 text-left">ID</th>
-                    <th class="p-4 text-left">Nom</th>
-                    <th class="p-4 text-left">Email</th>
-                    <th class="p-4 text-left">Rôle</th>
-                    <th class="p-4 text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="text-gray-700">
-                @forelse($users as $user)
-                <tr class="border-t hover:bg-gray-50">
-                    <td class="p-4">{{ $user->id }}</td>
-                    <td class="p-4 font-medium">{{ $user->name }}</td>
-                    <td class="p-4">{{ $user->email }}</td>
-                    <td class="p-4 capitalize">
-                       @php
-                            $roleColors = [
-                                'admin' => 'bg-purple-100 text-purple-800',
-                                'gerante' => 'bg-indigo-100 text-indigo-800',
-                                'couturiere' => 'bg-yellow-100 text-yellow-800',
-                                'client' => 'bg-blue-200 text-blue-800',
-                            ];
-                            $color = $roleColors[$user->role] ?? 'bg-blue-100 text-gray-700';
-                            $roleLabel = $user->role === 'gerante' ? 'responsable' : $user->role;
-
-                        @endphp
-                        <span class="inline-flex items-center gap-1 px-2 py-1 text-sm rounded {{ $color }}">
-                            <i data-lucide="user" class="w-4 h-4"></i> {{ $roleLabel }}
-                        </span>
-                    </td>
-                    <td class="p-4 text-center">
-                        <div class="flex justify-center gap-2">
-                            <a href="{{ route('admin.users.edit', $user->id) }}" class="inline-flex items-center gap-1 px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600 transition" title="Modifier">
-                                <i data-lucide="edit-2" class="w-4 h-4"></i> Modifier
-                            </a>
-                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Supprimer cet utilisateur ?');" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="inline-flex items-center gap-1 px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition" title="Supprimer">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i> Supprimer
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="p-4 text-center text-gray-500">Aucun utilisateur trouvé.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
+    <script>
+        lucide.createIcons();
+    </script>
 @endsection

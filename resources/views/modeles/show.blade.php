@@ -94,16 +94,17 @@
         </div>
 
 
-        {{-- Générer le patron --}}
-        <div class="mb-10 justify-center">
-            <form action="{{ route('patron.generate', $modele->id) }}" method="POST">
-                @csrf
-                <button type="submit"
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition">
-                    <i data-lucide="wand-2" class="w-5 h-5"></i> Générer le Patron
-                </button>
-            </form>
-        </div>
+
+{{-- Générer le patron --}}
+<div class="mb-10 justify-center">
+    <button
+id="generatePatronBtn" data-id="{{ $modele->id }}"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition">
+        <i data-lucide="wand-2" class="w-5 h-5"></i> Générer le Patron
+    </button>
+</div>
+
+
 
 
         {{-- Mesures associées --}}
@@ -183,4 +184,38 @@
 <script>
     lucide.createIcons();
 </script>
+
+<script>
+document.getElementById('generatePatronBtn').addEventListener('click', function () {
+    const modeleId = this.dataset.id;
+
+    fetch(`/modeles/${modeleId}/download-patron`)
+        .then(response => {
+            if (!response.ok) throw new Error("Erreur lors de la génération.");
+            return response.blob().then(blob => {
+                // Créer une URL temporaire
+                const url = window.URL.createObjectURL(blob);
+
+                // Utiliser le nom du fichier indiqué dans les headers
+                const contentDisposition = response.headers.get('Content-Disposition');
+                const filename = contentDisposition
+                    ? contentDisposition.split('filename=')[1]?.replace(/"/g, '') ?? 'patron.pdf'
+                    : 'patron.pdf';
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            });
+        })
+        .catch(error => {
+            alert("Erreur : " + error.message);
+        });
+});
+</script>
+
+
 @endsection

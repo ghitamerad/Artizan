@@ -132,12 +132,12 @@ Route::middleware('auth')->group(function () {
 
 // Routes pour la Génération de Patrons
 Route::middleware('auth')->group(function () {
-    Route::post('/modeles/{modele}/generate-patron', [PatronController::class, 'generatePatron'])->name('patron.generate');
     Route::get('/patron/{modele}', [PatronController::class, 'showPatron'])->name('patron.show');
     Route::get('/patron/personnalise/{detailCommandeId}', [PatronController::class, 'customPattern'])->name('patron.custom');
     Route::get('/patron/personnalise/afficher/{detailCommandeId}', [PatronController::class, 'showCustomPattern'])->name('patron.custom.show');
     Route::get('/patron/telecharger/{id}', [PatronController::class, 'telecharger'])->name('patron.telecharger');
 });
+Route::get('/modeles/{modele}/download-patron', [PatronController::class, 'generatePatron'])->name('patron.download');
 
 // Routes spécifiques Prêt-à-Porter et Sur-Mesure (Livewire)
 Route::get('/pret-a-porter', PretAPorter::class)->name('pret-a-porter');
@@ -233,6 +233,10 @@ Route::get('/mes-devis', [DevisController::class, 'indexClient'])->name('mes-dev
 Route::get('/mes-devis/{devi}', [DevisController::class, 'showClient'])->name('devis.client.show');
 
 Route::post('/devis/{devi}/reponse', [DevisController::class, 'repondreClient'])->name('devis.repondreClient');
+
+use App\Livewire\Admin\StatistiquesChart;
+
+Route::get('/admin/statistiques', StatistiquesChart::class)->name('admin.statistiques');
 
 
 require __DIR__ . '/auth.php';

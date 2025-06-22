@@ -29,7 +29,7 @@
                             <th class="px-6 py-4 text-left">Description</th>
                             <th class="px-6 py-4 text-left">Catégorie</th>
                             <th class="px-6 py-4 text-left">Image</th>
-                            <th class="px-6 py-4 text-right">Actions</th>
+                            <th class="px-6 py-4 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -37,7 +37,7 @@
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4">{{ $devi->id }}</td>
                                 <td class="px-6 py-4">{{ $devi->utilisateur->name }}</td>
-                                <td class="px-6 py-4">{{ $devi->description }}</td>
+                                <td class="px-6 py-4">{{ \Illuminate\Support\Str::limit($devi->description, 80) }}</td>
                                 <td class="px-6 py-4">{{ $devi->categorie->nom ?? '-' }}</td>
                                 <td class="px-6 py-4">
                                     @if ($devi->image)
@@ -47,7 +47,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex gap-3 flex-wrap justify-end">
+                                    <div class="flex gap-3 flex-wrap justify-center">
                                         <a href="{{ route('devis.show', $devi) }}"
                                             class="flex items-center gap-1 px-3 py-1 border border-blue-200 bg-blue-50 text-blue-700 rounded-md shadow-sm hover:bg-blue-100 transition">
                                             <i data-lucide="eye" class="w-4 h-4"></i> Voir

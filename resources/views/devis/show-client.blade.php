@@ -8,12 +8,6 @@
         <p class="mb-2"><span class="font-semibold">Catégorie :</span> {{ $devi->categorie->nom }}</p>
         <p class="mb-2"><span class="font-semibold">Description :</span> {{ $devi->description ?? 'Non spécifiée' }}</p>
 
-        @if ($devi->image)
-            <div class="mb-4">
-                <span class="font-semibold">Image :</span><br>
-                <img src="{{ asset('storage/' . $devi->image) }}" alt="Image du devis" class="mt-2 rounded-lg w-full max-w-sm">
-            </div>
-        @endif
 
         <p class="mb-2"><span class="font-semibold">Tarif proposé :</span>
             @if ($devi->tarif)
@@ -27,7 +21,7 @@
             <p class="font-semibold mb-1">Attributs sélectionnés :</p>
             <ul class="list-disc list-inside text-gray-700">
                 @foreach ($devi->attributValeurs as $valeur)
-                    <li>{{ $valeur->attribut->nom }} : {{ $valeur->valeur }}</li>
+                    <li>{{ $valeur->attribut->nom }} : {{ $valeur->nom }}</li>
                 @endforeach
             </ul>
         </div>
@@ -41,6 +35,13 @@
                 <span class="ml-2 inline-block px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">En attente</span>
             @endif
         </p>
+
+        @if ($devi->image)
+            <div class="mb-4">
+                <span class="font-semibold">Image :</span><br>
+                <img src="{{ asset('storage/' . $devi->image) }}" alt="Image du devis" class="mt-2 rounded-lg w-40 max-w-sm">
+            </div>
+        @endif
     </div>
 
     @if($devi->tarif && $devi->statut=== "en_attente")

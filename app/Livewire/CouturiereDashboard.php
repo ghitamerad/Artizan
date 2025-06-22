@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 class CouturiereDashboard extends Component
 {
     public $commandes;
-    public $titre = "📋 Commandes en attente";
+    public $titre = " Commandes en attente";
 
     public function mount()
     {
@@ -20,7 +20,7 @@ class CouturiereDashboard extends Component
 
     public function voirCommandes()
     {
-        $this->titre = "📋 Commandes en attente";
+        $this->titre = " Commandes en attente";
         $this->commandes = DetailCommande::where('user_id', Auth::id())
             ->where('statut', 'Null')
             ->with(['modele', 'commande.user'])
@@ -30,7 +30,7 @@ class CouturiereDashboard extends Component
 
     public function voirCommandesAcceptees()
     {
-        $this->titre = "✅ Commandes acceptées";
+        $this->titre = "Commandes acceptées";
         $this->commandes = DetailCommande::where('user_id', Auth::id())
             ->whereIn('statut', ['validee', 'refuser'])
             ->with(['modele', 'commande.user'])

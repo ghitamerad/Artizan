@@ -3,12 +3,16 @@
 @section('content')
 
 <div class="container mx-auto p-6 mt-10">
-    <h2 class="text-3xl font-bold text-gray-700 mb-6">📦 Mes Commandes</h2>
+    <h2 class="text-3xl font-bold text-gray-700 mb-6 flex items-center gap-2">
+        <i data-lucide="shopping-bag" class="w-7 h-7 text-gray-700"></i>
+        Mes Commandes
+    </h2>
 
     <!-- Commandes en cours -->
     <div class="bg-white p-6 rounded-2xl shadow-lg mb-10 border border-[#F5F5DC]">
         <h3 class="text-xl font-semibold text-[#2C3E50] mb-4 flex items-center gap-2">
-            🚀 Commandes en cours
+            <i data-lucide="loader-circle" class="w-5 h-5 text-yellow-500"></i>
+            Commandes en cours
         </h3>
         @if ($commandesEnCours->isEmpty())
             <p class="text-gray-500 italic">Aucune commande en cours.</p>
@@ -28,7 +32,8 @@
                             </p>
                         </div>
                         <a href="{{ route('detail-commandes.showClient', $commande->id) }}"
-                           class="px-4 py-2 bg-[#D4AF37] text-white text-sm rounded-lg hover:bg-[#C19B2C] transition duration-200">
+                           class="px-4 py-2 bg-[#D4AF37] text-white text-sm rounded-lg hover:bg-[#C19B2C] transition duration-200 inline-flex items-center gap-1">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
                             Voir détails
                         </a>
                     </div>
@@ -40,7 +45,8 @@
     <!-- Commandes précédentes -->
     <div class="bg-white p-6 rounded-2xl shadow-lg border border-[#F5F5DC]">
         <h3 class="text-xl font-semibold text-[#2C3E50] mb-4 flex items-center gap-2">
-            ✅ Commandes terminées
+            <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+            Commandes terminées
         </h3>
         @if ($commandesPrecedentes->isEmpty())
             <p class="text-gray-500 italic">Aucune commande terminée.</p>
@@ -58,7 +64,8 @@
                             </p>
                         </div>
                         <a href="{{ route('detail-commandes.showClient', $commande->id) }}"
-                           class="px-4 py-2 bg-[#2C3E50] text-white text-sm rounded-lg hover:bg-[#1A252F] transition duration-200">
+                           class="px-4 py-2 bg-[#2C3E50] text-white text-sm rounded-lg hover:bg-[#1A252F] transition duration-200 inline-flex items-center gap-1">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
                             Voir détails
                         </a>
                     </div>
@@ -67,8 +74,11 @@
         @endif
     </div>
 
-    <a href="{{ route('panier') }}" class="mt-4 inline-block px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
+    <a href="{{ route('panier') }}"
+       class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
+        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
         Voir mon panier
     </a>
 </div>
+
 @endsection

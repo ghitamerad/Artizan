@@ -8,6 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
 
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('images/logolebsazinacopy.png') }}" type="image/png">
@@ -237,6 +240,8 @@
                         - Admin
                     @elseif(Auth::user()->role === 'gerante')
                         - Responsable
+                    @elseif(Auth::user()->role === 'couturiere')
+                        - couturière
                     @endif
                 </div>
                 <div class="flex items-center gap-4">

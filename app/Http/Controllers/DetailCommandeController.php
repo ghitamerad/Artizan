@@ -21,53 +21,53 @@ class DetailCommandeController extends Controller
     /**
      * Display a listing of the resource.
      */
-public function index()
-{
-    $userId = Auth::id();
-    $filtre = request('filtre', 'toutes');
+    public function index()
+    {
+        $userId = Auth::id();
+        $filtre = request('filtre', 'toutes');
 
-    // 1. Récupérer les détails de commandes filtrés
-    $query = DetailCommande::whereHas('commande', function ($q) use ($userId) {
-        $q->where('user_id', $userId);
-    });
+        // 1. Récupérer les détails de commandes filtrés
+        $query = DetailCommande::whereHas('commande', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        });
 
-    switch ($filtre) {
-        case 'en_cours':
-            $query->where('statut', 'en_attente');
-            break;
-        case 'terminees':
-            $query->where('statut', 'validee');
-            break;
-        case 'toutes':
-        default:
-            // Aucun filtre supplémentaire
-            break;
+        switch ($filtre) {
+            case 'en_cours':
+                $query->where('statut', 'en_attente');
+                break;
+            case 'terminees':
+                $query->where('statut', 'validee');
+                break;
+            case 'toutes':
+            default:
+                // Aucun filtre supplémentaire
+                break;
+        }
+
+        $detailCommandes = $query->with('commande')->latest()->get();
+
+        // 2. Récupérer les commandes en cours (statut 'en_attente' ou 'validee')
+        $commandesEnCours = Commande::where('user_id', $userId)
+            ->whereIn('statut', ['en_attente', 'validee'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // 3. Récupérer les commandes précédentes (statut 'expediee')
+        $commandesPrecedentes = Commande::where('user_id', $userId)
+            ->where('statut', 'expediee')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $slot = '';
+
+        return view('detail_commande.index', compact(
+            'detailCommandes',
+            'filtre',
+            'commandesEnCours',
+            'commandesPrecedentes',
+            'slot'
+        ));
     }
-
-    $detailCommandes = $query->with('commande')->latest()->get();
-
-    // 2. Récupérer les commandes en cours (statut 'en_attente' ou 'validee')
-    $commandesEnCours = Commande::where('user_id', $userId)
-        ->whereIn('statut', ['en_attente', 'validee'])
-        ->orderBy('created_at', 'desc')
-        ->get();
-
-    // 3. Récupérer les commandes précédentes (statut 'expediee')
-    $commandesPrecedentes = Commande::where('user_id', $userId)
-        ->where('statut', 'expediee')
-        ->orderBy('created_at', 'desc')
-        ->get();
-
-    $slot = '';
-
-    return view('detail_commande.index', compact(
-        'detailCommandes',
-        'filtre',
-        'commandesEnCours',
-        'commandesPrecedentes',
-        'slot'
-    ));
-}
 
 
 
@@ -231,12 +231,19 @@ public function index()
 
     public function commandesCouturiere()
     {
-        $commandes = DetailCommande::where('user_id', Auth::id())
+        $commandesEnCours = DetailCommande::where('user_id', Auth::id())
             ->where('statut', 'validee')
+            ->with(['modele', 'commande.user'])
             ->latest()
             ->get();
 
-        return view('couturiere.commandes', compact('commandes'));
+        $commandesTerminees = DetailCommande::where('user_id', Auth::id())
+            ->where('statut', 'fini')
+            ->with(['modele', 'commande.user'])
+            ->latest()
+            ->get();
+
+        return view('couturiere.commandes', compact('commandesEnCours', 'commandesTerminees'));
     }
 
     public function terminerCommande($id)
@@ -246,9 +253,9 @@ public function index()
         if ($commandeDetail->user_id == Auth::id()) {
             $commandeDetail->update(['statut' => 'fini']);
 
-                    // Notifier le client que ce détail est terminé
-        $client = $commandeDetail->commande->user;
-        $client->notify(new DetailCommandeTermine());
+            // Notifier le client que ce détail est terminé
+            $client = $commandeDetail->commande->user;
+            $client->notify(new DetailCommandeTermine());
 
 
             // Vérifier si tous les détails de la commande sont finis
@@ -261,8 +268,8 @@ public function index()
             if ($tousFinis) {
                 $commande->update(['statut' => 'validee']);
 
-                            // Notifier le client que la commande est complète
-            $client->notify(new CommandeTerminee($commande));
+                // Notifier le client que la commande est complète
+                $client->notify(new CommandeTerminee($commande));
             }
 
             return redirect()->route('couturiere.commandes')->with('success', 'Détail de la commande terminé.');

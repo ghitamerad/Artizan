@@ -37,70 +37,70 @@ class ModeleController extends Controller
         return view('modeles.index', compact('modeles', 'filtre'));
     }
 
-public function create(Request $request)
-{
-    $this->authorize('create', Modele::class);
+    public function create(Request $request)
+    {
+        $this->authorize('create', Modele::class);
 
-    $categories = Categorie::leaf()->get();
-    $attributs = Attribut::with('valeurs')->get();
-    $attributValeurs = collect();
-    $cheminFichierVal = null;
-    $cheminFichierMesure = null;
+        $categories = Categorie::leaf()->get();
+        $attributs = Attribut::with('valeurs')->get();
+        $attributValeurs = collect();
+        $cheminFichierVal = null;
+        $cheminFichierMesure = null;
 
-    if ($request->has('devis_id')) {
-        $devi = Devis::with([
-            'attributValeurs.attribut',
-            'categorie'
-        ])->findOrFail($request->devis_id);
+        if ($request->has('devis_id')) {
+            $devi = Devis::with([
+                'attributValeurs.attribut',
+                'categorie'
+            ])->findOrFail($request->devis_id);
 
-        $attributValeurs = $devi->attributValeurs;
+            $attributValeurs = $devi->attributValeurs;
 
-        // Récupérer uniquement les attributs obligatoires
-        $valeursObligatoires = $attributValeurs->filter(function ($valeur) {
-            return $valeur->attribut && $valeur->attribut->obligatoire;
-        });
+            // Récupérer uniquement les attributs obligatoires
+            $valeursObligatoires = $attributValeurs->filter(function ($valeur) {
+                return $valeur->attribut && $valeur->attribut->obligatoire;
+            });
 
-        // Injecter les données nécessaires dans la requête
-        $request->merge([
-            'categorie_id' => $devi->categorie_id,
-            'attribut_valeurs' => $valeursObligatoires->pluck('id')->toArray(),
-        ]);
+            // Injecter les données nécessaires dans la requête
+            $request->merge([
+                'categorie_id' => $devi->categorie_id,
+                'attribut_valeurs' => $valeursObligatoires->pluck('id')->toArray(),
+            ]);
 
-        // Appeler le service de fusion
-        $fusionService = new FusionPatronService();
-        $fusionService->genererPatronPersonnalise($request, $devi->id);
+            // Appeler le service de fusion
+            $fusionService = new FusionPatronService();
+            $fusionService->genererPatronPersonnalise($request, $devi->id);
 
-        // Récupérer le chemin du fichier .val généré
-        if ($devi->chemin_patron) {
-            $cheminFichierVal = 'storage/' . $devi->chemin_patron;
+            // Récupérer le chemin du fichier .val généré
+            if ($devi->chemin_patron) {
+                $cheminFichierVal = 'storage/' . $devi->chemin_patron;
+            }
+
+            // Retrouver la fiche de mesure utilisée pendant la génération
+            $categorie = $devi->categorie;
+
+            $categoriesAscendantes = collect([$categorie]);
+
+            if ($categorie->parent) {
+                $categoriesAscendantes->prepend($categorie->parent);
+            }
+
+            $categorieAvecFiche = $categoriesAscendantes->first(function ($c) {
+                return $c->fichier_mesure;
+            });
+
+            if ($categorieAvecFiche && Storage::disk('public')->exists($categorieAvecFiche->fichier_mesure)) {
+                $cheminFichierMesure = $categorieAvecFiche->fichier_mesure;
+            }
         }
 
-        // Retrouver la fiche de mesure utilisée pendant la génération
-        $categorie = $devi->categorie;
-
-        $categoriesAscendantes = collect([$categorie]);
-
-        if ($categorie->parent) {
-            $categoriesAscendantes->prepend($categorie->parent);
-        }
-
-        $categorieAvecFiche = $categoriesAscendantes->first(function ($c) {
-            return $c->fichier_mesure;
-        });
-
-        if ($categorieAvecFiche && Storage::disk('public')->exists($categorieAvecFiche->fichier_mesure)) {
-            $cheminFichierMesure = $categorieAvecFiche->fichier_mesure;
-        }
+        return view('modeles.create', compact(
+            'categories',
+            'attributs',
+            'attributValeurs',
+            'cheminFichierVal',
+            'cheminFichierMesure'
+        ));
     }
-
-    return view('modeles.create', compact(
-        'categories',
-        'attributs',
-        'attributValeurs',
-        'cheminFichierVal',
-        'cheminFichierMesure'
-    ));
-}
 
 
 
@@ -144,16 +144,26 @@ public function create(Request $request)
 
 
         if ($request->filled('fichier_val_auto')) {
-            $chemin = $request->input('fichier_val_auto'); // ex: 'patrons_generes/modele-123-fusionne.val'
+            $chemin = $request->input('fichier_val_auto'); // ex: 'storage/patrons_generes/xxx.val'
+            $cheminRelatif = str_replace('storage/', '', $chemin); // devient 'patrons_generes/xxx.val'
 
-            if (Storage::exists($chemin)) {
+            if (Storage::disk('public')->exists($cheminRelatif)) {
                 $nomFinal = "patrons/modele-{$modele->id}-patron.val";
+                Storage::disk('public')->put($nomFinal, Storage::disk('public')->get($cheminRelatif));
 
-                // Copier le fichier fusionné dans le dossier "public/patrons" avec un nom standardisé
-                Storage::disk('public')->put($nomFinal, Storage::get($chemin));
-
-                // Enregistrer le nouveau chemin dans la colonne "patron"
                 $modele->patron = $nomFinal;
+            }
+        }
+
+        if ($request->filled('fichier_mesure_auto')) {
+            $chemin = $request->input('fichier_mesure_auto'); // ex: 'storage/mesures/...'
+            $cheminRelatif = str_replace('storage/', '', $chemin); // ex: 'mesures/xxx.vit'
+
+            if (Storage::disk('public')->exists($cheminRelatif)) {
+                $nomFinal = "mesures/modele-{$modele->id}-mesures.vit";
+                Storage::disk('public')->put($nomFinal, Storage::disk('public')->get($cheminRelatif));
+
+                $modele->xml = $nomFinal;
             }
         }
 
@@ -249,14 +259,21 @@ public function create(Request $request)
 
 
         // Fichiers
+        // Fichiers
         if ($request->hasFile('patron')) {
-            Storage::disk('public')->delete($modele->patron);
+            if (!empty($modele->patron) && Storage::disk('public')->exists($modele->patron)) {
+                Storage::disk('public')->delete($modele->patron);
+            }
+
             $patronName = "modele-{$modele->id}-patron.val";
             $modele->patron = $request->file('patron')->storeAs('patrons', $patronName, 'public');
         }
 
         if ($request->hasFile('xml')) {
-            Storage::disk('public')->delete($modele->xml);
+            if (!empty($modele->xml) && Storage::disk('public')->exists($modele->xml)) {
+                Storage::disk('public')->delete($modele->xml);
+            }
+
             $xmlName = "modele-{$modele->id}-mesures.vit";
             $modele->xml = $request->file('xml')->storeAs('mesures', $xmlName, 'public');
         }
