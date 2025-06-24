@@ -22,10 +22,24 @@
 
 <body class="bg-gray-100">
     @livewireScripts
+    <style>
+/* Cache la scrollbar pour Chrome, Safari et Edge */
+.hide-scrollbar::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+}
+
+/* Cache la scrollbar pour Firefox */
+.hide-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+}
+</style>
+
 
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-[#05335E] text-white border-r border-gray-200 flex flex-col h-full">
+<aside class="w-64 bg-[#05335E] text-white border-r border-gray-200 flex flex-col h-full overflow-y-auto overflow-x-hidden hide-scrollbar">
             <!-- Logo / Titre -->
             <div class="px-6 py-6 border-b border-gray-200">
                 <div class="flex items-center space-x-3">
@@ -108,10 +122,11 @@
 
                         @php
                             $activeCommande = in_array(request()->get('filtre'), [
-                                'nouvellesCommande',
+                                'nouvellesCommandes',
                                 'encours',
                                 'terminees',
                                 'refusees',
+                                'expediees'
                             ]);
                         @endphp
 
@@ -140,6 +155,9 @@
                                 </x-nav-link>
                                 <x-nav-link :href="route('commandes.index', ['filtre' => 'terminees'])" :active="request()->get('filtre') === 'terminees'">
                                     Commandes terminées
+                                </x-nav-link>
+                                  <x-nav-link :href="route('commandes.index', ['filtre' => 'expedier'])" :active="request()->get('filtre') === 'expediees'">
+                                    Commandes expediée
                                 </x-nav-link>
                                 <x-nav-link :href="route('commandes.index', ['filtre' => 'refusees'])" :active="request()->get('filtre') === 'refusees'">
                                     Commandes refusées

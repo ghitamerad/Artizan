@@ -27,4 +27,10 @@ class Devis extends Model
         return $this->belongsToMany(AttributValeur::class, 'attribut_valeur_devis','devis_id','attribut_valeur_id');
     }
 
+    public function modele()
+{
+    return $this->belongsTo(Modele::class);
+}
+
+
 }

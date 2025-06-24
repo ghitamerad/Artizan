@@ -7,6 +7,9 @@ use App\Models\DetailCommande;
 use App\Services\GeneratePatronService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\CommandeReponseCouturiere;
+use Illuminate\Support\Facades\Notification;
+
 
 class CouturiereDashboard extends Component
 {
@@ -48,28 +51,30 @@ class CouturiereDashboard extends Component
 
         $commande = $detailCommande->commande;
         $tousValides = $commande->details()
-                        ->where('custom', true)
-                        ->where('statut', '!=', 'validee')
-                        ->doesntExist();
+            ->where('custom', true)
+            ->where('statut', '!=', 'validee')
+            ->doesntExist();
 
         if ($tousValides) {
             $commande->update(['statut' => 'validee']);
         }
 
+        // Notifier la responsable
+        $responsables = \App\Models\User::where('role', 'gerante')->get();
+        Notification::send($responsables, new CommandeReponseCouturiere($detailCommande, 'acceptée'));
 
-    // Génération du patron (sans téléchargement)
-    $service = new GeneratePatronService();
-    $result = $service->generatePattern($detailCommande->id);
+        // Génération du patron (sans téléchargement)
+        $service = new GeneratePatronService();
+        $result = $service->generatePattern($detailCommande->id);
 
-    if ($result) {
-        // Peut-être un petit message ou mise à jour d'état
-        session()->flash('message', 'Commande acceptée et patron généré.');
-    } else {
-        session()->flash('error', 'Erreur lors de la génération du patron.');
-    }
+        if ($result) {
+            // Peut-être un petit message ou mise à jour d'état
+            session()->flash('message', 'Commande acceptée et patron généré.');
+        } else {
+            session()->flash('error', 'Erreur lors de la génération du patron.');
+        }
         session()->flash('success', '✅ La commande a été acceptée avec succès !');
         return redirect()->route('couturiere.commandes');
-
     }
 
     public function refuser($id)
@@ -79,13 +84,17 @@ class CouturiereDashboard extends Component
 
         $commande = $detailCommande->commande;
         $tousRefuses = $commande->details()
-                        ->where('custom', true)
-                        ->where('statut', '!=', 'refuser')
-                        ->doesntExist();
+            ->where('custom', true)
+            ->where('statut', '!=', 'refuser')
+            ->doesntExist();
 
         if ($tousRefuses) {
             $commande->update(['statut' => 'en_attente']);
         }
+
+        // Notifier la responsable
+        $responsables = \App\Models\User::where('role', 'gerante')->get();
+        Notification::send($responsables, new CommandeReponseCouturiere($detailCommande, 'refusée'));
 
         session()->flash('error', '❌ La commande a été refusée.');
 

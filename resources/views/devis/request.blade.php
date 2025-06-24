@@ -1,7 +1,7 @@
 @extends('layouts.test2')
 
 @section('content')
-    <div class="min-h-screen bg-[#F7F3E6] py-12 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen bg-[#FDFBF1] py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
             <h1 class="text-2xl font-bold text-[#05335E] mb-6">Demande de devis personnalisé</h1>
 
@@ -31,7 +31,7 @@
                         <option value="">Choisir une catégorie</option>
                         @foreach ($categories as $categorie)
                             <option class="text-[#05335E]" value="{{ $categorie->id }}"
-                                {{ old('categorie_id') == $categorie->id ? 'selected' : '' }}>
+                                {{ (old('categorie_id') ?? ($categorieId ?? '')) == $categorie->id ? 'selected' : '' }}>
                                 {{ $categorie->nom }}
                             </option>
                         @endforeach
@@ -65,10 +65,10 @@
                                 @foreach ($attribut->valeurs as $valeur)
                                     <label
                                         class="inline-flex items-center space-x-2 p-2 border rounded-md shadow-sm cursor-pointer hover:bg-gray-100">
-                                        <input type="radio" name="attribut_valeurs[{{ $attribut->id }}]"
-                                            value="{{ $valeur->id }}"
-                                            {{ old("attribut_valeurs.{$attribut->id}") == $valeur->id ? 'checked' : '' }}
-                                            class="text-[#05335E] focus:ring-[#C19B2C]">
+                                       <input type="radio" name="attribut_valeurs[{{ $attribut->id }}]"
+    value="{{ $valeur->id }}"
+    {{ (old("attribut_valeurs.{$attribut->id}") ?? ($selectedValeurs[$attribut->id] ?? '')) == $valeur->id ? 'checked' : '' }}>
+
 
                                         @if ($valeur->image)
                                             <img src="{{ Storage::url($valeur->image) }}" alt="{{ $valeur->nom }}"

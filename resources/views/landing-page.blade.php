@@ -1,188 +1,121 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lebsa Zina - Élégance Traditionnelle Algérienne</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        body {
-            background-color: #F7F3E6; /* Votre beige de fond */
-            font-family: 'Georgia', serif; /* Votre police préférée */
-        }
-        /* Vos couleurs personnalisées */
-        .bg-brand-beige { background-color: #F7F3E6; }
-        .text-brand-blue { color: #05335E; }
-        .bg-brand-blue { background-color: #05335E; }
-        .text-brand-gold { color: #C19B2C; }
-        .bg-brand-gold { background-color: #C19B2C; }
-        .border-brand-gold { border-color: #C19B2C; }
+@extends('layouts.test2')
 
-        /* Couleurs de survol personnalisées */
-        .hover\:bg-brand-gold-dark:hover { background-color: #a38123; } /* Doré un peu plus foncé */
-        .hover\:bg-brand-blue-dark:hover { background-color: #032242; } /* Bleu un peu plus foncé */
-        .hover\:text-brand-blue:hover { color: #05335E; }
+@section('content')
+    <div class="bg-[#FFF8EC] mt-10 text-gray-800">
 
-
-        /* Amélioration de la lisibilité du texte sur l'image de fond de la section Hero */
-        .hero-section-overlay::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 60%);
-            z-index: 1;
-        }
-         .hero-text-shadow {
-            text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.4); /* Ombre pour le texte */
-        }
-    </style>
-</head>
-<body class="text-gray-800">
-
-    <!-- HERO / INTRO (Votre structure originale avec améliorations) -->
-    <section class="relative bg-brand-beige min-h-screen flex items-center justify-center pt-16 pb-10 sm:pt-10 sm:pb-0">
-        {{-- <div class="absolute inset-0 z-0 hero-section-overlay">
-            <img src="{{ asset('images/optional-hero-background.jpg') }}"
-                 alt="Arrière-plan Lebsa Zina"
-                 class="w-full h-full object-cover object-center opacity-70">
-        </div> --}}
-
-        <div class="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 items-center gap-10 md:gap-16">
-            <div class="space-y-6 text-center md:text-left">
-                <h1 class="text-5xl lg:text-6xl font-extrabold text-brand-blue hero-text-shadow">Lebsa Zina</h1>
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 hero-text-shadow">
-                    L'Élégance <span class="text-brand-gold">Traditionnelle</span>,
-                    <span class="block sm:inline">Votre Style <span class="text-brand-gold">Unique</span>.</span>
-                </h2>
-                <p class="text-lg text-slate-700 max-w-md mx-auto md:mx-0 hero-text-shadow leading-relaxed">
-                    Découvrez notre collection de tenues algériennes authentiques.
-                    Achat, confection sur mesure et bientôt location pour sublimer tous vos événements.
+        {{-- Hero Section --}}
+        <section class="bg-gradient-to-r from-[#05335E] to-[#021C35] text-[#FDFBF1] py-20 px-6 text-center">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <h1 class="text-4xl md:text-5xl font-bold">Lebsa Zina</h1>
+                <p class="text-lg md:text-xl">
+                    Confectionnez votre tenue traditionnelle algérienne selon vos goûts, avec devis personnalisés et
+                    génération automatique de patrons.
                 </p>
-                <a href="{{ route('home') }}"
-                   class="inline-block bg-brand-blue hover:bg-[#C19B2C] text-white hover:text-white  py-3.5 px-10 sm:py-4 sm:px-12 rounded-lg shadow-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 border-2 border-transparent hover:border-brand-blue">
-                    Explorer les Collections
+                <a href="#personnalisation"
+                    class="inline-flex items-center gap-2 bg-[#FDFBF1] text-[#05335E] px-6 py-3 rounded-lg text-lg font-medium hover:bg-[#F2F2F2] transition">
+                    Commencer la personnalisation
+                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
                 </a>
             </div>
-            <div class="flex justify-center md:justify-end">
-                <img src="{{ asset('images/dame.png') }}" alt="Dame élégante en tenue traditionnelle Lebsa Zina"
-                     class="w-[350px] sm:w-[380px] md:w-[450px] lg:w-[500px] object-contain rounded-lg transform transition-transform duration-500 hover:scale-105">
+        </section>
+
+        {{-- À propos --}}
+        <section class="py-16 px-6 bg-[#FDFBF1]">
+            <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+                <img src="{{ asset('images/customisation.png') }}" alt="Personnalisation" class="rounded-xl ">
+                <div>
+                    <h2 class="text-3xl font-semibold mb-4 text-[#05335E]">L’innovation au service de la couture</h2>
+                    <p class="text-black text-lg leading-relaxed">
+                         <strong>Lebsa Zina</strong> est bien plus qu’un
+                        simple site de personnalisation vestimentaire :
+                        c’est une plateforme innovante conçue pour moderniser le processus de commande de vêtements
+                        traditionnels sur mesure.
+                        Grâce à une sélection dynamique de modules (manches, cols, coupes, longueurs…), elle permet aux
+                        clientes de composer leur propre tenue en toute autonomie via une interface intuitive.
+                        Les devis sont générés automatiquement et les patrons sont produits de manière intelligente selon
+                        les choix effectués.
+                        Pensé comme un outil clé-en-main, <strong>Lebsa Zina</strong> peut être adopté par des ateliers de
+                        couture, des coopératives artisanales ou des porteurs de projet souhaitant digitaliser leur offre
+                        tout en valorisant le patrimoine vestimentaire algérien.
+                    </p>
+
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Section 2: Questionnaire "Que recherchez-vous ?" (RÉINTÉGRÉE) -->
-    <section class="py-16 md:py-24 bg-brand-beige text-center px-4">
-        <div class="max-w-4xl mx-auto">
-@livewire('questionnaire-selector')
+        {{-- Nos engagements --}}
+        <section class="bg-[#05335E] py-20 px-6 text-[#FDFBF1]">
+            <div class="max-w-6xl mx-auto text-center space-y-10">
+                <h2 class="text-3xl font-bold mb-4">Nos engagements</h2>
+                <p class="text-lg max-w-3xl mx-auto text-[#E6E6E6]">
+                    Chez <strong>Lebsa Zina</strong>, nous nous engageons à offrir une expérience fiable, humaine et
+                    innovante. Chaque tenue est pensée pour vous, avec soin et précision.
+                </p>
 
-             {{-- Si vous avez un composant Livewire pour un questionnaire plus détaillé : --}}
-            {{-- <div class="mt-16">
+                <div class="grid md:grid-cols-4 gap-8 text-left text-sm md:text-base">
+                    <div class="bg-[#FFFFFF0D] rounded-xl p-6 border border-[#FFFFFF1A]">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-[#FFD700] mb-3"></i>
+                        <p><strong>100% sur mesure</strong><br>Chaque modèle s’adapte à vos choix et vos mesures exactes.
+                        </p>
+                    </div>
+                    <div class="bg-[#FFFFFF0D] rounded-xl p-6 border border-[#FFFFFF1A]">
+                        <i data-lucide="clock" class="w-6 h-6 text-[#FFD700] mb-3"></i>
+                        <p><strong>Réponse rapide</strong><br>Recevez votre devis personnalisé en un temps record.</p>
+                    </div>
+                    <div class="bg-[#FFFFFF0D] rounded-xl p-6 border border-[#FFFFFF1A]">
+                        <i data-lucide="scissors" class="w-6 h-6 text-[#FFD700] mb-3"></i>
+                        <p><strong>Patrons professionnels</strong><br>Validés par des couturières expérimentées.</p>
+                    </div>
+                    <div class="bg-[#FFFFFF0D] rounded-xl p-6 border border-[#FFFFFF1A]">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-[#FFD700] mb-3"></i>
+                        <p><strong>Respect de votre vie privée</strong><br>Vos données et mesures sont traitées en toute
+                            confidentialité.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        {{-- Composant Livewire QuestionnaireSelector --}}
+        <section id="personnalisation" class="bg-[#FDFBF1] py-20 px-6">
+            <div class="max-w-6xl mx-auto text-center mb-10">
+                <h2 class="text-3xl font-bold text-[#05335E] mb-4">Créez votre tenue sur mesure</h2>
+                <p class="text-[#5C4A31] text-lg">
+                    Répondez au questionnaire ci-dessous pour trouver les modèles qui vous correspondent parfaitement.
+                </p>
+            </div>
+
+            <div class="max-w-6xl mx-auto space-y-8">
                 @livewire('questionnaire-selector')
-            </div> --}}
-        </div>
-    </section>
-
-    <!-- Section "Nos Modèles Phares" -->
-    <section class="py-16 md:py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12 md:mb-16">
-                <h2 class="font-lora text-3xl md:text-4xl font-bold text-brand-blue mb-4">Inspirations du Moment</h2>
-                <p class="text-lg text-slate-700 max-w-2xl mx-auto">Laissez-vous séduire par une sélection de nos créations les plus convoitées.</p>
             </div>
+        </section>
 
-            <!-- @if(isset($modelesPhares) && $modelesPhares->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                @foreach($modelesPhares->take(4) as $modele)
-                <div class="group bg-brand-beige rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1.5 overflow-hidden flex flex-col">
-                    <a href="{{ route('modele.show', $modele->id) }}" class="block flex flex-col h-full">
-                        <div class="aspect-[3/4] overflow-hidden">
-                            @if($modele->image)
-                                <img src="{{ str_starts_with($modele->image, 'images/') ? asset($modele->image) : asset('storage/' . $modele->image) }}" alt="{{ $modele->nom }}" class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105">
-                            @else
-                                <div class="w-full h-full bg-slate-200 flex items-center justify-center">
-                                    <svg class="h-16 w-16 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                </div>
-                            @endif
+        {{-- Avis clients --}}
+        <section class="py-16 px-6 bg-[#FDFBF1]">
+            <div class="max-w-5xl mx-auto text-center">
+                <h2 class="text-3xl font-semibold mb-8 text-[#05335E]">Ce que disent nos clientes</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    @foreach (['Service rapide', 'Modèles élégants', 'Personnalisation parfaite'] as $avis)
+                        <div class="bg-[#05335E] p-6 rounded-xl shadow-md">
+                            <i data-lucide="stars" class="w-6 h-6 text-yellow-500 mb-3 mx-auto"></i>
+                            <p class="text-[#FDFBF1] italic">"{{ $avis }}."</p>
+                            <p class="mt-2 text-sm text-[#FDFBF1]">— Une cliente satisfaite</p>
                         </div>
-                        <div class="p-4 md:p-5 flex flex-col flex-grow">
-                            <h3 class="font-lora text-lg font-semibold text-brand-blue group-hover:text-brand-gold transition-colors duration-300 leading-tight mb-1">
-                                {{ Str::limit($modele->nom, 35) }}
-                            </h3>
-                            <span class="text-xs font-medium text-brand-gold tracking-wider uppercase mb-2">
-                                {{ $modele->categorie->nom ?? 'Traditionnel' }}
-                            </span>
-                            <p class="text-xl font-bold text-brand-blue mt-auto">{{ number_format($modele->prix, 2, ',', ' ') }} €</p>
-                        </div>
-                    </a>
+                    @endforeach
                 </div>
-                @endforeach
             </div>
-            <div class="text-center mt-12 md:mt-16">
-                 <a href="{{ route('home') }}"
-                   class="inline-block bg-brand-blue hover:bg-brand-gold text-white hover:text-brand-blue py-3 px-8 rounded-lg shadow-md text-md font-semibold transition-all duration-300 border-2 border-transparent hover:border-brand-blue">
-                    Voir Tous Nos Modèles
-                </a>
-            </div>
-            @else
-            <p class="text-center text-slate-600 py-10">Nos inspirations du moment seront bientôt dévoilées. Revenez nous voir !</p>
-            @endif -->
-        </div>
-    </section>
+        </section>
 
-     <!-- NOS SERVICES -->
-     <section class="bg-brand-beige py-16 md:py-20" id="services">
-        <div class="max-w-6xl mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 md:mb-14 text-brand-blue">Nos Services</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 text-center">
-                <a href="{{ route('home') }}" class="group space-y-4 p-6 rounded-lg hover:bg-white hover:shadow-xl transition-all duration-300">
-                    <img src="{{ asset('icons/dress.svg') }}" class="mx-auto h-14 text-brand-gold transition-transform duration-300 group-hover:scale-110" alt="Vente">
-                    <h3 class="text-xl font-semibold text-brand-blue group-hover:text-brand-gold">Vente Prêt-à-Porter</h3>
-                </a>
-                <div class="group space-y-4 p-6 rounded-lg hover:bg-white hover:shadow-xl transition-all duration-300 cursor-not-allowed opacity-70" title="Service de location bientôt disponible">
-                    <img src="{{ asset('icons/hanger.svg') }}" class="mx-auto h-14 text-brand-gold transition-transform duration-300 group-hover:scale-110" alt="Location">
-                    <h3 class="text-xl font-semibold text-brand-blue group-hover:text-brand-gold">Location (Bientôt)</h3>
+        {{-- Footer --}}
+        <footer class="bg-[#05335E] text-[#FDFBF1] py-10">
+            <div class="max-w-6xl mx-auto text-center space-y-4">
+                <p>&copy; {{ date('Y') }} Lebsa Zina. Tous droits réservés.</p>
+                <div class="flex justify-center gap-6">
+                    <a href="#" class="hover:text-blue-300">Conditions d'utilisation</a>
+                    <a href="#" class="hover:text-blue-300">Confidentialité</a>
+                    <a href="#" class="hover:text-blue-300">Contact</a>
                 </div>
-                <a href="{{ route('sur-mesure') }}" class="group space-y-4 p-6 rounded-lg hover:shadow-xl transition-all duration-300 hover:bg-white">
-                    <img src="{{ asset('icons/needle.svg') }}" class="mx-auto h-14 text-brand-gold transition-transform duration-300 group-hover:scale-110" alt="Sur-mesure">
-                    <h3 class="text-xl font-semibold text-brand-blue group-hover:text-brand-gold">Confection Sur-Mesure</h3>
-                </a>
             </div>
-        </div>
-    </section>
-
-
-    <!-- FOOTER -->
-    <footer class="bg-brand-blue text-white py-12">
-        <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div>
-                <h3 class="text-2xl font-bold mb-4">Lebsa Zina</h3>
-                <p class="text-sm text-gray-300">L’élégance algérienne à portée de main.</p>
-            </div>
-            <div>
-                <h4 class="text-xl font-semibold mb-3">Navigation</h4>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="{{ route('landing-page') }}" class="text-gray-300 hover:text-brand-gold hover:underline">Accueil</a></li>
-                    <li><a href="{{ route('home') }}" class="text-gray-300 hover:text-brand-gold hover:underline">Catalogue (Prêt-à-Porter)</a></li>
-                    <li><a href="{{ route('sur-mesure') }}" class="text-gray-300 hover:text-brand-gold hover:underline">Création Sur Mesure</a></li>
-                    <li><a href="#services" class="text-gray-300 hover:text-brand-gold hover:underline">Nos Services</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-xl font-semibold mb-3">Contact</h4>
-                <ul class="text-sm space-y-2 text-gray-300">
-                    <li>📍 Tlemcen, Algérie</li>
-                    <li>📞 +213 555 123 456</li>
-                    <li>✉️ contact@lebsazina.dz</li>
-                </ul>
-            </div>
-        </div>
-        <div class="text-center text-xs text-gray-400 mt-10 pt-8 border-t border-gray-700/50">
-            © {{ date('Y') }} Lebsa Zina. Tous droits réservés.
-        </div>
-    </footer>
-
-</body>
-</html>
+        </footer>
+    </div>
+@endsection

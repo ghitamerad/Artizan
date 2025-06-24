@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Commande;
 use App\Models\DetailCommande;
 use App\Models\Modele;
+use App\Models\Devis;
+use App\Models\Mesure;
 use App\Models\User;
 use App\Notifications\CommandeTerminee;
 use Illuminate\Http\Request;
@@ -14,6 +16,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Notifications\NouvelleCommandeNotification;
+use App\Notifications\CommandeCreee;
+use Illuminate\Support\Facades\Notification;
 
 
 class CommandeController extends Controller
@@ -34,11 +38,13 @@ class CommandeController extends Controller
             $commandes->where('statut', 'en_attente');
         } elseif ($filtre === 'encours') {
             $commandes->where('statut', 'validee')
-                      ->orWhere('statut', 'assigner');
+                ->orWhere('statut', 'assigner');
         } elseif ($filtre === 'terminees') {
             $commandes->where('statut', 'expediee');
         } elseif ($filtre === 'refusees') {
             $commandes->where('statut', 'annulee');
+        } elseif ($filtre === 'expedier') {
+            $commandes->where('statut', 'expediee');
         }
 
         $commandes = $commandes->latest()->paginate(10);
@@ -62,7 +68,21 @@ class CommandeController extends Controller
         return view('commandes.show', compact('commande', 'couturieres'));
     }
 
+    public function expedier(Commande $commande)
+    {
+        $this->authorize('validateCommande', $commande);
 
+        if (!in_array($commande->statut, ['validee', 'assignee'])) {
+            return redirect()->route('commandes.index')
+                ->with('error', 'Seules les commandes validées ou assignées peuvent être expédiées.');
+        }
+
+        $commande->statut = 'expediee';
+        $commande->save();
+
+        return redirect()->back()
+            ->with('success', 'La commande a été marquée comme expédiée.');
+    }
 
     public function store(Request $request)
     {
@@ -168,7 +188,107 @@ class CommandeController extends Controller
     }
 
 
+    public function createFromDevis(Devis $devis)
+    {
+        $this->authorize('create', Commande::class);
 
+        $client = $devis->utilisateur;
+        $modele = Modele::findOrFail($devis->modele_id);
+        $mesures = $modele->mesures;
+
+        return view('commandes.create_from_devis', compact('devis', 'client', 'modele', 'mesures'));
+    }
+
+    public function storeFromDevis(Request $request, Devis $devis)
+    {
+        Log::info('📩 Formulaire reçu', $request->all());
+
+        DB::beginTransaction();
+
+        try {
+            Log::info('🔍 Début création commande depuis devis', [
+                'devis_id' => $devis->id,
+                'user_id' => $devis->user_id,
+                'modele_id' => $devis->modele_id
+            ]);
+
+            $request->validate([
+                'quantite' => 'required|integer|min:1',
+                'custom' => 'nullable|boolean',
+                'mesures' => 'nullable|array',
+                'mesures.*' => 'nullable|numeric|min:0',
+            ]);
+
+            $userId = $devis->user_id;
+            $modele = $devis->modele;
+            $quantite = $request->quantite;
+            $prixUnitaire = $modele->prix;
+
+            // Création de la commande
+            $commande = Commande::create([
+                'user_id' => $userId,
+                'statut' => 'validee',
+                'montant_total' => $prixUnitaire * $quantite, // ✅ plus fiable que $devis->tarif
+            ]);
+
+            Log::info('✅ Commande créée', ['commande_id' => $commande->id]);
+
+            // Création du détail de commande
+            $detail = DetailCommande::create([
+                'commande_id' => $commande->id,
+                'modele_id' => $devis->modele_id,
+                'quantite' => $request->quantite,
+                'prix_unitaire' =>  $prixUnitaire,
+                'custom' => $request->boolean('custom'),
+            ]);
+
+            Log::info('✅ Détail commande créé', ['detail_id' => $detail->id, 'custom' => $detail->custom]);
+
+            if ($request->boolean('custom')) {
+                Log::info('🧵 Traitement mesures personnalisées activé');
+
+                // Récupérer les mesures du modèle
+                $mesuresModel = \App\Models\Modele::findOrFail($devis->modele_id)->mesures;
+
+                foreach ($mesuresModel as $mesure) {
+                    $valeur = $request->mesures[$mesure->id] ?? $mesure->valeur_par_defaut;
+
+                    Log::info("📐 Mesure traitée", [
+                        'mesure_id' => $mesure->id,
+                        'label' => $mesure->label,
+                        'valeur_saisie' => $request->mesures[$mesure->id] ?? null,
+                        'valeur_enregistrée' => $valeur
+                    ]);
+
+                    \App\Models\MesureDetailCommande::create([
+                        'mesure_id' => $mesure->id,
+                        'details_commande_id' => $detail->id,
+                        'valeur_mesure' => $valeur,
+                        'valeur_par_defauts' => $mesure->valeur_par_defaut,
+                        'variable_xml' => $mesure->variable_xml,
+                    ]);
+                }
+            }
+
+            // Notifier le client
+            $client = $devis->utilisateur;
+            Notification::send($client, new \App\Notifications\CommandeCreee($commande, $detail));
+
+            Log::info("📬 Notification envoyée au client", ['client_id' => $client->id]);
+
+            DB::commit();
+
+            return redirect()->route('commandes.show', $commande)->with('success', 'Commande créée avec succès.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('❌ Erreur lors de la création de commande à partir du devis', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Une erreur est survenue : ' . $e->getMessage());
+        }
+    }
 
     public function edit(Commande $commande)
     {

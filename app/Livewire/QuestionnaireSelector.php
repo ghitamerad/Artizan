@@ -117,6 +117,17 @@ public function genererResultats()
 
     $this->modelesFiltres = $modelesFiltres->values(); // reset les clés
 }
+public function demanderDevis()
+{
+    // Stocker les infos du questionnaire dans la session
+    session([
+        'devis.categorie_id' => $this->categorieFinale->id,
+        'devis.attributs' => $this->selectedValeurs,
+    ]);
+
+    // Redirection vers le formulaire de demande de devis
+    return redirect()->route('devis.demande');
+}
 
 
 

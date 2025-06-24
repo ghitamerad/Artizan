@@ -7,12 +7,14 @@ use App\Models\Modele;
 use App\Http\Requests\StoremesureRequest;
 use App\Http\Requests\UpdatemesureRequest;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
 use SimpleXMLElement;
 
 
 class MesureController extends Controller
 {
-        /**
+    /**
      * Extraction des mesures depuis un fichier .vit
      */
     public function importMesuresFromVit(Modele $modele)
@@ -90,18 +92,30 @@ class MesureController extends Controller
     /**
      * Update the specified measure in storage.
      */
-    public function update(Request $request, Mesure $mesure)
-    {
-        $request->validate([
-            'label' => 'required|string|max:255',
-            'valeur_par_defaut' => 'required|numeric',
-            'variable_xml' => 'string|max:255|unique:mesures,variable_xml,' . $mesure->id
-        ]);
 
-        $mesure->update($request->all());
+public function update(Request $request, Mesure $mesure)
+{
+    $request->validate([
+        'label' => 'required|string|max:255',
+        'valeur_par_defaut' => 'required|numeric',
+        'variable_xml' => [
+            'nullable',
+            'string',
+            'max:255',
+            Rule::unique('mesures')->where(function ($query) use ($request, $mesure) {
+                return $query->where('modele_id', $mesure->modele_id);
+            })->ignore($mesure->id),
+        ],
+        'min' => 'required|numeric|lte:valeur_par_defaut',
+        'max' => 'required|numeric|gte:valeur_par_defaut',
+    ]);
 
-        return redirect()->route('modeles.edit', $mesure->modele_id)->with('success', 'Mesure mise à jour.');
-    }
+    $mesure->update($request->all());
+
+   return redirect()->back()->with('success', 'Mesure mise à jour.');
+
+}
+
 
     /**
      * Remove the specified measure from storage.

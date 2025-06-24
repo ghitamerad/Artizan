@@ -17,30 +17,17 @@ use Illuminate\Support\Facades\Notification;
 class DevisController extends Controller
 {
 
-    public function indexClient()
-    {
-        $filtre = request('filtre', 'attente');
+public function indexClient()
+{
+    $devis = Devis::where('user_id', Auth::id())
+        ->latest()
+        ->get();
 
-        $query = Devis::where('user_id', Auth::id());
-
-        switch ($filtre) {
-            case 'acceptes':
-                $query->where('statut', 'aceptee');
-                break;
-            case 'refuses':
-                $query->where('statut', 'refusee');
-                break;
-            case 'attente':
-            default:
-                $query->where('statut', 'en_attente');
-                break;
-        }
-
-        $devis = $query->latest()->get();
-
-        return view('devis.mes-devis', compact('devis', 'filtre'));
-    }
-
+    return view('devis.mes-devis', [
+        'devis' => $devis,
+        'filtre' => 'tous' // juste à titre d’info si tu veux l’afficher dans la vue
+    ]);
+}
     public function repondre(Request $request, Devis $devi)
     {
         $request->validate([
@@ -144,6 +131,8 @@ class DevisController extends Controller
     {
         $categories = Categorie::leaf()->get();
         $attributs = Attribut::with('valeurs')->get();
+
+
         return view('devis.create', compact('categories', 'attributs'));
     }
 
@@ -151,7 +140,10 @@ class DevisController extends Controller
     {
         $categories = Categorie::leaf()->get();
         $attributs = Attribut::with('valeurs')->get();
-        return view('devis.request', compact('categories', 'attributs'));
+
+        $categorieId = session('devis.categorie_id');
+        $selectedValeurs = session('devis.attributs', []);
+        return view('devis.request', compact('categories', 'attributs','categorieId', 'selectedValeurs'));
     }
 
     public function store(Request $request)
@@ -198,6 +190,8 @@ class DevisController extends Controller
 
         $devis = \App\Models\Devis::create($data);
         $devis->attributValeurs()->sync($valeursSelectionnees);
+        session()->forget('devis');
+
 
         return redirect()->back()->with('message', 'Devis créé avec succès');
     }

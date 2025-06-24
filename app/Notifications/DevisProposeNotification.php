@@ -12,7 +12,7 @@ class DevisProposeNotification extends Notification
 {
     use Queueable;
 
-    protected $devis;
+ protected $devis;
 
     public function __construct(Devis $devis)
     {
@@ -21,7 +21,7 @@ class DevisProposeNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database', 'mail']; // ou ['database', 'mail'] si tu veux l'email aussi
+        return ['database', 'mail'];
     }
 
     public function toDatabase($notifiable)
@@ -30,6 +30,7 @@ class DevisProposeNotification extends Notification
             'devis_id' => $this->devis->id,
             'message' => "Le responsable a proposé un tarif pour votre devis.",
             'tarif' => $this->devis->tarif,
+            'lien' => route('devis.client.show', $this->devis->id), // lien direct
         ];
     }
 
@@ -43,9 +44,9 @@ class DevisProposeNotification extends Notification
             ->line("- Numéro du devis : #{$this->devis->id}")
             ->line("- Tarif proposé : **" . number_format($this->devis->tarif, 2) . " DA**")
             ->line("- Date de la proposition : " . $this->devis->updated_at->format('d/m/Y à H:i'))
-            ->action('📥 Consulter le devis', route('devis.show', $this->devis->id))
+            ->action('📥 Consulter le devis', route('devis.client.show', $this->devis->id))
             ->line("Nous vous invitons à consulter le devis et à **accepter ou refuser la proposition** directement depuis votre espace client.")
             ->line("💡 Pour toute question ou précision, n'hésitez pas à nous contacter.")
-            ->salutation('Cordialement, l’équipe Lebsa Zina');
+            ->salutation('— L’équipe Lebsa Zina');
     }
 }

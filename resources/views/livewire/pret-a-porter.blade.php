@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#F7F3E6] p-8">
+<div class="min-h-screen bg-[#FDFBF1] p-8">
     <!-- Barre de recherche et filtres -->
     <div class="max-w-6xl mx-auto mb-10">
         <div class="flex flex-col lg:flex-row items-center gap-4 bg-white p-6 rounded-xl shadow-lg">

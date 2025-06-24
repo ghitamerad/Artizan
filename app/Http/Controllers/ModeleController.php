@@ -190,6 +190,16 @@ class ModeleController extends Controller
 
         $modele->save();
 
+        // Si un devis est lié à cette création, on met à jour le champ modele_id
+if ($request->filled('devis_id')) {
+    $devis = Devis::find($request->devis_id);
+    if ($devis) {
+        $devis->modele_id = $modele->id;
+        $devis->save();
+    }
+}
+
+
         return redirect()->route('modeles.index')->with('message', 'Modèle ajouté avec succès !');
     }
 

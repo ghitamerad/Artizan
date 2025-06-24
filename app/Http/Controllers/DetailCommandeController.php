@@ -125,16 +125,34 @@ class DetailCommandeController extends Controller
     {
         $detailCommande = DetailCommande::findOrFail($id);
 
-        // Validation des données entrantes
+        // Validation de base
         $request->validate([
             'user_id' => 'nullable|exists:users,id',
             'statut' => 'required|in:Null,validee,refuser,fini',
             'quantite' => 'required|integer|min:1',
             'prix_unitaire' => 'required|numeric|min:0',
             'custom' => 'nullable|boolean',
-            'mesures' => 'nullable|array',  // Assure que c'est un tableau
-            'mesures.*' => 'nullable|numeric|min:0', // Chaque mesure doit être un nombre positif
+            'mesures' => 'nullable|array',
+            'mesures.*' => 'nullable|numeric|min:0',
         ]);
+
+        // 💡 Validation dynamique des mesures avec min / max
+        if ($request->has('mesures')) {
+            foreach ($request->mesures as $mesureId => $valeur) {
+                $mesureDetail = $detailCommande->mesuresDetail()->where('id', $mesureId)->first();
+
+                if ($mesureDetail && $mesureDetail->mesure) {
+                    $min = $mesureDetail->mesure->min;
+                    $max = $mesureDetail->mesure->max;
+
+                    if ($valeur < $min || $valeur > $max) {
+                        return redirect()->back()->withInput()->withErrors([
+                            "mesures.$mesureId" => "La valeur de la mesure '{$mesureDetail->mesure->label}' doit être entre $min et $max.",
+                        ]);
+                    }
+                }
+            }
+        }
 
         // Mise à jour des champs principaux
         $detailCommande->update([
@@ -145,7 +163,7 @@ class DetailCommandeController extends Controller
             'custom' => $request->custom,
         ]);
 
-        // Mise à jour des mesures
+        // Mise à jour des mesures si tout est OK
         if ($request->has('mesures')) {
             foreach ($request->mesures as $mesureId => $valeur) {
                 $mesure = $detailCommande->mesuresDetail()->where('id', $mesureId)->first();
@@ -183,10 +201,17 @@ class DetailCommandeController extends Controller
         try {
             foreach ($request->mesures as $mesureData) {
                 $mesureDetail = MesureDetailCommande::findOrFail($mesureData['id']);
-                $mesureDetail->update([
-                    'valeur_mesure' => $mesureData['valeur_mesure'],
-                ]);
+                $mesureModele = $mesureDetail->mesure; // relation vers le modèle Mesure
+
+                $valeur = $mesureData['valeur_mesure'];
+
+                if ($valeur < $mesureModele->min || $valeur > $mesureModele->max) {
+                    return redirect()->back()->with('error', "La valeur de la mesure '{$mesureModele->label}' doit être entre {$mesureModele->min} et {$mesureModele->max}.");
+                }
+
+                $mesureDetail->update(['valeur_mesure' => $valeur]);
             }
+
 
             DB::commit();
             return redirect()->back()->with('success', 'Mesures mises à jour avec succès.');
@@ -209,6 +234,12 @@ class DetailCommandeController extends Controller
         $detail->user_id = $request->user_id;
         $detail->save();
 
+        $commande = $detail->commande;
+
+
+        $couturiere = \App\Models\User::find($request->user_id);
+        $couturiere->notify(new \App\Notifications\CouturiereAssignee($commande, $detail));
+
         // Récupérer la commande associée
         $commande = $detail->commande;
 
@@ -221,6 +252,10 @@ class DetailCommandeController extends Controller
         // Si tous les détails `custom = true` ont un `user_id`, on met à jour la commande en "assignée"
         if ($tousAssignes) {
             $commande->update(['statut' => 'assigner']);
+            $client = $commande->user;
+            $client->notify(new CommandeTerminee($commande));
+
+
         }
 
         return redirect()->route('commandes.show', $commande->id)
@@ -246,35 +281,41 @@ class DetailCommandeController extends Controller
         return view('couturiere.commandes', compact('commandesEnCours', 'commandesTerminees'));
     }
 
-    public function terminerCommande($id)
-    {
-        $commandeDetail = DetailCommande::findOrFail($id);
+public function terminerCommande($id)
+{
+    $commandeDetail = DetailCommande::findOrFail($id);
 
-        if ($commandeDetail->user_id == Auth::id()) {
-            $commandeDetail->update(['statut' => 'fini']);
+    if ($commandeDetail->user_id == Auth::id()) {
+        $commandeDetail->update(['statut' => 'fini']);
 
-            // Notifier le client que ce détail est terminé
-            $client = $commandeDetail->commande->user;
-            $client->notify(new DetailCommandeTermine());
+        $commande = $commandeDetail->commande;
+        $client = $commande->user;
+
+        // 🔔 Notifier le client que ce détail est terminé
+        $client->notify(new \App\Notifications\DetailCommandeTermine($commandeDetail));
+
+        // ✅ Vérifier si tous les détails personnalisés sont finis
+        $tousFinis = $commande->details()
+            ->where('custom', true)
+            ->where('statut', '!=', 'fini')
+            ->doesntExist();
+
+        if ($tousFinis) {
+            $commande->update(['statut' => 'validee']);
 
 
-            // Vérifier si tous les détails de la commande sont finis
-            $commande = $commandeDetail->commande; // Relation entre détail et commande
-            $tousFinis = $commande->details()
-                ->where('custom', true)
-                ->where('statut', '!=', 'fini')
-                ->doesntExist();
+            // 🔔 Notifier la responsable
+            $responsables = \App\Models\User::where('role', 'gerante')->get();
 
-            if ($tousFinis) {
-                $commande->update(['statut' => 'validee']);
-
-                // Notifier le client que la commande est complète
-                $client->notify(new CommandeTerminee($commande));
+            foreach ($responsables as $responsable) {
+                $responsable->notify(new \App\Notifications\CommandeTermineeParCouturiere($commandeDetail));
             }
-
-            return redirect()->route('couturiere.commandes')->with('success', 'Détail de la commande terminé.');
         }
 
-        return redirect()->route('couturiere.commandes')->with('error', 'Action non autorisée.');
+        return redirect()->route('couturiere.commandes')->with('success', 'Détail de la commande terminé.');
     }
+
+    return redirect()->route('couturiere.commandes')->with('error', 'Action non autorisée.');
+}
+
 }

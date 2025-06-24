@@ -2,12 +2,13 @@
 
 @section('content')
     @php
-        use App\Enums\StatutDevis;
-
-        $canGeneratePatron = $devi->attributValeurs->every(
-            fn($valeur) => $valeur->elementsPatron->contains(fn($ep) => $ep->categorie_id === $devi->categorie_id),
-        );
+        $canGeneratePatron = $devi->attributValeurs
+            ->filter(fn($valeur) => $valeur->attribut->obligatoire ?? false) // uniquement les obligatoires
+            ->every(
+                fn($valeur) => $valeur->elementsPatron->contains(fn($ep) => $ep->categorie_id === $devi->categorie_id),
+            );
     @endphp
+
 
     <div class="max-w-5xl mx-auto p-6 bg-white rounded-md shadow-md mt-8">
         <h1 class="text-3xl font-bold mb-6 text-gray-800">Détail du devis</h1>
@@ -141,20 +142,39 @@
                 class="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition duration-300">
                 Retour à la liste des devis
             </a>
-            <!-- Bouton Créer un modèle -->
-            <a href="{{ route('modeles.create', ['devis_id' => $devi->id]) }}"
-                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
-                Créer un modèle
-            </a>
 
-                        <!-- Bouton Créer un modèle -->
-            <a href="{{ route('modeles.create', ['devis_id' => $devi->id]) }}"
-                class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300">
-                Créer une commande
-            </a>
+            <!-- Si un modèle a déjà été créé -->
+            @if ($devi->modele_id)
+                <!-- Lien vers le modèle -->
+                <a href="{{ route('modeles.show', $devi->modele_id) }}"
+                    class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300">
+                    Voir le modèle créé
+                </a>
+            @else
+                <!-- Bouton Créer un modèle désactivé si un élément patron est manquant -->
+                @if (!$canGeneratePatron)
+                    <button disabled class="px-6 py-3 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed">
+                        Créer un modèle (éléments de patron manquants)
+                    </button>
+                @else
+                    <!-- Bouton actif -->
+                    <a href="{{ route('modeles.create', ['devis_id' => $devi->id]) }}"
+                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+                        Créer un modèle
+                    </a>
+                @endif
+            @endif
 
+            @if ($devi->modele_id && $devi->statut === 'aceptee')
+                <!-- Bouton Créer une commande -->
+                <a href="{{ route('devis.creer_commande', $devi->id) }}"
+                    class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300">
+                    Créer une commande
+                </a>
+            @endif
 
 
         </div>
+
     </div>
 @endsection

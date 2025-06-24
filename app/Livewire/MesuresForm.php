@@ -30,24 +30,35 @@ class MesuresForm extends Component
 
     public function save()
     {
-        // Valider toutes les valeurs comme numériques
-        foreach ($this->values as $key => $value) {
-            if (!is_numeric($value) || $value < 0) {
-                $this->addError("values.$key", "La valeur de $key doit être un nombre positif.");
+        foreach ($this->mesures as $mesure) {
+            $label = $mesure->label;
+            $valeur = $this->values[$label] ?? null;
+
+            if (!is_numeric($valeur)) {
+                $this->addError("values.$label", "La valeur de '{$label}' doit être un nombre.");
+                continue;
+            }
+
+            if ($valeur < $mesure->min || $valeur > $mesure->max) {
+                $this->addError("values.$label", "La valeur de '{$label}' doit être comprise entre {$mesure->min} et {$mesure->max}.");
             }
         }
 
+        // Si des erreurs ont été ajoutées, on stoppe ici
         if ($this->getErrorBag()->isNotEmpty()) {
             return;
         }
 
-        // Sauvegarder dans le cache sous forme [label => valeur]
+        // Sauvegarde dans le cache
         Cache::put($this->cacheKey(), $this->values, now()->addHours(12));
 
         session()->flash('success', 'Vos mesures ont été enregistrées temporairement.');
 
         return redirect()->route('panier');
     }
+
+    
+
 
     private function cacheKey()
     {

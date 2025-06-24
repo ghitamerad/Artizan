@@ -30,6 +30,8 @@ class NouvelleCommandeNotification extends Notification
             'commande_id' => $this->commande->id,
             'client_nom' => $this->commande->user->name,
             'message' => 'Une nouvelle commande a été passée.',
+            'lien' => route('commandes.show', $this->commande->id), // 🔗 Lien vers la commande
+
         ];
     }
 }

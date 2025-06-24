@@ -71,22 +71,33 @@
                                         @endcan
 
                                         @can('validateCommande', $commande)
-                                            <form action="{{ route('commandes.validate', $commande) }}" method="POST">
-                                                @csrf
-                                                <button type="submit"
-                                                    class="flex items-center gap-1 px-3 py-1 border border-green-200 bg-green-50 text-green-700 rounded-md shadow-sm hover:bg-green-100 transition">
-                                                    <i data-lucide="check" class="w-4 h-4"></i> Valider
-                                                </button>
-                                            </form>
+                                            @if ($commande->statut === 'en_attente')
+                                                <form action="{{ route('commandes.validate', $commande) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="flex items-center gap-1 px-3 py-1 border border-green-200 bg-green-50 text-green-700 rounded-md shadow-sm hover:bg-green-100 transition">
+                                                        <i data-lucide="check" class="w-4 h-4"></i> Valider
+                                                    </button>
+                                                </form>
 
-                                            <form action="{{ route('commandes.invalidate', $commande) }}" method="POST">
-                                                @csrf
-                                                <button type="submit"
-                                                    class="flex items-center gap-1 px-3 py-1 border border-red-200 bg-red-50 text-red-700 rounded-md shadow-sm hover:bg-red-100 transition">
-                                                    <i data-lucide="x" class="w-4 h-4"></i> Refuser
-                                                </button>
-                                            </form>
+                                                <form action="{{ route('commandes.invalidate', $commande) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="flex items-center gap-1 px-3 py-1 border border-red-200 bg-red-50 text-red-700 rounded-md shadow-sm hover:bg-red-100 transition">
+                                                        <i data-lucide="x" class="w-4 h-4"></i> Refuser
+                                                    </button>
+                                                </form>
+                                            @elseif(in_array($commande->statut, ['assignee', 'validee']))
+                                                <form action="{{ route('commandes.expediee', $commande) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="flex items-center gap-1 px-3 py-1 border border-green-200 bg-green-50 text-green-700 rounded-md shadow-sm hover:bg-green-100 transition">
+                                                        <i data-lucide="truck" class="w-4 h-4"></i> Expédier
+                                                    </button>
+                                                </form>
+                                            @endif
                                         @endcan
+
 
                                         {{-- Suppression désactivée
                                         @can('delete', $commande)

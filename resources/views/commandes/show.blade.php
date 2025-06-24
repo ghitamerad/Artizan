@@ -33,7 +33,7 @@
                 <p class="flex items-center gap-2">
                     <i data-lucide="credit-card" class="w-5 h-5 text-gray-500"></i>
                     <span class="font-semibold">Montant total :</span>
-                    <span class="text-green-600 font-semibold">{{ number_format($commande->montant_total, 2) }} €</span>
+                    <span class="text-green-600 font-semibold">{{ number_format($commande->montant_total, 2) }} DZD</span>
                 </p>
 
                 <p class="flex items-center gap-2">
@@ -77,7 +77,7 @@
                         {{-- Actions / Prix / Couturière --}}
                         <div class="flex items-center gap-3">
                             <span class="text-gray-800 font-semibold">{{ number_format($detail->prix_unitaire, 2) }}
-                                €</span>
+                                DZD</span>
 
                             @if ($detail->custom)
                                 @if ($detail->couturiere)

@@ -105,6 +105,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/commandes/{commande}', [CommandeController::class, 'destroy'])->name('commandes.destroy');
     Route::post('/commandes/{commande}/valider', [CommandeController::class, 'validateCommande'])->name('commandes.validate');
     Route::post('/commandes/{commande}/invalider', [CommandeController::class, 'unvalidateCommande'])->name('commandes.invalidate');
+    Route::post('/commandes/{commande}/expedier', [CommandeController::class, 'expedier'])->name('commandes.expediee');
+
 });
 
 // Routes pour les Détails de Commande
@@ -223,7 +225,15 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/patrons/generer/{id}', [ElementPatronController::class, 'genererPatronPersonnalise'])->name('devis.generer');
 
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
+    ->name('notifications.markAsRead');
+
+Route::get('/notifications-client', [\App\Http\Controllers\NotificationController::class, 'indexClient'])
+    ->middleware(['auth'])
+    ->name('notifications.client');
+
+    Route::view('/conditions-generales', 'conditions')->name('conditions');
+
 
 
 Route::put('/devis/{devi}/repondre', [DevisController::class, 'repondre'])->name('devis.repondre');
@@ -237,6 +247,9 @@ Route::post('/devis/{devi}/reponse', [DevisController::class, 'repondreClient'])
 use App\Livewire\Admin\StatistiquesChart;
 
 Route::get('/admin/statistiques', StatistiquesChart::class)->name('admin.statistiques');
+
+Route::get('/devis/{devis}/commande', [CommandeController::class, 'createFromDevis'])->name('devis.creer_commande');
+Route::post('/devis/{devis}/commande', [CommandeController::class, 'storeFromDevis'])->name('devis.store_commande');
 
 
 require __DIR__ . '/auth.php';

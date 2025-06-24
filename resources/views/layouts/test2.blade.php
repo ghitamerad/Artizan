@@ -18,25 +18,27 @@
 
     {{-- lucide icons --}}
     <script src="https://unpkg.com/lucide@latest"></script>
+    @livewireStyles
+
 
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans  text-gray-600 antialiased bg-[#FDFBF1]">
+<body class="font-sans text-[#FDFBF1] antialiased bg-[#FDFBF1]">
 
     <div class="min-h-screen">
 
         <!-- Navbar -->
-        <nav class="bg-[#F8F2E1] shadow-md fixed w-full z-10 top-0">
+        <nav class="bg-[#FDFBF1] shadow-md fixed w-full z-10 top-0">
             <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
                 <div class="flex justify-between items-center h-16">
                     <!-- Logo -->
                     <a href="{{ route('home') }}" class="flex items-center gap-2">
                         <img src="{{ asset('images/logoLebsaZinaCopy.png') }}" alt="Logo Lebsa Zina"
                             class="mb-2 h-16 w-auto">
-                        <span class="text-2xl font-bold text-[#05335E]">Lebsa Zina</span>
+                        <span class="hidden md:inline text-2xl font-bold text-[#05335E]">Lebsa Zina</span>
                     </a>
                     <!-- Bouton hamburger -->
                     <button id="menu-toggle" class="md:hidden text-[#05335E] focus:outline-none">
@@ -48,7 +50,7 @@
 
                     <!-- Liens desktop -->
                     <div class="hidden md:flex space-x-8 items-center">
-                        <a href="{{ route('home') }}"
+                        <a href="{{ route('landing-page') }}"
                             class="text-[#05335E] hover:text-[#C19B2C] font-medium">Accueil</a>
 
                         <a href="{{ route('home') }}"
@@ -58,25 +60,40 @@
                         <a href="{{ route('sur-mesure') }}" class="text-[#05335E] hover:text-[#C19B2C] font-medium">Sur
                             Mesure</a> --}}
                         <a href="{{ route('devis.demande') }}"
-                            class="text-[#05335E] hover:text-[#C19B2C] font-medium">Demander un devis</a>
+                            class="text-[#05335E] hover:text-[#C19B2C] font-medium">Demande devis</a>
 
 
                     </div>
 
                     <!-- Champ de recherche Livewire -->
-                    <div class="hidden md:block">
+                    <div class="flex items-center">
                         @livewire('recherche-bar')
-                       {{-- <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 hover:text-[#2C3E50]"
-                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <circle cx="11" cy="11" r="8" />
-                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                        </svg>--}}
                     </div>
+
 
 
                     <!-- Zone utilisateur -->
                     <div class="hidden md:flex items-center space-x-4">
+                        @auth
+                            @php
+                                $nombreNotifications = auth()->user()->unreadNotifications->count();
+                            @endphp
+
+                            <a href="{{ route('notifications.client') }}" class="relative">
+                                <i data-lucide="{{ $nombreNotifications > 0 ? 'bell-ring' : 'bell' }}"
+                                    class="w-7 h-7 text-[#05335E] hover:text-[#C19B2C] transition"></i>
+
+                                @if ($nombreNotifications > 0)
+                                    <span
+                                        class="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 shadow">
+                                        {{ $nombreNotifications }}
+                                    </span>
+                                @endif
+                            </a>
+                        @endauth
+
                         <livewire:panier-bouton />
+
 
                         @auth
                             <!-- Menu utilisateur connecté -->
@@ -105,7 +122,7 @@
                             </div>
                         @else
                             <a href="{{ route('login') }}"
-                                class="px-4 py-2 text-[#F7F3E6] bg-[#05335E] rounded-lg hover:bg-[#C19B2C]">Se connecter</a>
+                                class="px-4 py-2 text-[#FDFBF1] bg-[#05335E] rounded-lg hover:bg-[#C19B2C]">Se connecter</a>
                             <a href="{{ route('register') }}"
                                 class="px-4 py-2 text-[#05335E] border border-[#05335E] rounded-lg hover:bg-[#C19B2C] hover:text-[#05335E]">S'inscrire</a>
                         @endauth
@@ -114,12 +131,13 @@
 
                 <!-- Menu mobile (caché par défaut) -->
                 <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2">
-                    <a href="{{ route('home') }}" class="block text-[#05335E] font-medium">Accueil</a>
+                    <a href="{{ route('landing-page') }}" class="block text-[#05335E] font-medium">Accueil</a>
                     <a href="{{ route('home') }}" class="block text-[#05335E] font-medium">Catalogue</a>
                     {{-- <a href="{{ route('pret-a-porter') }}" class="block text-[#05335E] font-medium">Pret à Porter</a>
                     <a href="{{ route('sur-mesure') }}" class="block text-[#05335E] font-medium">Sur Mesure</a> --}}
                     <a href="{{ route('devis.demande') }}" class="block text-[#05335E] font-medium">Demander un
                         devis</a>
+
 
                     @auth
                         <a href="{{ route('dashboard') }}" class="block text-[#05335E] font-medium">Tableau de bord</a>
@@ -138,26 +156,29 @@
 
 
         <!-- Contenu principal -->
-<main class="flex-1 p-10">
-    @yield('content')
-</main>
+        <main class="flex-1 p-10">
+            @yield('content')
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+
     <script>
         function toggleMenu() {
             let menu = document.getElementById("user-menu");
             menu.classList.toggle("hidden");
         }
 
-        document.getElementById("menu-toggle").addEventListener("click", function () {
+        document.getElementById("menu-toggle").addEventListener("click", function() {
             let mobileMenu = document.getElementById("mobile-menu");
             mobileMenu.classList.toggle("hidden");
         });
     </script>
+    @livewireScripts
 
-            <script>
-            lucide.createIcons();
-        </script>
-
-    </div>
 </body>
 
 </html>

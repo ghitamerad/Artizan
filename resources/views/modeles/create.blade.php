@@ -195,6 +195,9 @@
                         class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
             @endif
+            @if (request()->has('devis_id'))
+                <input type="hidden" name="devis_id" value="{{ request()->devis_id }}">
+            @endif
 
 
             <!-- Boutons -->

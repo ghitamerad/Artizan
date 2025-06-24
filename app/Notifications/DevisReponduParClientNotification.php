@@ -36,6 +36,8 @@ class DevisReponduParClientNotification extends Notification
         return [
             'message' => "Le client a {$this->devis->statut} le devis #{$this->devis->id}.",
             'devis_id' => $this->devis->id,
+            'lien' => route('devis.show', $this->devis->id), // 💡 Lien vers la commande
+
         ];
     }
 }

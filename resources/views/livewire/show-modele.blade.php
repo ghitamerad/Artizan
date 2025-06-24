@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#F7F3E6] p-8">
+<div class="min-h-screen bg-[#FDFBF1] p-8">
     <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="grid md:grid-cols-2 gap-8">
             <!-- Image du modèle -->

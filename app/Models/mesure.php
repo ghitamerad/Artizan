@@ -11,7 +11,7 @@ class Mesure extends Model
     /** @use HasFactory<\Database\Factories\MesureFactory> */
     use HasFactory;
 
-    protected $fillable = ['modele_id',	'label', 'valeur_par_defaut', 'variable_xml'];
+    protected $fillable = ['modele_id',	'label', 'valeur_par_defaut', 'variable_xml','max','min'];
 
 
     /**

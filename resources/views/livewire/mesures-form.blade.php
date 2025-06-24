@@ -19,7 +19,7 @@
                     </label>
                     <input type="number" step="0.01" wire:model.defer="values.{{ $mesure->label }}" id="mesure_{{ $mesure->id }}"
                         class="text-[#2C3E50] w-full border-gray-300 rounded-lg shadow-sm focus:border-[#D4AF37] focus:ring focus:ring-[#D4AF37] p-3 text-lg">
-                    @error('values.' . $mesure->id)
+                    @error('values.' . $mesure->label)
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>

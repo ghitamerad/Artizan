@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#F7F3E6] p-8">
+<div class="min-h-screen bg-[#FDFBF1] p-8">
 
     <!-- Bouton flottant pour afficher les filtres -->
     <button wire:click="afficherFormulaireFiltres"

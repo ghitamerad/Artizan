@@ -16,10 +16,11 @@ new #[Layout('layouts.guest')] class extends Component {
     public string $telephone = '';
     public string $adresse = '';
 
-
     /**
      * Handle an incoming registration request.
      */
+    public bool $conditions_acceptees = false;
+
     public function register(): void
     {
         $validated = $this->validate([
@@ -28,6 +29,8 @@ new #[Layout('layouts.guest')] class extends Component {
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
             'telephone' => ['required', 'string', 'min:10'],
             'adresse' => ['nullable', 'string', 'max:255'],
+            'conditions_acceptees' => ['accepted'],
+
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -63,21 +66,21 @@ new #[Layout('layouts.guest')] class extends Component {
                 required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
-<!-- Telephone -->
-<div class="mt-4">
-    <x-input-label for="telephone" :value="__('Téléphone')" />
-    <x-text-input wire:model="telephone" id="telephone" class="block mt-1 w-full" type="text" name="telephone"
-        required autocomplete="tel" />
-    <x-input-error :messages="$errors->get('telephone')" class="mt-2" />
-</div>
+        <!-- Telephone -->
+        <div class="mt-4">
+            <x-input-label for="telephone" :value="__('Téléphone')" />
+            <x-text-input wire:model="telephone" id="telephone" class="block mt-1 w-full" type="text"
+                name="telephone" required autocomplete="tel" />
+            <x-input-error :messages="$errors->get('telephone')" class="mt-2" />
+        </div>
 
-<!-- Adresse -->
-<div class="mt-4">
-    <x-input-label for="adresse" :value="__('Adresse')" />
-    <x-text-input wire:model="adresse" id="adresse" class="block mt-1 w-full" type="text" name="adresse"
-        autocomplete="street-address" />
-    <x-input-error :messages="$errors->get('adresse')" class="mt-2" />
-</div>
+        <!-- Adresse -->
+        <div class="mt-4">
+            <x-input-label for="adresse" :value="__('Adresse')" />
+            <x-text-input wire:model="adresse" id="adresse" class="block mt-1 w-full" type="text" name="adresse"
+                autocomplete="street-address" />
+            <x-input-error :messages="$errors->get('adresse')" class="mt-2" />
+        </div>
 
         <!-- Password -->
         <div class="mt-4">
@@ -104,6 +107,22 @@ new #[Layout('layouts.guest')] class extends Component {
                 href="{{ route('login') }}" wire:navigate>
                 {{ __('Already registered?') }}
             </a>
+            <!-- Acceptation des conditions -->
+            <div class="mt-4">
+                <label class="flex items-start space-x-2 text-sm text-gray-700">
+                    <input wire:model.defer="conditions_acceptees" type="checkbox"
+                        class="mt-1 border-gray-300 rounded shadow-sm">
+                    <span>
+                        En vous inscrivant, vous acceptez nos <a href="{{ route('conditions') }}"
+                            class="text-[#05335E] underline hover:text-[#C19B2C]">conditions générales</a>
+                        et confirmez avoir lu la <strong>loi 18-07</strong> sur la protection des données personnelles.
+                    </span>
+                </label>
+                @error('conditions_acceptees')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
 
             <x-primary-button class="ms-4">
                 {{ __('Register') }}
