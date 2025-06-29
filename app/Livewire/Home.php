@@ -119,7 +119,12 @@ class Home extends Component
     {
         if ($this->categorieSelectionnee) {
             $categorie = Categorie::with('enfants')->find($this->categorieSelectionnee);
-            return ($categorie && $categorie->enfants->isNotEmpty()) ? $categorie->enfants : null;
+return ($categorie && $categorie->enfants->isNotEmpty())
+    ? $categorie->enfants->map(function ($cat) {
+        $cat->has_children = $cat->enfants->isNotEmpty(); // Ajoute ce champ manuellement
+        return $cat;
+    })
+    : null;
         }
 
         return Categorie::whereNull('categorie_id')->get();

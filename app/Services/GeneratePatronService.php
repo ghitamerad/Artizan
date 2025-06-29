@@ -57,14 +57,15 @@ class GeneratePatronService
         // Préparer la commande de génération
         $nomFichier = strtolower(str_replace(' ', '_', $modele->nom)) . "_{$detailCommande->id}";
         $valentinaPath = config('services.valentina.exe_path');
+        $valentinaParams = config('services.valentina.params');
 
-        if (!$valentinaPath || !file_exists($valentinaPath)) {
+        if (!$valentinaPath) {
             Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
             return null;
         }
 
         $extraOption = $modele->type === 'fragment' ? '--exportOnlyDetails' : '';
-        $command = "\"$valentinaPath\" -b \"$nomFichier\" -d \"$customPatternDir\" -f 1 -p 0 -m \"$modifiedXmlPath\" $extraOption \"$patronPath\"";
+        $command = "\"$valentinaPath\"  $valentinaParams-b \"$nomFichier\" -d \"$customPatternDir\" -f 1 -p 0 -m \"$modifiedXmlPath\" $extraOption \"$patronPath\"";
 
         $output = null;
         $return_var = null;

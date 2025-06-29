@@ -24,6 +24,30 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        .demo-banner {
+            width: 200px;
+            background: #e3342f;
+            /* Rouge */
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            position: fixed;
+            top: 40px;
+            right: -60px;
+            transform: rotate(45deg);
+            z-index: 9999;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            font-family: sans-serif;
+            padding: 5px 0;
+        }
+    </style>
+
+    <div class="demo-banner">
+        Démonstration
+    </div>
+
 </head>
 
 <body class="font-sans text-[#FDFBF1] antialiased bg-[#FDFBF1]">

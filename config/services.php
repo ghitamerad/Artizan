@@ -37,6 +37,7 @@ return [
 
     'valentina' => [
         'exe_path' => env('VALENTINA_EXE_PATH'),
+        'params' => env('VALENTINA_PARAMS'),
     ],
 
 

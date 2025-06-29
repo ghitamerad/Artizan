@@ -119,8 +119,9 @@ class ElementPatronController extends Controller
         Log::info('Début de genererPatronPersonnalise');
 
         $valentinaExePath = config('services.valentina.exe_path');
+        $valentinaExeParams = config('services.valentina.params');
 
-        if (!$valentinaExePath || !file_exists($valentinaExePath)) {
+        if (!$valentinaExePath) {
             Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
             return back()->withErrors(['Le chemin vers l\'exécutable Valentina est invalide ou non défini.']);
         }
@@ -203,6 +204,7 @@ class ElementPatronController extends Controller
                 $fichiers->toArray(),
                 $outputFolder,
                 $valentinaExePath,
+                $valentinaExeParams,
                 $measureFile,
                 $devisId // nouveau paramètre pour le nom
             );
@@ -225,7 +227,7 @@ class ElementPatronController extends Controller
     }
 
 
-    private function fusionnerValentinaFiles(array $files, string $outputFolder, string $valentinaExePath, string $measureFile,  int $devisId)
+    private function fusionnerValentinaFiles(array $files, string $outputFolder, string $valentinaExePath, string $valentinaExeParams, string $measureFile,  int $devisId)
     {
         Log::info('Début de fusionnerValentinaFiles');
         Log::info('Fichiers à fusionner: ' . implode(', ', $files));
@@ -342,7 +344,7 @@ class ElementPatronController extends Controller
 
         // Export PDF
         $patternName = pathinfo($outputVal, PATHINFO_FILENAME);
-        $cmd = "\"$valentinaExePath\" -b $patternName -d \"$outputFolder\" --exportOnlyDetails -f 1 -p 0 -m \"$measureFile\" \"$outputVal\"";
+        $cmd = "\"$valentinaExePath\" $valentinaExeParams -b $patternName -d \"$outputFolder\" --exportOnlyDetails -f 1 -p 0 -m \"$measureFile\" \"$outputVal\"";
         Log::info("Commande Valentina : $cmd");
 
         $cmd .= ' >nul 2>&1';

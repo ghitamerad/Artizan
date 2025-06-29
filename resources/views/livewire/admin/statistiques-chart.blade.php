@@ -1,6 +1,3 @@
-@extends('layouts.admin')
-
-@section('content')
     <div class="max-w-7xl mx-auto py-10 px-6">
 
         <div class="flex flex-wrap -mx-3 mb-8">
@@ -298,4 +295,3 @@
 
         });
     </script>
-@endsection

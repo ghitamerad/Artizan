@@ -255,7 +255,6 @@ class DetailCommandeController extends Controller
             $client = $commande->user;
             $client->notify(new CommandeTerminee($commande));
 
-
         }
 
         return redirect()->route('commandes.show', $commande->id)

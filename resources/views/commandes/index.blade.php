@@ -119,21 +119,42 @@
                                     <div class="border-l-4 border-blue-500 pl-4 mt-2">
                                         <h4 class="font-semibold text-gray-700 mb-2">Détails :</h4>
                                         @if ($commande->details->isNotEmpty())
-                                            <ul class="list-disc list-inside text-gray-600 space-y-1 text-base">
+                                            <div class="space-y-4">
                                                 @foreach ($commande->details as $detail)
-                                                    <li>
-                                                        <a href="{{ route('commandes.detail_commande', $detail) }}"
-                                                            class="hover:underline">
-                                                            Modèle : {{ $detail->modele->nom ?? '—' }},
-                                                            Quantité : {{ $detail->quantite }},
-                                                            Prix : {{ number_format($detail->prix_unitaire, 2) }} DZD
-                                                        </a>
-                                                    </li>
+                                                    <div
+                                                        class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                                                        <div class="flex items-start gap-3">
+                                                            <i data-lucide="shirt" class="w-5 h-5 text-[#05335E] mt-1"></i>
+                                                            <div>
+                                                                <p class="text-gray-800 font-medium">
+                                                                    Modèle :
+                                                                    <a href="{{ route('commandes.detail_commande', $detail) }}"
+                                                                        class="text-blue-600 hover:underline">
+                                                                        {{ $detail->modele->nom ?? '—' }}
+                                                                    </a>
+                                                                </p>
+                                                                <p class="text-sm text-gray-600">
+                                                                    Quantité : {{ $detail->quantite }} &nbsp; | &nbsp;
+                                                                    Prix unitaire :
+                                                                    {{ number_format($detail->prix_unitaire, 2) }} DZD
+                                                                </p>
+                                                                <p class="text-sm text-gray-500 mt-1">
+                                                                    Type :
+                                                                    <span
+                                                                        class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold
+                                {{ $detail->custom ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' }}">
+                                                                        {{ $detail->custom ? 'Sur-mesure' : 'Prêt-à-porter' }}
+                                                                    </span>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @endforeach
-                                            </ul>
+                                            </div>
                                         @else
                                             <p class="text-gray-500 text-base">Aucun détail pour cette commande.</p>
                                         @endif
+
                                     </div>
                                 </td>
                             </tr>

@@ -13,21 +13,23 @@ use Illuminate\Support\Facades\Storage;
 use App\Notifications\DevisProposeNotification;
 use App\Notifications\DevisReponduParClientNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
+
 
 class DevisController extends Controller
 {
 
-public function indexClient()
-{
-    $devis = Devis::where('user_id', Auth::id())
-        ->latest()
-        ->get();
+    public function indexClient()
+    {
+        $devis = Devis::where('user_id', Auth::id())
+            ->latest()
+            ->get();
 
-    return view('devis.mes-devis', [
-        'devis' => $devis,
-        'filtre' => 'tous' // juste à titre d’info si tu veux l’afficher dans la vue
-    ]);
-}
+        return view('devis.mes-devis', [
+            'devis' => $devis,
+            'filtre' => 'tous' // juste à titre d’info si tu veux l’afficher dans la vue
+        ]);
+    }
     public function repondre(Request $request, Devis $devi)
     {
         $request->validate([
@@ -112,9 +114,9 @@ public function indexClient()
         $query = Devis::query();
 
         if ($filtre === 'nouvelles') {
-            $query->where('statut','en_attente');
+            $query->where('statut', 'en_attente');
         } elseif ($filtre === 'proposes') {
-            $query->whereNotNull('tarif')->where('statut','en_attente'); // pas encore accepté/refusé
+            $query->whereNotNull('tarif')->where('statut', 'en_attente'); // pas encore accepté/refusé
         } elseif ($filtre === 'acceptes') {
             $query->where('statut', 'aceptee');
         } elseif ($filtre === 'refuses') {
@@ -143,12 +145,21 @@ public function indexClient()
 
         $categorieId = session('devis.categorie_id');
         $selectedValeurs = session('devis.attributs', []);
-        return view('devis.request', compact('categories', 'attributs','categorieId', 'selectedValeurs'));
+        return view('devis.request', compact('categories', 'attributs', 'categorieId', 'selectedValeurs'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        Log::info('Début de la création de devis', ['user_id' => Auth::id()]);
+
+        // 🔧 Transformer les valeurs radio (attribut_valeurs[ID] => valeur_id) en un tableau plat
+        $valeurs = collect($request->input('attribut_valeurs', []))->values()->all();
+        $request->merge(['attribut_valeurs' => $valeurs]);
+
+        Log::info('Valeurs d’attributs reçues (après transformation)', $valeurs);
+
+        // ✅ Validation
+        $validated = $request->validate([
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
             'categorie_id' => 'required|exists:categories,id',
@@ -156,9 +167,13 @@ public function indexClient()
             'attribut_valeurs.*' => 'exists:attribut_valeurs,id',
         ]);
 
+        Log::info('Validation réussie', $validated);
+
         $valeursSelectionnees = collect($request->input('attribut_valeurs', []));
 
+        // 🔍 Vérification des attributs obligatoires
         $attributsObligatoires = Attribut::with('valeurs')->where('obligatoire', true)->get();
+        Log::info('Attributs obligatoires récupérés', ['count' => $attributsObligatoires->count()]);
 
         $erreurs = [];
         foreach ($attributsObligatoires as $attribut) {
@@ -167,7 +182,10 @@ public function indexClient()
                 $erreurs[] = "Vous devez sélectionner au moins une valeur pour l’attribut obligatoire « {$attribut->nom} ».";
             }
         }
+
         if (!empty($erreurs)) {
+            Log::warning('Échec validation attributs obligatoires', ['erreurs' => $erreurs]);
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -180,20 +198,27 @@ public function indexClient()
                 ->withErrors(['attribut_valeurs' => implode(' ', $erreurs)]);
         }
 
-
+        // Préparation des données
         $data = $request->only(['description', 'categorie_id']);
         $data['user_id'] = Auth::id();
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('devis_images', 'public');
+            Log::info('Image uploadée avec succès', ['path' => $data['image']]);
         }
 
+        // Création du devis
         $devis = \App\Models\Devis::create($data);
+        Log::info('Devis créé', ['devis_id' => $devis->id]);
+
+        // Association des valeurs d’attributs
         $devis->attributValeurs()->sync($valeursSelectionnees);
+        Log::info('Valeurs d’attributs liées au devis', ['valeurs' => $valeursSelectionnees]);
+
         session()->forget('devis');
+        Log::info('Session devis effacée');
 
-
-        return redirect()->back()->with('message', 'Devis créé avec succès');
+        return redirect()->route('devis.index')->with('message', 'Devis créé avec succès');
     }
 
 

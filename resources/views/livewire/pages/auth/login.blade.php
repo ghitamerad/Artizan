@@ -26,8 +26,8 @@ new #[Layout('layouts.guest')] class extends Component {
 
         // Sinon, on redirige selon le rôle de l'utilisateur
         $redirectUrl = match (Auth::user()->role) {
-            'admin' => route('modeles.index'),
-            'gerante' => route('modeles.index'),
+            'admin' => route('admin.users.index'),
+            'gerante' => route('admin.statistiques'),
             'couturiere' => route('couturiere.dashboard'),
             'client' => route('dashboard'),
             default => route('home'),

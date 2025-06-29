@@ -112,79 +112,128 @@
 
 
         {{-- Carrousel des catégories --}}
-@php
-    $categoriesParPage = 5;
-@endphp
+        @php
+            $categoriesParPage = 5;
+            $chunks = $categoriesActuelles ? $categoriesActuelles->chunk($categoriesParPage) : collect();
+            $categorieSelectionneeInstance = $categorieSelectionnee
+                ? \App\Models\Categorie::with('enfants')->find($categorieSelectionnee)
+                : null;
+        @endphp
 
-<div class="text-center">
-    <h2 class="text-lg font-semibold text-gray-700 mb-4">Catégories</h2>
+        <div class="text-center mb-6">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Catégories</h2>
 
-    <div x-data="{ page: 0, total: {{ ceil($categoriesActuelles->count() / $categoriesParPage) }} }" class="relative max-w-full">
+            <div class="flex items-center justify-between gap-4">
+                <!-- Flèche gauche -->
+                <button onclick="changeCategoriePage(-1)" id="btn-prev"
+                    class="text-gray-500 hover:text-gray-800 disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
 
-        {{-- Carrousel --}}
-        <div class="flex items-center justify-between">
-            {{-- Flèche gauche --}}
-            <button @click="page = Math.max(0, page - 1)"
-                    class="text-gray-500 hover:text-gray-800 disabled:opacity-30 disabled:cursor-not-allowed"
-                    :disabled="page === 0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M15 19l-7-7 7-7"/>
-                </svg>
-            </button>
-
-            {{-- Les catégories --}}
-            <div class="flex gap-6 overflow-hidden w-full justify-center">
-                <template x-for="(categorie, index) in {{ $categoriesActuelles->toJson() }}" :key="categorie.id">
-                    <template x-if="index >= page * {{ $categoriesParPage }} && index < (page + 1) * {{ $categoriesParPage }}">
-                        <div class="flex flex-col items-center w-20 shrink-0 snap-center">
-                            <div @click="$wire.selectCategorie(categorie.id)"
-                                 class="w-20 h-20 rounded-full border-2 overflow-hidden cursor-pointer transition-all duration-300
-                                    flex items-center justify-center"
-                                 :class="{
-                                     'border-green-500 shadow-md': $wire.categorieSelectionnee === categorie.id && !categorie.enfants?.length,
-                                     'border-blue-600 bg-blue-600 text-white shadow-lg': $wire.categorieSelectionnee === categorie.id,
-                                     'border-gray-300 hover:border-blue-500 bg-white': $wire.categorieSelectionnee !== categorie.id
-                                 }">
-                                <template x-if="categorie.image">
-                                    <img :src="'/storage/' + categorie.image" :alt="categorie.nom"
-                                         class="object-cover w-full h-full">
-                                </template>
-                                <template x-if="!categorie.image">
-                                    <div class="bg-gray-200 w-full h-full flex items-center justify-center text-xs text-gray-500">
-                                        Pas d’image
+                <div class="overflow-hidden w-full">
+                    <div id="categoriePages" class="flex transition-transform duration-300 ease-in-out"
+                        style="transform: translateX(0%);">
+                        @if ($chunks->count())
+                            @foreach ($chunks as $chunk)
+                                <div class="flex gap-6 justify-center w-full shrink-0">
+                                    @foreach ($chunk as $categorie)
+                                        <div wire:click="selectCategorie({{ $categorie->id }})"
+                                            class="flex flex-col items-center w-20 shrink-0 snap-center cursor-pointer"
+                                            title="{{ $categorie->nom }}">
+                                            <div
+                                                class="w-20 h-20 rounded-full border-2 overflow-hidden flex items-center justify-center transition-all duration-300
+                                        {{ $categorieSelectionnee === $categorie->id
+                                            ? ($categorie->enfants->isEmpty()
+                                                ? 'border-green-500 shadow-md'
+                                                : 'bg-blue-600 text-white border-blue-600 shadow-lg')
+                                            : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500' }}">
+                                                @if ($categorie->image)
+                                                    <img src="{{ asset('storage/' . $categorie->image) }}"
+                                                        alt="{{ $categorie->nom }}"
+                                                        class="object-cover w-full h-full" />
+                                                @else
+                                                    <div
+                                                        class="bg-gray-200 w-full h-full flex items-center justify-center text-xs text-gray-500">
+                                                        Pas d’image
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <span class="text-sm mt-2 text-center font-semibold text-gray-700 px-1">
+                                                {{ $categorie->nom }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        @elseif ($categorieSelectionneeInstance)
+                            <div class="flex gap-6 justify-center w-full shrink-0">
+                                <div wire:click="selectCategorie({{ $categorieSelectionneeInstance->id }})"
+                                    class="flex flex-col items-center w-20 shrink-0 snap-center cursor-pointer"
+                                    title="{{ $categorieSelectionneeInstance->nom }}">
+                                    <div
+                                        class="w-20 h-20 rounded-full border-2 overflow-hidden flex items-center justify-center transition-all duration-300
+                                {{ $categorieSelectionneeInstance->enfants->isEmpty()
+                                    ? 'border-green-500 shadow-md'
+                                    : 'bg-blue-600 text-white border-blue-600 shadow-lg' }}">
+                                        @if ($categorieSelectionneeInstance->image)
+                                            <img src="{{ asset('storage/' . $categorieSelectionneeInstance->image) }}"
+                                                alt="{{ $categorieSelectionneeInstance->nom }}"
+                                                class="object-cover w-full h-full" />
+                                        @else
+                                            <div
+                                                class="bg-gray-200 w-full h-full flex items-center justify-center text-xs text-gray-500">
+                                                Pas d’image
+                                            </div>
+                                        @endif
                                     </div>
-                                </template>
+                                    <span class="text-sm mt-2 text-center font-semibold text-gray-700 px-1">
+                                        {{ $categorieSelectionneeInstance->nom }}
+                                    </span>
+                                </div>
                             </div>
-                            <span class="text-sm mt-2 text-center font-semibold text-gray-700 px-1" x-text="categorie.nom"></span>
-                        </div>
-                    </template>
-                </template>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Flèche droite -->
+                <button onclick="changeCategoriePage(1)" id="btn-next"
+                    class="text-gray-500 hover:text-gray-800 disabled:opacity-30 disabled:cursor-not-allowed"
+                    @if ($chunks->count() <= 1) disabled @endif>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
             </div>
 
-            {{-- Flèche droite --}}
-            <button @click="page = Math.min(total - 1, page + 1)"
-                    class="text-gray-500 hover:text-gray-800 disabled:opacity-30 disabled:cursor-not-allowed"
-                    :disabled="page >= total - 1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M9 5l7 7-7 7"/>
-                </svg>
-            </button>
+            @if ($categorieSelectionnee)
+                <button wire:click="$set('categorieSelectionnee', null)"
+                    class="mt-4 text-sm text-blue-600 hover:underline">
+                    ← Retour aux catégories
+                </button>
+            @endif
         </div>
 
-    </div>
+        <script>
+            let currentCategoriePage = 0;
+            const totalCategoriePages = {{ $chunks->count() }};
+            const container = document.getElementById('categoriePages');
 
-    {{-- Bouton retour --}}
-    @if ($categorieSelectionnee)
-        <button wire:click="$set('categorieSelectionnee', null)"
-                class="mt-4 text-sm text-blue-600 hover:underline">
-            ← Retour aux catégories
-        </button>
-    @endif
-</div>
+            function changeCategoriePage(direction) {
+                currentCategoriePage = Math.max(0, Math.min(currentCategoriePage + direction, totalCategoriePages - 1));
+                const translateX = -100 * currentCategoriePage;
+                container.style.transform = `translateX(${translateX}%)`;
+
+                document.getElementById('btn-prev').disabled = currentCategoriePage === 0;
+                document.getElementById('btn-next').disabled = currentCategoriePage >= totalCategoriePages - 1;
+            }
+        </script>
+
+
+
 
 
         <div class="mb-6 mt-8 border-b border-gray-200">

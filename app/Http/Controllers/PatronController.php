@@ -55,8 +55,9 @@ public function generatePatron($modeleId)
     }
 
     $valentinaPath = config('services.valentina.exe_path');
-    if (!$valentinaPath || !file_exists($valentinaPath)) {
-        Log::error("Valentina introuvable");
+    $valentinaParams = config('services.valentina.params');
+    if (!$valentinaPath ) {
+        Log::error("Valentina introuvable : $valentinaPath");
         return response()->json(['error' => 'Valentina introuvable.'], 500);
     }
 
@@ -65,7 +66,7 @@ public function generatePatron($modeleId)
     $extraOption = $type === 'fragment' ? '--exportOnlyDetails' : '';
 
     // Construction de la commande
-    $command = "\"$valentinaPath\" -b \"$nomFichierBase\" -d \"$outputDir\" -f 1 -p 0 -m \"$xmlPath\" $extraOption \"$patronPath\"";
+    $command = "\"$valentinaPath\" $valentinaParams -b \"$nomFichierBase\" -d \"$outputDir\" -f 1 -p 0 -m \"$xmlPath\" $extraOption \"$patronPath\"";
     Log::info("Commande exécutée : $command");
 
     $output = [];
@@ -164,8 +165,10 @@ public function generatePatron($modeleId)
         $outputFile = $customPatternDir . "{$nomFichier}.pdf";
 
         $valentinaPath = config('services.valentina.exe_path');
+        $valentinaParams = config('services.valentina.params');
 
-        if (!$valentinaPath || !file_exists($valentinaPath)) {
+
+        if (!$valentinaPath) {
             Log::error("Le chemin vers l'exécutable Valentina est invalide ou non défini.");
             return back()->withErrors(['Le chemin vers l\'exécutable Valentina est invalide ou non défini.']);
         }
@@ -175,7 +178,7 @@ public function generatePatron($modeleId)
         // Commande selon le type
         $extraOption = $type === 'fragment' ? '--exportOnlyDetails' : '';
 
-        $command = "\"$valentinaPath\" -b \"$nomFichier\" -d \"$customPatternDir\" -f 1 -p 0 -m \"$modifiedXmlPath\" $extraOption \"$patronPath\"";
+        $command = "\"$valentinaPath\" $valentinaParams -b \"$nomFichier\" -d \"$customPatternDir\" -f 1 -p 0 -m \"$modifiedXmlPath\" $extraOption \"$patronPath\"";
 
 
         $output = null;

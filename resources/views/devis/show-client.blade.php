@@ -1,7 +1,7 @@
 @extends('layouts.test2')
 
 @section('content')
-<div class="max-w-4xl mx-auto py-8 px-4">
+<div class="max-w-4xl mx-auto py-8 px-4 text-black">
     <h2 class="text-2xl font-semibold mb-6 text-gray-800">Détails du devis</h2>
 
     <div class="bg-white rounded-xl shadow-md p-6 mb-6">

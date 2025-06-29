@@ -18,32 +18,58 @@
     @vite('resources/js/app.js') {{-- pour Vite --}}
 
     @livewireStyles
+    <style>
+        .demo-banner {
+            width: 200px;
+            background: #e3342f;
+            /* Rouge */
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            position: fixed;
+            top: 40px;
+            right: -60px;
+            transform: rotate(45deg);
+            z-index: 9999;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            font-family: sans-serif;
+            padding: 5px 0;
+        }
+    </style>
+
+    <div class="demo-banner">
+        Démonstration
+    </div>
+
 </head>
 
 <body class="bg-gray-100">
     @livewireScripts
     <style>
-/* Cache la scrollbar pour Chrome, Safari et Edge */
-.hide-scrollbar::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
-}
+        /* Cache la scrollbar pour Chrome, Safari et Edge */
+        .hide-scrollbar::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+        }
 
-/* Cache la scrollbar pour Firefox */
-.hide-scrollbar {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE 10+ */
-}
-</style>
+        /* Cache la scrollbar pour Firefox */
+        .hide-scrollbar {
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE 10+ */
+        }
+    </style>
 
 
     <div class="flex h-screen">
         <!-- Sidebar -->
-<aside class="w-64 bg-[#05335E] text-white border-r border-gray-200 flex flex-col h-full overflow-y-auto overflow-x-hidden hide-scrollbar">
+        <aside
+            class="w-64 bg-[#05335E] text-white border-r border-gray-200 flex flex-col h-full overflow-y-auto overflow-x-hidden hide-scrollbar">
             <!-- Logo / Titre -->
             <div class="px-6 py-6 border-b border-gray-200">
                 <div class="flex items-center space-x-3">
-                    <img src="{{ asset('images/logoLebsaZinaCopy.png') }}" alt="Logo Lebsa Zina" class="h-12 w-auto">
+                    <img src="{{ asset('images/logolebsazinaCopy.png') }}" alt="Logo Lebsa Zina" class="h-12 w-auto">
                     <h1 class="text-xl font-bold">Lebsa Zina</h1>
 
                 </div>
@@ -126,7 +152,7 @@
                                 'encours',
                                 'terminees',
                                 'refusees',
-                                'expediees'
+                                'expediees',
                             ]);
                         @endphp
 
@@ -156,7 +182,7 @@
                                 <x-nav-link :href="route('commandes.index', ['filtre' => 'terminees'])" :active="request()->get('filtre') === 'terminees'">
                                     Commandes terminées
                                 </x-nav-link>
-                                  <x-nav-link :href="route('commandes.index', ['filtre' => 'expedier'])" :active="request()->get('filtre') === 'expediees'">
+                                <x-nav-link :href="route('commandes.index', ['filtre' => 'expedier'])" :active="request()->get('filtre') === 'expediees'">
                                     Commandes expediée
                                 </x-nav-link>
                                 <x-nav-link :href="route('commandes.index', ['filtre' => 'refusees'])" :active="request()->get('filtre') === 'refusees'">

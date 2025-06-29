@@ -3,17 +3,10 @@ import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
     plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
-        }),
+        laravel([
+            'resources/css/app.css',
+            'resources/js/app.js',
+        ]),
     ],
-server: {
-  host: 'localhost',
-  port: 5173,
-  strictPort: true,
-  proxy: {
-    '/api': 'http://localhost:8000', // adapter au port Laravel
-  },
-},
 });
+
